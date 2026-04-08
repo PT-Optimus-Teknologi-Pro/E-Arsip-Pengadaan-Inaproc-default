@@ -88,19 +88,36 @@ func GetFeedback(id uint) Feedback {
 func SaveFeedback(kualitas, fasilitas, kelengkapan []string, komentar string) error {
 	var feedbacks []Feedback
 	for i := range JENIS_LAYANAN {
-		kualitasInt , _ := strconv.Atoi(kualitas[i])
-		fasilitasInt , _ := strconv.Atoi(fasilitas[i])
-		kelengkapanInt , _ := strconv.Atoi(kelengkapan[i])
+		// Safety check for slice indices
+		kVal := "0"
+		if i < len(kualitas) { kVal = kualitas[i] }
+		fVal := "0"
+		if i < len(fasilitas) { fVal = fasilitas[i] }
+		keVal := "0"
+		if i < len(kelengkapan) { keVal = kelengkapan[i] }
+
+		kualitasInt, _ := strconv.Atoi(kVal)
+		fasilitasInt, _ := strconv.Atoi(fVal)
+		kelengkapanInt, _ := strconv.Atoi(keVal)
+
 		feedbacks = append(feedbacks, Feedback{
-			Jenis: i+1,
-			Nama: "Guest",
-			Kualitas: kualitasInt,
-			Fasilitas: fasilitasInt,
+			Jenis:       i + 1,
+			Nama:        "Guest",
+			Kualitas:    kualitasInt,
+			Fasilitas:   fasilitasInt,
 			Kelengkapan: kelengkapanInt,
-			Komentar: komentar,
+			Komentar:    komentar,
 		})
 	}
-	return  db.Save(&feedbacks).Error
+	// Use Create for bulk insert which is more standard and reliable in GORM
+	return db.Create(&feedbacks).Error
+}
+
+func GetTotalFeedbackCount() int64 {
+	var count int64
+	// More accurate: count distinct created_at to get number of form submissions
+	db.Model(&Feedback{}).Select("count(distinct(created_at))").Scan(&count)
+	return count
 }
 
 func GetCountFeedbackByJenisKualitas(jenis int, start int) int64 {
@@ -126,6 +143,9 @@ type SummaryFeedBack struct {
 	Kualitas	[5]int64
 	Fasilitas	[5]int64
 	Kelengkapan	[5]int64
+	KualitasAvg	float64
+	FasilitasAvg float64
+	KelengkapanAvg float64
 }
 
 func (obj SummaryFeedBack) Label() string {

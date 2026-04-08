@@ -8,13 +8,16 @@
     --primary: #0026B4;
     --primary-light: #f0f4ff;
     --accent: #fbbf24;
+    --success: #22c55e;
+    --danger: #ef4444;
     --text-main: #1e293b;
     --text-muted: #64748b;
     --border-color: #e2e8f0;
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
   }
 
   .fl-wrapper {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 2rem auto 5rem;
     padding: 0 1.5rem;
     font-family: 'Outfit', sans-serif;
@@ -22,235 +25,144 @@
   
   /* Header Section */
   .fl-header-row {
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
   }
   .fl-header-row h2 {
-    font-size: 2.2rem;
-    font-weight: 800;
+    font-size: 2.5rem;
+    font-weight: 900;
     color: var(--text-main);
     margin: 0;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
   }
   .fl-header-row p {
     font-size: 1.1rem;
     color: var(--text-muted);
-    margin: 5px 0 0;
+    margin: 8px 0 0;
   }
 
-  /* Premium Stats Grid */
-  .stats-grid {
+  /* Executive Stats */
+  .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
     margin-bottom: 3rem;
   }
-  .stat-card {
-    background: #fff;
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 1.8rem;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-    transition: all 0.3s ease;
-  }
-  .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0, 38, 180, 0.08);
-    border-color: var(--primary);
-  }
-  .stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .stat-icon.blue { background: #E0E7FF; color: #4338CA; }
-  .stat-icon.orange { background: #FFF7ED; color: #EA580C; }
-  .stat-icon.pink { background: #FDF2F8; color: #DB2777; }
-
-  .stat-info .val {
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: var(--text-main);
-    line-height: 1;
-  }
-  .stat-info .lbl {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    margin-top: 4px;
-  }
-
-  /* Section Title */
-  .section-header {
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .section-header h3 {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: var(--text-main);
-    margin: 0;
-  }
-  .section-line {
-    flex-grow: 1;
-    height: 1px;
-    background: var(--border-color);
-  }
-
-  /* Service Card */
-  .report-card {
+  .stat-card-new {
     background: #fff;
     border: 1px solid var(--border-color);
     border-radius: 24px;
-    margin-bottom: 2rem;
+    padding: 2rem;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
   }
-  .report-card-header {
-    background: #f8fafc;
-    padding: 1.8rem;
+  .stat-card-new:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 38, 180, 0.1);
+    border-color: var(--primary);
+  }
+  .stat-card-new h4 {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+  .stat-card-new .value {
+    font-size: 2.4rem;
+    font-weight: 900;
+    color: var(--text-main);
     display: flex;
-    align-items: center;
-    gap: 20px;
-    border-bottom: 1px solid var(--border-color);
+    align-items: baseline;
+    gap: 8px;
   }
-  .report-card-icon {
-    width: 50px;
-    height: 50px;
-    background: #fff;
-    border-radius: 12px;
-    padding: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  .stat-card-new .trend {
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    margin-left: auto;
   }
-  .report-card-icon img { width: 100%; height: 100%; object-fit: contain; }
-  .report-card-title h4 { font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin: 0; }
-  .report-card-title p { font-size: 0.9rem; color: var(--text-muted); margin: 2px 0 0; }
+  .stat-card-new.blue { border-left: 6px solid var(--primary); }
+  .stat-card-new.green { border-left: 6px solid var(--success); }
+  .stat-card-new.orange { border-left: 6px solid var(--accent); }
 
-  /* Charts Grid */
-  .report-grid {
+  /* Charts Container */
+  .rekap-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    padding: 2rem;
-    gap: 2.5rem;
+    gap: 2rem;
+    margin-bottom: 3rem;
   }
-  .metric-group h5 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.85rem;
-    font-weight: 800;
-    color: var(--primary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 1.2rem;
-  }
-  
-  .dist-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
-  }
-  .dist-stars {
-    width: 65px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text-muted);
-  }
-  .dist-stars svg { color: var(--accent); }
-  
-  .dist-progress {
-    flex-grow: 1;
-    height: 10px;
-    background: #f1f5f9;
-    border-radius: 10px;
-    position: relative;
-    overflow: hidden;
-  }
-  .dist-bar {
-    position: absolute;
-    left: 0; top: 0; height: 100%;
-    border-radius: 10px;
-    transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .dist-count {
-    width: 30px;
-    text-align: right;
-    font-size: 0.9rem;
-    font-weight: 800;
-    color: var(--text-main);
-  }
-
-  /* Testimonials Section */
-  .testimonial-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-  }
-  .testimonial-card {
+  .chart-card {
     background: #fff;
     border: 1px solid var(--border-color);
-    border-radius: 20px;
+    border-radius: 28px;
     padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
+    box-shadow: var(--card-shadow);
   }
-  .testimonial-card::before {
-    content: '"';
-    position: absolute;
-    top: 10px; right: 20px;
-    font-family: serif;
-    font-size: 5rem;
-    color: #f1f5f9;
-    line-height: 1;
-    z-index: 0;
-  }
-  .testimonial-body {
-    position: relative;
-    z-index: 1;
-  }
-  .testi-header {
+  .chart-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 1rem;
+    gap: 15px;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed var(--border-color);
   }
-  .testi-avatar {
-    width: 44px;
-    height: 44px;
+  .chart-header .icon-box {
+    width: 48px; height: 48px;
+    border-radius: 14px;
     background: var(--primary-light);
-    color: var(--primary);
-    border-radius: 50%;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
+    align-items: center; justify-content: center;
   }
-  .testi-info .name { font-weight: 700; color: var(--text-main); font-size: 1rem; }
-  .testi-info .date { font-size: 0.8rem; color: var(--text-muted); }
-  
-  .testi-comment {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #475569;
-    margin: 0;
+  .chart-header h4 { margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-main); }
+
+  /* Testimonials */
+  .testimonials-container {
+    margin-top: 4rem;
+  }
+  .testimonial-masonry {
+    column-count: 3;
+    column-gap: 1.5rem;
+  }
+  @media (max-width: 1100px) { .testimonial-masonry { column-count: 2; } }
+  @media (max-width: 768px) { .testimonial-masonry { column-count: 1; } }
+
+  .testi-card-premium {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 22px;
+    padding: 1.8rem;
+    box-shadow: var(--card-shadow);
+    transition: 0.3s;
+  }
+  .testi-card-premium:hover { border-color: var(--primary); transform: scale(1.02); }
+  .testi-info { display: flex; align-items: center; gap: 12px; margin-bottom: 1.2rem; }
+  .testi-avatar-circle {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--primary), #4338CA);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.1rem;
+  }
+  .testi-meta .name { font-weight: 800; color: var(--text-main); font-size: 0.95rem; display: block; }
+  .testi-meta .time { font-size: 0.75rem; color: var(--text-muted); }
+  .testi-text {
+    font-size: 1rem; line-height: 1.7; color: #334155; font-style: italic;
+    position: relative; padding-left: 15px; border-left: 3px solid var(--primary-light);
   }
 
-  @media (max-width: 992px) {
-    .report-grid { grid-template-columns: 1fr; gap: 2rem; }
-  }
+  /* Apex Overrides */
+  .apexcharts-canvas { margin: 0 auto; }
 </style>
 {% endblock %}
 
@@ -258,214 +170,154 @@
 <div class="fl-wrapper">
   <!-- Header -->
   <div class="fl-header-row">
-    <h2>Analisis Kepuasan Layanan</h2>
-    <p>Data dikumpulkan secara real-time dari formulir evaluasi digital UKPBJ.</p>
+    <div>
+      <h2>Analitik Evaluasi</h2>
+      <p>Dashboard kepuasan pengunjung e-Arsip Inaproc.</p>
+    </div>
+    <div id="overall-gauge" style="width: 250px; height: 160px; margin-bottom: -20px;"></div>
   </div>
 
-  <!-- Premium Stats Dashboard -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon blue">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-      </div>
-      <div class="stat-info">
-        <div class="val">{{ totalResponses }}</div>
-        <div class="lbl">Total Respons</div>
-      </div>
+  <!-- Stats Grid -->
+  <div class="dashboard-grid">
+    <div class="stat-card-new blue">
+      <h4>Total Respons</h4>
+      <div class="value">{{ totalResponses }} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 600;">Submisi</span></div>
     </div>
-    
-    <div class="stat-card">
-      <div class="stat-icon orange">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-      </div>
-      <div class="stat-info">
-        <div class="val">4.8</div>
-        <div class="lbl">Skor Rata-Rata</div>
-      </div>
+    <div class="stat-card-new green">
+      <h4>Skor Rata-Rata</h4>
+      <div class="value">{{ globalAvg|floatformat:1 }} <span style="font-size: 1rem; color: var(--success); font-weight: 600;">★</span></div>
     </div>
-
-    <div class="stat-card">
-      <div class="stat-icon pink">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-      </div>
-      <div class="stat-info">
-        <div class="val">{{ allFeedbacks|length }}</div>
-        <div class="lbl">Testimonial Baru</div>
-      </div>
+    <div class="stat-card-new orange">
+      <h4>Testimonial</h4>
+      <div class="value">{{ allFeedbacks|length }} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 600;">Pesan</span></div>
+    </div>
+    <div class="stat-card-new blue">
+      <h4>Tingkat Kepuasan</h4>
+      <div class="value">{{ globalAvgPercent }}<span style="font-size: 1.5rem; margin-top: 5px;">%</span></div>
     </div>
   </div>
 
-  <div class="section-header">
-    <h3>Rekapitulasi Kategori</h3>
+  <!-- Charts Section -->
+  <div class="section-header" style="margin-bottom: 2rem;">
+    <h3 style="font-weight: 900; font-size: 1.6rem; color: var(--text-main);">Performance Layanan</h3>
     <div class="section-line"></div>
   </div>
 
-  <!-- Summary Cards Loop -->
-  {% for obj in summary %}
-  <div class="report-card">
-    <div class="report-card-header">
-      <div class="report-card-icon">
-        <img src="/assets/icon-feedback/Layanan {{ obj.Label }}.png" 
-             onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'" alt="Icon">
+  <div class="rekap-grid">
+    {% for obj in summary %}
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="icon-box">
+          <img src="/assets/icon-feedback/{% if obj.Label == 'Pembuktian Kualifikasi' %}{{ obj.Label }}{% else %}Layanan {{ obj.Label }}{% endif %}.png" 
+               onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'" 
+               style="width: 28px; height: 28px; object-fit: contain;">
+        </div>
+        <h4>{{ obj.Label }}</h4>
       </div>
-      <div class="report-card-title">
-        <h4>Layanan {{ obj.Label }}</h4>
-        <p>Analisis kepuasan untuk kriteria kualitas, fasilitas, dan kelengkapan.</p>
-      </div>
-    </div>
-    
-    <div class="report-grid">
-      <!-- Kualitas -->
-      <div class="metric-group">
-        <h5>Kualitas Layanan</h5>
-        <div class="dist-row">
-            <div class="dist-stars">5 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kualitas.4 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
-            </div>
-            <div class="dist-val">{{ obj.Kualitas.4 }}</div>
+      <div id="chart-{{ obj.Jenis }}" 
+           class="service-radar-chart"
+           data-kualitas="{{ obj.KualitasAvg }}"
+           data-fasilitas="{{ obj.FasilitasAvg }}"
+           data-info="{{ obj.KelengkapanAvg }}"
+           data-jenis="{{ obj.Jenis }}"
+           style="min-height: 300px;"></div>
+      
+      <div style="margin-top: 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">Kualitas</div>
+            <div style="font-weight: 900; color: var(--primary);">{{ obj.KualitasAvg|floatformat:1 }}</div>
         </div>
-        <div class="dist-row">
-            <div class="dist-stars">4 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kualitas.3 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
-            </div>
-            <div class="dist-val">{{ obj.Kualitas.3 }}</div>
+        <div style="text-align: center; border-left: 1px solid #eee; border-right: 1px solid #eee;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">Fasilitas</div>
+            <div style="font-weight: 900; color: var(--primary);">{{ obj.FasilitasAvg|floatformat:1 }}</div>
         </div>
-        <div class="dist-row">
-            <div class="dist-stars">3 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kualitas.2 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--text-muted);"></div>
-            </div>
-            <div class="dist-val">{{ obj.Kualitas.2 }}</div>
-        </div>
-        <div class="dist-row">
-            <div class="dist-stars">2 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kualitas.1 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
-            </div>
-            <div class="dist-val">{{ obj.Kualitas.1 }}</div>
-        </div>
-        <div class="dist-row">
-            <div class="dist-stars">1 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kualitas.0 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
-            </div>
-            <div class="dist-val">{{ obj.Kualitas.0 }}</div>
+        <div style="text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">Info</div>
+            <div style="font-weight: 900; color: var(--primary);">{{ obj.KelengkapanAvg|floatformat:1 }}</div>
         </div>
       </div>
-
-      <!-- Fasilitas -->
-      <div class="metric-group">
-        <h5>Fasilitas Layanan</h5>
-        <div class="dist-row">
-            <div class="dist-stars">5 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Fasilitas.4 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
-            </div>
-            <div class="dist-val">{{ obj.Fasilitas.4 }}</div>
-        </div>
-        <div class="dist-row">
-            <div class="dist-stars">4 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Fasilitas.3 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
-            </div>
-            <div class="dist-val">{{ obj.Fasilitas.3 }}</div>
-        </div>
-        <div class="dist-row">
-            <div class="dist-stars">3 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Fasilitas.2 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--text-muted);"></div>
-            </div>
-            <div class="dist-val">{{ obj.Fasilitas.2 }}</div>
-        </div>
-        <div class="dist-row">
-            <div class="dist-stars">2 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Fasilitas.1 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
-            </div>
-            <div class="dist-val">{{ obj.Fasilitas.1 }}</div>
-        </div>
-        <div class="dist-row">
-            <div class="dist-stars">1 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Fasilitas.0 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
-            </div>
-            <div class="dist-val">{{ obj.Fasilitas.0 }}</div>
-        </div>
-      </div>
-
-      <!-- Kelengkapan -->
-      <div class="metric-group">
-        <h5>Kelengkapan Informasi</h5>
-        <div class="dist-row">
-            <div class="dist-stars">5 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kelengkapan.4 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
-            </div>
-            <div class="dist-val">{{ obj.Kelengkapan.4 }}</div>
-        </div>
-        <div class="dist-row">
-            <div class="dist-stars">4 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kelengkapan.3 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
-            </div>
-            <div class="dist-val">{{ obj.Kelengkapan.3 }}</div>
-        </div>
-        <div class="dist-row">
-            <div class="dist-stars">3 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kelengkapan.2 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--text-muted);"></div>
-            </div>
-            <div class="dist-val">{{ obj.Kelengkapan.2 }}</div>
-        </div>
-        <div class="dist-row">
-            <div class="dist-stars">2 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kelengkapan.1 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
-            </div>
-            <div class="dist-val">{{ obj.Kelengkapan.1 }}</div>
-        </div>
-        <div class="dist-row">
-            <div class="dist-stars">1 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
-            <div class="dist-progress">
-              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kelengkapan.0 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
-            </div>
-            <div class="dist-val">{{ obj.Kelengkapan.0 }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  {% endfor %}
-
-  <!-- Premium Testimonials Section -->
-  <div class="section-header" style="margin-top: 4rem;">
-    <h3>Pesan & Saran Terbaru</h3>
-    <div class="section-line"></div>
-  </div>
-
-  <div class="testimonial-grid">
-    {% for item in allFeedbacks %}
-    <div class="testimonial-card">
-      <div class="testimonial-body">
-        <div class="testi-header">
-          <div class="testi-avatar">G</div>
-          <div class="testi-info">
-            <div class="name">Guest User</div>
-            <div class="date">{{ formatDateTime(item.CreatedAt) }}</div>
-          </div>
-        </div>
-        <p class="testi-comment">"{{ item.Komentar }}"</p>
-      </div>
-    </div>
-    {% empty %}
-    <div class="col-12 py-5 text-center" style="background: #fafafa; border-radius: 20px; border: 2px dashed #eee;">
-      <div class="mb-3">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ddd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-      </div>
-      <p style="color: #999; font-weight: 600;">Belum ada pesan atau saran kualitatif yang masuk.</p>
     </div>
     {% endfor %}
   </div>
+
+  <!-- Testimonials -->
+  <div class="testimonials-container">
+    <div class="section-header" style="margin-bottom: 2.5rem;">
+      <h3 style="font-weight: 900; font-size: 1.6rem; color: var(--text-main);">Pesan & Saran Terbaru</h3>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="testimonial-masonry">
+      {% for item in allFeedbacks %}
+      <div class="testi-card-premium">
+        <div class="testi-info">
+          <div class="testi-avatar-circle">{{ item.Nama|slice:":1"|default:"G" }}</div>
+          <div class="testi-meta">
+            <span class="name">{% if item.Nama == 'Guest' %}Pengunjung #{{ item.ID }}{% else %}{{ item.Nama }}{% endif %}</span>
+            <span class="time">{{ formatDateTime(item.CreatedAt) }}</span>
+          </div>
+        </div>
+        <p class="testi-text">"{{ item.Komentar }}"</p>
+      </div>
+      {% empty %}
+      <div style="grid-column: 1/-1; text-align: center; padding: 4rem; background: #f8fafc; border-radius: 30px; border: 2px dashed var(--border-color);">
+        <p style="color: var(--text-muted); font-weight: 600; font-size: 1.1rem;">Belum ada saran atau pesan baru hari ini.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const getNum = (v) => parseFloat(v) || 0;
+
+    // 1. Executive Gauge
+    const gaugeEl = document.querySelector("#overall-gauge");
+    if (gaugeEl) {
+      const avg = getNum(gaugeEl.dataset.avg);
+      const gaugeOptions = {
+        series: [avg / 5 * 100],
+        chart: { height: 230, type: 'radialBar', sparkline: { enabled: true } },
+        plotOptions: {
+          radialBar: {
+            startAngle: -90, endAngle: 90,
+            hollow: { size: '65%' },
+            track: { background: '#e7e7e7', strokeWidth: '97%', margin: 5 },
+            dataLabels: {
+              name: { show: false },
+              value: { offsetY: -2, fontSize: '24px', fontWeight: '900', color: '#0026B4', formatter: (val) => (val/20).toFixed(1) + " ★" }
+            }
+          }
+        },
+        fill: { type: 'gradient', gradient: { shade: 'light', shadeIntensity: 0.4, inverseColors: false, opacityFrom: 1, opacityTo: 1, stops: [0, 50, 100], colorStops: [{ offset: 0, color: '#0026B4', opacity: 1 }, { offset: 100, color: '#4338CA', opacity: 1 }] } },
+        labels: ['Average Score'],
+      };
+      new ApexCharts(gaugeEl, gaugeOptions).render();
+    }
+
+    // 2. Service Radars (Data decoupling for clean IDE linting)
+    document.querySelectorAll(".service-radar-chart").forEach(function(el) {
+      var dKualitas = getNum(el.dataset.kualitas);
+      var dFasilitas = getNum(el.dataset.fasilitas);
+      var dInfo = getNum(el.dataset.info);
+
+      var options = {
+        series: [{ name: 'Skor Layanan', data: [dKualitas, dFasilitas, dInfo] }],
+        chart: { height: 320, type: 'radar', toolbar: { show: false }, dropShadow: { enabled: true, blur: 8, left: 1, top: 1, opacity: 0.1 } },
+        colors: ['#0026B4'],
+        stroke: { width: 3 },
+        fill: { opacity: 0.2 },
+        markers: { size: 4, strokeWidth: 2, hover: { size: 7 } },
+        xaxis: { categories: ['Kualitas', 'Fasilitas', 'Informasi'], labels: { style: { colors: ['#64748b', '#64748b', '#64748b'], fontSize: '11px', fontWeight: 700 } } },
+        yaxis: { max: 5, tickAmount: 5, labels: { show: false } },
+        grid: { strokeDashArray: 4 }
+      };
+      new ApexCharts(el, options).render();
+    });
+  });
+</script>
 {% endblock %}

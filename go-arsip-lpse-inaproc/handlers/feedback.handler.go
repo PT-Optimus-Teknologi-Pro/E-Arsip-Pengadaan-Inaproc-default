@@ -58,7 +58,11 @@ func FeedbackList(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	mp["summary"] = services.GetSummaryFeedback()
 	mp["allFeedbacks"] = services.GetAllFeedbacks()
-	mp["totalResponses"] = services.GetTotalFeedbackResponses()
+	total := services.GetTotalFeedbackResponses()
+	mp["totalResponses"] = total
+	globalAvg := services.GetGlobalAverageScore()
+	mp["globalAvg"] = globalAvg
+	mp["globalAvgPercent"] = int(globalAvg * 20)
 	return c.Render("feedback/feedback-list", mp)
 }
 

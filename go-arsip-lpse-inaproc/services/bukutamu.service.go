@@ -4,7 +4,6 @@ import (
 	"arsip/models"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/log"
 )
 
 func GetBukuTamu(id uint) models.BukuTamu {
@@ -32,14 +31,23 @@ func SaveFeedback(kualitas, fasilitas, kelengkapan []string, komentar string) er
 
 func GetSummaryFeedback() []models.SummaryFeedBack {
 	var summary []models.SummaryFeedBack
-	for i := range 3 {
-		jenis := i + 1;
-		log.Info("summary jenis", jenis)
-		obj := models.SummaryFeedBack {
-			Jenis: jenis,
-			Fasilitas: summaryFeedbackByFasilitas(jenis),
-			Kualitas: summaryFeedbackByKualitas(jenis),
-			Kelengkapan: summaryFeedbackByKelengkapan(jenis),
+	total := float64(GetTotalFeedbackResponses())
+	if total == 0 { total = 1 } // Avoid division by zero
+
+	for i := 0; i < 3; i++ {
+		jenis := i + 1
+		kDist := summaryFeedbackByKualitas(jenis)
+		fDist := summaryFeedbackByFasilitas(jenis)
+		keDist := summaryFeedbackByKelengkapan(jenis)
+
+		obj := models.SummaryFeedBack{
+			Jenis:          jenis,
+			Kualitas:       kDist,
+			Fasilitas:      fDist,
+			Kelengkapan:    keDist,
+			KualitasAvg:    float64(kDist[0]+kDist[1]*2+kDist[2]*3+kDist[3]*4+kDist[4]*5) / total,
+			FasilitasAvg:   float64(fDist[0]+fDist[1]*2+fDist[2]*3+fDist[3]*4+fDist[4]*5) / total,
+			KelengkapanAvg: float64(keDist[0]+keDist[1]*2+keDist[2]*3+keDist[3]*4+keDist[4]*5) / total,
 		}
 		summary = append(summary, obj)
 	}
@@ -78,17 +86,23 @@ func summaryFeedbackByKelengkapan(jenis int) [5]int64 {
 
 func GetAllFeedbacks() []models.Feedback {
 	var feedbacks []models.Feedback
-	// Only fetch feedbacks that have comments and are not deleted
-	models.GetDB().Where("komentar <> ''").Order("created_at desc").Limit(30).Find(&feedbacks)
+	// Only fetch feedbacks that have non-empty comments
+	models.GetDB().Where("komentar IS NOT NULL AND komentar <> ''").Order("created_at desc").Limit(20).Find(&feedbacks)
 	return feedbacks
 }
 
 func GetTotalFeedbackResponses() int64 {
-	var count int64
-	// Since each form submission creates 3 records in the Feedback table (one for each service), 
-	// we count by grouping or just counting total and dividing by 3? 
-	// Actually, let's just count total records for simplicity or count unique names if applicable.
-	// But let's just count how many distinct "created_at" timestamps we have roughly, or just total count.
-	models.GetDB().Model(&models.Feedback{}).Count(&count)
-	return count / 3 // Assuming 3 types of services per form
+	return models.GetTotalFeedbackCount()
 }
+
+func GetGlobalAverageScore() float64 {
+	summary := GetSummaryFeedback()
+	if len(summary) == 0 { return 0 }
+	
+	var totalAvg float64
+	for _, s := range summary {
+		totalAvg += (s.KualitasAvg + s.FasilitasAvg + s.KelengkapanAvg) / 3
+	}
+	return totalAvg / float64(len(summary))
+}
+
