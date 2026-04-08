@@ -4,30 +4,308 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>e-Arsip Pengadaan - {% block pagetitle %} {% endblock %}</title>
+  <title>{{ appTitle }} - {% block pagetitle %} {% endblock %}</title>
+  <link rel="icon" type="image/x-icon" href="{{ faviconPath|default:'/favicon.ico' }}">
   <link rel="stylesheet"  href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" />
   <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/ui/trumbowyg.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
   <link rel="stylesheet" href="https://preview.tabler.io/dist/libs/star-rating.js/dist/star-rating.min.css" />
+  <style>
+    /* Mobile navbar: menu collapse rapi */
+    @media (max-width: 767.98px) {
+      #navbar-menu {
+        border-top: 1px solid #e8edf5;
+        margin-top: 8px;
+        padding: 8px 0;
+        background: #fff;
+      }
+      #navbar-menu .navbar-nav {
+        gap: 2px;
+      }
+      #navbar-menu .nav-link {
+        padding: 10px 12px !important;
+        border-radius: 8px;
+        color: #11215D !important;
+      }
+      #navbar-menu .nav-link:hover {
+        background: #f0f4ff;
+      }
+      #navbar-menu .nav-item.active > .nav-link {
+        background: #e8edf8;
+        font-weight: 700;
+      }
+      #navbar-menu .dropdown-menu {
+        box-shadow: none !important;
+        border: none !important;
+        background: #f5f7ff !important;
+        border-radius: 8px !important;
+        margin: 4px 0 4px 8px !important;
+        padding: 4px 0 !important;
+      }
+      #navbar-menu .dropdown-item {
+        color: #11215D !important;
+        border-radius: 6px;
+        padding: 8px 16px;
+      }
+      #navbar-menu .dropdown-item:hover {
+        background: #e0e8ff;
+      }
+      /* Tombol Sign In / Sign Up di mobile */
+      #navbar-menu .navbar-nav.flex-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 8px 0 4px 0;
+        gap: 8px;
+        border-top: 1px solid #e8edf5;
+        margin-top: 4px;
+      }
+      #navbar-menu .navbar-nav.flex-row .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
   {% block css %}
   {% endblock %}
 </head>
 
-<body>
-    <div class="page">
+<body class="d-flex flex-column" style="min-height: 100vh;">
+    {% include "loading.html" %}
+    <div class="page flex-fill">
       {%include 'header.html' %}
       <div class="page-wrapper">
         <div class="page-body">
-          <div class="container-xl">
+          <div class="container-xl" style="flex: 1;">
               {% block content %}{% endblock %}
           </div>
         </div>
-      </div>
+      
+      <!-- Professional Footer -->
+      <footer class="site-footer mt-auto" style="background: #020b26; color: rgba(255,255,255,0.7); padding: 5rem 0 2rem; border-top: 1px solid rgba(255,255,255,0.05);">
+        <div class="container">
+          <div class="row gy-5">
+            <!-- About Section -->
+            <div class="col-lg-4 pe-lg-5">
+              <div class="footer-brand mb-4">
+                <img src="{{ logoPath }}" alt="Logo" style="height: 55px; width: auto; max-height: 55px; display: block; filter: brightness(0) invert(1);" />
+              </div>
+              <p class="mb-4" style="line-height: 1.7; font-size: 0.95rem; text-align: justify;">
+                {{ app_settings.FooterDescription }}
+              </p>
+              <div class="social-links d-flex gap-3 mt-4 flex-wrap">
+                {% for s in GetFooterSocials() %}
+                <a href="{{ s.url }}" target="_blank" class="social-icon-btn d-flex align-items-center justify-content-center" title="{{ s.label }}">
+                  {% if StartWith(s.icon, "http") or StartWith(s.icon, "/") or StartWith(s.icon, "data:") %}
+                    <img src="{{ s.icon }}" alt="{{ s.label }}" style="width: 22px; height: 22px; object-fit: contain; display: block; filter: brightness(0) invert(1);">
+                  {% elif s.icon != "" %}
+                    <i data-feather="{{ s.icon }}"></i>
+                  {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                  {% endif %}
+                </a>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-6 col-lg-2">
+              <h4 class="footer-heading mb-4">Tautan Cepat</h4>
+              <ul class="list-unstyled footer-links">
+                {% for q in GetFooterQuicks() %}
+                <li><a href="{{ q.url }}">{{ q.label }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <!-- Services -->
+            <div class="col-6 col-lg-2">
+              <h4 class="footer-heading mb-4">Layanan Kami</h4>
+              <ul class="list-unstyled footer-links">
+                {% for v in GetFooterServices() %}
+                <li><a href="{{ v.url }}">{{ v.label }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-4 ps-lg-5">
+              <h4 class="footer-heading mb-4">Hubungi Kami</h4>
+              <ul class="list-unstyled d-flex flex-column gap-3 contact-info">
+                <li class="d-flex align-items-start gap-3">
+                  <div class="icon-circle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                  </div>
+                  <span>{{ app_settings.FooterAddress }}</span>
+                </li>
+                <li class="d-flex align-items-center gap-3">
+                  <div class="icon-circle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                  </div>
+                  <span>{{ app_settings.FooterPhone }}</span>
+                </li>
+                <li class="d-flex align-items-center gap-3">
+                  <div class="icon-circle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                  </div>
+                  <span>{{ app_settings.FooterEmail }}</span>
+                </li>
+                <li class="d-flex align-items-start gap-3">
+                  <div class="icon-circle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
+                  <span>{{ app_settings.FooterWorkHours }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <hr class="mt-5 mb-4" style="border-color: rgba(255,255,255,0.05);">
+
+          <div class="row align-items-center">
+            <div class="col-md-12 text-center">
+              <p class="mb-0 copyright-text">&copy; 2026 <strong>{{ appTitle }}</strong>. All rights reserved.</p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
+    </div>
+    
+    <style>
+      :root {
+        --footer-bg: #020b26;
+        --footer-accent: #007BFF;
+      }
+      .site-footer {
+        font-family: 'Outfit', sans-serif;
+      }
+      .footer-heading {
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        position: relative;
+        padding-bottom: 12px;
+      }
+      .footer-heading::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 30px;
+        height: 2px;
+        background: var(--footer-accent);
+      }
+      .footer-links li {
+        margin-bottom: 12px;
+      }
+      .footer-links a {
+        text-decoration: none;
+        color: rgba(255,255,255,0.7);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        display: inline-block;
+      }
+      .footer-links a:hover {
+        color: #fff !important;
+        transform: translateX(5px);
+      }
+      .social-icon-btn {
+        width: 46px;
+        height: 46px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.08);
+        color: #fff !important;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255,255,255,0.1);
+        /* FIX: pastikan tidak ada ukuran aneh dari konten kosong */
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      /* FIX: Semua elemen di dalam social-icon-btn paksa ukuran konsisten */
+      .social-icon-btn svg,
+      .social-icon-btn i,
+      .social-icon-btn [data-feather] {
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        min-height: 22px !important;
+        stroke: #fff !important;
+        stroke-width: 2px !important;
+        stroke-linecap: round !important;
+        stroke-linejoin: round !important;
+        fill: none !important;
+        color: #fff !important;
+        display: block !important;
+        pointer-events: none;
+      }
+      .social-icon-btn:hover {
+        background: var(--footer-accent);
+        transform: translateY(-4px);
+        border-color: #fff;
+        box-shadow: 0 8px 20px rgba(0,123,255,0.3);
+      }
+      .icon-circle {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        border-radius: 50%;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+      }
+      .icon-circle svg, .icon-circle i {
+        width: 18px !important;
+        height: 18px !important;
+        color: #0026B4 !important;
+        stroke: #0026B4 !important;
+        stroke-width: 2.5px !important;
+        fill: none !important;
+      }
+      .contact-info li:hover .icon-circle {
+        transform: scale(1.1);
+        background: #007BFF;
+      }
+      .contact-info li:hover .icon-circle svg {
+        color: #fff !important;
+        stroke: #fff !important;
+      }
+      .contact-info span {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #fff;
+        font-weight: 500;
+      }
+      .copyright-text {
+        font-size: 0.85rem;
+        opacity: 0.6;
+      }
+      .page-wrapper {
+        min-height: calc(100vh - 64px); /* Adjust based on navbar height */
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <!-- FIX: Load feather-icons lebih awal, sebelum script lain yang mungkin memanipulasi DOM -->
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/pdfmake.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/vfs_fonts.js"></script>
@@ -41,9 +319,30 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery-mask-plugin@1.14.16/dist/jquery.mask.min.js"></script>
     <script src="https://preview.tabler.io/dist/libs/star-rating.js/dist/star-rating.min.js"></script>
     <script src="/js/app.js"></script>
+
     <script>
-        feather.replace();
+      // FIX: Gunakan DOMContentLoaded agar feather.replace() dipanggil
+      // setelah seluruh DOM (termasuk footer) selesai dirender
+      document.addEventListener('DOMContentLoaded', function () {
+        try {
+          feather.replace({
+            width: 22,
+            height: 22,
+            'stroke-width': 2
+          });
+        } catch (err) {
+          console.warn("Feather icons error:", err);
+        }
+
+        // FIX: Paksa style putih pada semua svg hasil feather.replace() di dalam social-icon-btn
+        document.querySelectorAll('.social-icon-btn svg').forEach(function(svg) {
+          svg.style.stroke = '#ffffff';
+          svg.style.color = '#ffffff';
+          svg.setAttribute('stroke', '#ffffff');
+        });
+      });
     </script>
+
     {% block script %}
     {% endblock %}
 </body>

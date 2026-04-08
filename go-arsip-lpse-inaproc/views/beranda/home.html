@@ -5,12 +5,106 @@ Dashboard
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col">
-        <h2 class="page-title">Dashboard</h2>
+<!-- Premium Hero Section with Custom Slider & Stats -->
+<div class="hero-container mb-5">
+    <!-- Hero Slider -->
+    <div class="hs-wrap" id="hsWrap">
+        {% if heroSliders|length > 0 %}
+            {% for slider in heroSliders %}
+            <div class="hs-slide {% if forloop.First %}is-active{% endif %}">
+                <img src="{{ slider.Image }}"
+                     alt="Slide {{ forloop.Counter }}"
+                     {% if forloop.First %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="hs-slide is-active">
+                <img src="/modern/images/dashboard-bg.jpg" alt="Dashboard" loading="eager" fetchpriority="high">
+            </div>
+        {% endif %}
     </div>
-    <div class="col-auto">
-        <form class="form-inline form-group mb-3 row">
+
+    <!-- Overlay -->
+    <div class="hero-overlay"></div>
+
+    <!-- Arrows -->
+    <button class="hs-arrow prev" id="hsPrev" aria-label="Previous">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+        </svg>
+    </button>
+    <button class="hs-arrow next" id="hsNext" aria-label="Next">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+        </svg>
+    </button>
+
+    <!-- Dots -->
+    <div class="hs-dots" id="hsDots"></div>
+
+    <div class="hero-content">
+        <div class="hero-badge">{{ heroBadge|default:"Portal Transparansi Pengadaan Daerah" }}</div>
+        <h1 class="hero-title">{{ heroTitle|default:"Sistem Informasi Arsip dan Monitoring Pengadaan" }}</h1>
+        <p class="hero-subtitle">
+            {{ heroSubtitle|default:"Aplikasi terintegrasi untuk pencatatan, pengarsipan, dan pelaporan progres pengadaan barang dan jasa pemerintah daerah berbasis data RUP." }}
+        </p>
+        
+        <div class="hero-actions">
+            <a href="#table-progress" class="btn-hero-primary">
+                Lihat Data Pengadaan
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="ms-1"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+            <a href="/login" class="btn-hero-outline">Login Sistem</a>
+        </div>
+    </div>
+
+    <div class="hero-stats-row">
+        <!-- Stat 1: Total Pagu -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-dot dot-blue"></div>
+                <span class="stat-label">TOTAL PAGU {{tahun}}</span>
+            </div>
+            <p class="stat-value">{{ heroTotalPagu|default:"Rp. 0" }}</p>
+        </div>
+
+        <!-- Stat 2: Realisasi -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-dot dot-green"></div>
+                <span class="stat-label">REALISASI</span>
+            </div>
+            <p class="stat-value">{{ heroRealisasi|default:"0.0%" }}</p>
+        </div>
+
+        <!-- Stat 3: Paket Selesai -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-dot dot-purple"></div>
+                <span class="stat-label">PAKET SELESAI</span>
+            </div>
+            <p class="stat-value">{{ heroPaketSelesai|default:"0" }} <span class="stat-suffix">Unit</span></p>
+        </div>
+
+        <!-- Stat 4: SKPD Aktif -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-dot dot-orange"></div>
+                <span class="stat-label">SKPD AKTIF</span>
+            </div>
+            <p class="stat-value">{{ heroSkpdAktif|default:"0" }} <span class="stat-suffix">Unit</span></p>
+        </div>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card rup-card">
+            <div class="card-body rup-card-body">
+                <div class="rup-header">
+                    <div>
+                        <h6 class="rup-card-title">Progress RUP</h6>
+                        <p class="rup-card-subtitle">Realisasi Umum Pengadaan per SKPD Tahun {{tahun}}</p>
+                    </div>
+                    <form class="form-inline form-group mb-3 row">
             <div class="input-group">
                 <div class="input-group-text">Tahun Anggaran</div>
                 <select class="form-control" name="tahun" onchange="this.form.submit()">
@@ -21,69 +115,81 @@ Dashboard
                 </select>
             </div>
         </form>
-    </div>
-</div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            <div class="card-body">
-                <h6 class="card-title">Progress RUP</h6>
-               <table class="table" id="table-progress">
-               </table>
+                </div>
+                
+               <table class="table" id="table-progress" style="width:100%"></table>
             </div>
         </div>
     </div>
     <div class="col-12 pt-3">
-        <div class="card">
+        <div class="card rekap-card">
+            <div class="rekap-header border-0 pb-0">
+                <div>
+                    <h6 class="rekap-card-title">Rencana dan Realisasi Per SKPD</h6>
+                    <p class="rekap-card-subtitle">Monitoring serapan anggaran & kinerja keuangan bulanan.</p>
+                </div>
+            </div>
             <div class="card-body">
-                <h6 class="card-title">Rencana dan Realisasi Per SKPD</h6>
-               <table class="table" id="rekap-rencana-skpd"></table>
+               <table class="table" id="rekap-rencana-skpd" style="width:100%"></table>
             </div>
         </div>
     </div>
-    <div class="col-12 pt-3 row">
-         <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="card-title">Paket Skala Prioritas</h6>
-                    <table class="table" id="table-prioritas"></table>
+    <div class="col-12 pt-3 row g-3">
+         <div class="col-12 col-md-6">
+            <div class="card sub-card">
+                <div class="sub-card-header">
+                    <div>
+                        <h6 class="sub-card-title">Paket Skala Prioritas</h6>
+                        <p class="sub-card-subtitle">Monitoring distribusi paket pengadaan dan status pelaksanaan.</p>
+                    </div>
+                </div>
+                <div class="card-body sub-card-body">
+                    <table class="table" id="table-prioritas" style="width:100%"></table>
                 </div>
             </div>
          </div>
-          <div class="col">
-              <div class="card">
-                  <div class="card-body">
-                      <h6 class="card-title">Detil Beban Kerja Pelaksana</h6>
-                      <table class="table" id="beban-kerja"></table>
-                  </div>
-              </div>
-          </div>
+         <div class="col-12 col-md-6">
+            <div class="card sub-card">
+                <div class="sub-card-header">
+                    <div>
+                        <h6 class="sub-card-title">Detil Beban Kerja Pelaksana</h6>
+                        <p class="sub-card-subtitle">Monitoring distribusi jumlah paket dan nilai pagu per pelaksana.</p>
+                    </div>
+                </div>
+                <div class="card-body sub-card-body">
+                    <table class="table" id="beban-kerja" style="width:100%"></table>
+                </div>
+            </div>
+         </div>
     </div>
-    <div class="col-12 pt-3 row">
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="card-title">Rekap Pekerjaan Paket Per SKPD</h6>
-                    <table class="table" id="rekap-skpd"></table>
+    <div class="col-12 pt-3 row g-3">
+        <div class="col-12 col-md-6">
+            <div class="card sub-card">
+                <div class="sub-card-header">
+                    <div>
+                        <h6 class="sub-card-title">Rekap Pekerjaan Paket Per SKPD</h6>
+                        <p class="sub-card-subtitle">Monitoring distribusi jumlah paket pengadaan per SKPD.</p>
+                    </div>
+                </div>
+                <div class="card-body sub-card-body">
+                    <table class="table" id="rekap-skpd" style="width:100%"></table>
                 </div>
             </div>
         </div>
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="card-title">Rekap Pekerjaan Paket Per PPK</h6>
-                   <table class="table" id="rekap-ppk"></table>
+        <div class="col-12 col-md-6">
+            <div class="card sub-card">
+                <div class="sub-card-header">
+                    <div>
+                        <h6 class="sub-card-title">Rekap Pekerjaan Paket Per PPK</h6>
+                        <p class="sub-card-subtitle">Monitoring distribusi jumlah paket pengadaan per PPK.</p>
+                    </div>
+                </div>
+                <div class="card-body sub-card-body">
+                   <table class="table" id="rekap-ppk" style="width:100%"></table>
                 </div>
             </div>
         </div>
     </div>
-    <!--<div class="col-12 pt-3">
-        <div class="card">
-            <div class="card-body">
-                <h6 class="card-title">Indesk Kepuasan Layanan</h6>
-                {% include "beranda/rekap-feedback.html" %}
-            </div>
-        </div>
-    </div>-->
     <div class="modal fade" id="theModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
@@ -103,6 +209,793 @@ Dashboard
 {% block css%}
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.3/css/buttons.dataTables.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.css">
+<style>
+/* ══════════════════════════════════════════════
+   CSS VARIABLES
+══════════════════════════════════════════════ */
+:root {
+  --orange-main: #FF9500;
+  --orange-bg:   #FFB70073;
+  --orange-light: rgba(255, 183, 0, 0.12);
+  --navy:        #11215D;
+  --border:      #e2e8f0;
+  --text-muted:  #64748b;
+  --text-dark:   #1e293b;
+  --bg-header:   #F5F5F5;
+  --radius-card: 12px;
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.06);
+  --glass-bg:    rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.25);
+}
+
+/* ══════════════════════════════════════════════
+   HERO SECTION
+   Desktop : min-height 520px
+   Mobile  : fixed 232px
+══════════════════════════════════════════════ */
+.hero-container {
+  position: relative;
+  width: 100%;
+  min-height: 520px;
+  background: #020b26;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.hs-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hs-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1.2s ease, transform 10s linear;
+  z-index: 1;
+}
+
+.hs-slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1.1);
+  z-index: 2;
+}
+
+.hs-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.7) contrast(1.1);
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(6,17,60,0.4) 0%, rgba(6,17,60,0.85) 100%);
+  z-index: 3;
+}
+
+/* Hero Content */
+.hero-content {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 2rem 5rem;
+  text-align: center;
+  color: #fff;
+}
+
+.hero-badge {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 18px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: 800;
+  max-width: 900px;
+  line-height: 1.15;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.01em;
+}
+
+.hero-title span { color: #3b82f6; }
+
+.hero-subtitle {
+  font-size: 17px;
+  max-width: 750px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-hero-primary {
+  background: #0026B4;
+  color: #fff !important;
+  font-weight: 700;
+  padding: 14px 32px;
+  border-radius: 12px;
+  transition: all 0.3s;
+  text-decoration: none;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.btn-hero-primary:hover {
+  background: #001a85;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 38, 180, 0.3);
+}
+
+.btn-hero-outline {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #fff !important;
+  font-weight: 700;
+  padding: 14px 32px;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.btn-hero-outline:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #fff;
+  transform: translateY(-3px);
+}
+
+/* Stats Row */
+.hero-stats-row {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  z-index: 10;
+}
+
+.stat-card {
+  background: #fff;
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0.75rem;
+}
+
+.stat-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-blue { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
+.dot-green { background: #10b981; box-shadow: 0 0 8px #10b981; }
+.dot-purple { background: #8b5cf6; box-shadow: 0 0 8px #8b5cf6; }
+.dot-orange { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #06113c;
+  margin: 0;
+}
+
+.stat-suffix {
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* Arrows & Dots */
+.hs-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  transition: all 0.3s;
+}
+.hs-arrow:hover { background: #fff; color: #020b26; border-color: #fff; }
+.hs-arrow.prev { left: 20px; }
+.hs-arrow.next { right: 20px; }
+
+.hs-dots {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+}
+.hs-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.hs-dot.is-active {
+  width: 24px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE – TABLET  (≤ 991px)
+══════════════════════════════════════════════ */
+@media (max-width: 991.98px) {
+  .hero-container {
+    min-height: 480px;
+    border-radius: 0;
+  }
+  .hero-stats-row {
+    position: relative;
+    grid-template-columns: repeat(2, 1fr);
+    bottom: 0;
+  }
+  .hero-title { font-size: 32px; }
+  .hero-content { padding-top: 5rem; padding-bottom: 3rem; }
+  .stat-value { font-size: 18px; }
+  .rup-progress-wrap { min-width: 110px; }
+  .sub-card-title { font-size: 14px !important; }
+  .rekap-card-title { font-size: 16px; }
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE – MOBILE  (≤ 767px)
+══════════════════════════════════════════════ */
+@media (max-width: 767.98px) {
+  .hero-container {
+    min-height: auto !important;
+    height: auto !important;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .hs-wrap, .hero-overlay {
+    height: 232px !important;
+    position: absolute;
+    top: 0; left: 0; width: 100%;
+  }
+
+  .hs-dots { bottom: auto; top: 210px; z-index: 20; }
+
+  .hero-content {
+    height: 232px !important;
+    padding: 40px 1.5rem 20px;
+    justify-content: flex-start;
+  }
+
+  .hero-badge {
+    margin-bottom: 0.5rem;
+    padding: 4px 12px;
+    font-size: 10px;
+  }
+
+  .hero-title {
+    font-size: 20px !important;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: 11px !important;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .hero-actions {
+    gap: 8px;
+    flex-direction: row !important;
+  }
+
+  .btn-hero-primary,
+  .btn-hero-outline {
+    padding: 8px 16px;
+    font-size: 12px;
+    border-radius: 8px;
+    width: auto !important;
+  }
+
+  .hero-stats-row { 
+    display: flex !important;
+    position: relative;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 12px;
+    padding: 15px 4px 5px;
+    background: transparent;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .hero-stats-row::-webkit-scrollbar { display: none; }
+  
+  .stat-card {
+    min-width: 150px;
+    flex: 0 0 auto;
+    border-radius: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .stat-value { font-size: 16px; margin-top: 4px; }
+  .stat-label { font-size: 10px; }
+
+  /* DATA TABLES MOBILE FIX */
+  .dt-layout-row {
+    display: flex;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+  .dt-layout-cell {
+    width: 100% !important;
+    display: block !important;
+  }
+  .dt-layout-end {
+    text-align: left !important;
+    justify-content: flex-start !important;
+  }
+  .dt-search, .dt-search input {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  .dt-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+  }
+  .dt-buttons .dt-button {
+    flex: 1;
+    justify-content: center;
+    margin-right: 0 !important;
+  }
+
+  .col-12.pt-3.row { flex-direction: column; }
+  .col-12.pt-3.row > .col { width: 100% !important; flex: none; }
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE – SMALL MOBILE  (≤ 575px)
+══════════════════════════════════════════════ */
+@media (max-width: 575.98px) {
+  .hero-actions { flex-direction: column; width: 100%; }
+  .btn-hero-primary,
+  .btn-hero-outline { width: 100%; justify-content: center; }
+  .hs-arrow { display: none; }
+
+  .sub-card-header { padding: 16px 16px 12px; }
+  .sub-card-body { padding: 12px !important; }
+  .rup-card-body { padding: 16px 16px 12px !important; }
+  .rekap-header { padding: 16px 16px 12px; }
+  .rr-pill { font-size: 11px; padding: 3px 8px; }
+  #table-prioritas_wrapper .dt-buttons .dt-button,
+  #beban-kerja_wrapper .dt-buttons .dt-button,
+  #rekap-skpd_wrapper .dt-buttons .dt-button,
+  #rekap-ppk_wrapper .dt-buttons .dt-button {
+    padding: 4px 10px !important;
+    font-size: 11.5px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   PROGRESS RUP CARD – Dark Navy
+══════════════════════════════════════════════ */
+.rup-card {
+  background: var(--navy) !important;
+  border: none !important;
+  border-radius: var(--radius-card) !important;
+  box-shadow: 0 4px 24px rgba(17,33,93,0.25) !important;
+  overflow: hidden;
+}
+.rup-card-body { padding: 24px 24px 16px !important; }
+.rup-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.rup-card-title {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  margin-bottom: 4px !important;
+}
+.rup-card-subtitle {
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.60);
+  margin: 0;
+}
+#table-progress_wrapper .dt-search label,
+#table-progress_wrapper .dt-search input { color: #fff !important; }
+#table-progress_wrapper .dt-search input {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid rgba(255,255,255,0.20) !important;
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+  color: #fff !important;
+}
+#table-progress_wrapper .dt-search input::placeholder { color: rgba(255,255,255,0.45) !important; }
+#table-progress thead tr th {
+  color: rgba(255,255,255,0.70) !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  border-bottom: 1px solid rgba(255,255,255,0.12) !important;
+  background: transparent !important;
+  padding-bottom: 10px !important;
+}
+#table-progress tbody tr td {
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+  background: transparent !important;
+  font-size: 13.5px !important;
+  vertical-align: middle !important;
+}
+#table-progress tbody tr:hover td { background: rgba(255,255,255,0.05) !important; }
+#table-progress_wrapper .dt-paging .dt-paging-button,
+#table-progress_wrapper .pagination .page-link {
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  margin: 0 2px !important;
+}
+#table-progress_wrapper .dt-paging .dt-paging-button.current,
+#table-progress_wrapper .dt-paging .dt-paging-button:hover {
+  background: rgba(255,255,255,0.2) !important;
+  color: #ffffff !important;
+}
+#table-progress_wrapper .dt-paging .dt-paging-button.disabled {
+  color: rgba(255,255,255,0.4) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+#table-progress_wrapper .dt-info { color: #ffffff !important; font-size: 13px !important; }
+#table-progress_wrapper .dt-buttons .dt-button {
+  background: rgba(255,255,255,0.12) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.20) !important;
+  border-radius: 7px !important;
+  font-size: 13px !important;
+  padding: 5px 16px !important;
+}
+#table-progress_wrapper .dt-buttons .dt-button:hover { background: rgba(255,255,255,0.22) !important; }
+
+/* ══════════════════════════════════════════════
+   PROGRESS BAR – Color Logic
+   = 100%  → Hijau  ✅
+   > 100%  → Kuning ⚠️  (melebihi target)
+   50–99%  → Kuning ⚠️  (mendekati target)
+   < 50%   → Merah  ❌
+══════════════════════════════════════════════ */
+.rup-progress-wrap { display: flex; align-items: center; gap: 10px; min-width: 180px; }
+.rup-progress-bar-bg { flex: 1; height: 9px; background: rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; }
+.rup-progress-fill { height: 100%; border-radius: 10px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+
+/* Hijau – tepat 100% */
+.rup-progress-fill.green  { background: linear-gradient(90deg,#16a34a,#22c55e); box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+/* Kuning – >100% atau 50–99% */
+.rup-progress-fill.yellow { background: linear-gradient(90deg,#ca8a04,#eab308); box-shadow: 0 0 6px rgba(234,179,8,0.5); }
+/* Merah – <50% */
+.rup-progress-fill.red    { background: linear-gradient(90deg,#b91c1c,#ef4444); box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+
+.rup-progress-pct { font-size: 13px; font-weight: 700; min-width: 58px; text-align: right; }
+.rup-progress-pct.green  { color: #4ade80; }
+.rup-progress-pct.yellow { color: #fde047; }
+.rup-progress-pct.red    { color: #f87171; }
+
+/* ══════════════════════════════════════════════
+   REKAP RENCANA CARD – White Clean
+══════════════════════════════════════════════ */
+.rekap-card {
+  background: #ffffff !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.rekap-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.rekap-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.rekap-card-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+#rekap-rencana-skpd thead tr th {
+  background-color: var(--bg-header) !important;
+  color: var(--text-muted) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 14px 12px !important;
+}
+#rekap-rencana-skpd tbody tr td {
+  border-bottom: 1px solid #f1f5f9 !important;
+  vertical-align: top !important;
+  padding: 16px 12px !important;
+}
+#rekap-rencana-skpd tbody tr:hover td { background-color: #f8fafc !important; }
+.rr-cell { display: flex; flex-direction: column; gap: 10px; }
+.rr-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.rr-label { font-size: 11.5px; color: #94a3b8; font-weight: 500; }
+.rr-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-block;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: opacity 0.2s;
+}
+.rr-pill-rencana { background: #0026B433 !important; color: #0026B4 !important; }
+.rr-pill-realisasi { background: #A8A8A866 !important; color: #000000 !important; }
+.rr-pill:hover { opacity: 0.8; text-decoration: none; }
+#rekap-rencana-skpd_wrapper .dt-buttons .dt-button {
+  background: #ffffff !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-dark) !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  padding: 6px 14px !important;
+  font-size: 12.5px !important;
+}
+#rekap-rencana-skpd_wrapper .dt-buttons .dt-button:hover { background: #f8fafc !important; }
+#rekap-rencana-skpd_wrapper .dt-search input {
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  padding: 6px 14px 6px 36px !important;
+  font-size: 13px !important;
+  color: var(--text-dark) !important;
+  background-color: #ffffff !important;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>');
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  background-size: 16px;
+}
+#rekap-rencana-skpd_wrapper .dt-paging .dt-paging-button {
+  color: var(--text-muted) !important;
+  border: 1px solid var(--border) !important;
+  background: #ffffff !important;
+}
+#rekap-rencana-skpd_wrapper .dt-paging .dt-paging-button.current,
+#rekap-rencana-skpd_wrapper .dt-paging .dt-paging-button:hover {
+  background: #f1f5f9 !important;
+  color: var(--text-dark) !important;
+}
+#rekap-rencana-skpd_wrapper .dt-info { color: var(--text-muted) !important; }
+
+/* ══════════════════════════════════════════════
+   SUB CARDS – White Clean
+══════════════════════════════════════════════ */
+.sub-card {
+  background: #ffffff !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-card) !important;
+  overflow: hidden;
+  height: 100%;
+}
+.sub-card-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  background: #ffffff;
+}
+.sub-card-title {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: var(--navy) !important;
+  margin-bottom: 3px !important;
+}
+.sub-card-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+}
+.sub-card-body { padding: 16px !important; }
+
+/* Table headers inside sub-cards */
+#table-prioritas thead tr th,
+#beban-kerja thead tr th,
+#rekap-skpd thead tr th,
+#rekap-ppk thead tr th {
+  background-color: var(--bg-header) !important;
+  color: var(--text-muted) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 12px 10px !important;
+}
+#table-prioritas tbody tr td,
+#beban-kerja tbody tr td,
+#rekap-skpd tbody tr td,
+#rekap-ppk tbody tr td {
+  border-bottom: 1px solid #f1f5f9 !important;
+  vertical-align: middle !important;
+  padding: 12px 10px !important;
+  font-size: 13.5px !important;
+  color: var(--text-dark) !important;
+}
+#table-prioritas tbody tr:hover td,
+#beban-kerja tbody tr:hover td,
+#rekap-skpd tbody tr:hover td,
+#rekap-ppk tbody tr:hover td { background-color: #f8fafc !important; }
+
+/* Search input sub-cards */
+#table-prioritas_wrapper .dt-search input,
+#beban-kerja_wrapper .dt-search input,
+#rekap-skpd_wrapper .dt-search input,
+#rekap-ppk_wrapper .dt-search input {
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  padding: 6px 14px 6px 36px !important;
+  font-size: 13px !important;
+  color: var(--text-dark) !important;
+  background-color: #ffffff !important;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>');
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  background-size: 16px;
+}
+
+/* DT buttons sub-cards */
+#table-prioritas_wrapper .dt-buttons .dt-button,
+#beban-kerja_wrapper .dt-buttons .dt-button,
+#rekap-skpd_wrapper .dt-buttons .dt-button,
+#rekap-ppk_wrapper .dt-buttons .dt-button {
+  background: #ffffff !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-dark) !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  padding: 6px 14px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+  font-size: 12.5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-right: 6px !important;
+  transition: background 0.2s, border-color 0.2s !important;
+}
+#table-prioritas_wrapper .dt-buttons .dt-button:hover,
+#beban-kerja_wrapper .dt-buttons .dt-button:hover,
+#rekap-skpd_wrapper .dt-buttons .dt-button:hover,
+#rekap-ppk_wrapper .dt-buttons .dt-button:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Pagination sub-cards */
+#table-prioritas_wrapper .dt-paging .dt-paging-button,
+#beban-kerja_wrapper .dt-paging .dt-paging-button,
+#rekap-skpd_wrapper .dt-paging .dt-paging-button,
+#rekap-ppk_wrapper .dt-paging .dt-paging-button {
+  color: var(--text-muted) !important;
+  border: 1px solid var(--border) !important;
+  background: #ffffff !important;
+  border-radius: 6px !important;
+  margin: 0 2px !important;
+}
+#table-prioritas_wrapper .dt-paging .dt-paging-button.current,
+#table-prioritas_wrapper .dt-paging .dt-paging-button:hover,
+#beban-kerja_wrapper .dt-paging .dt-paging-button.current,
+#beban-kerja_wrapper .dt-paging .dt-paging-button:hover,
+#rekap-skpd_wrapper .dt-paging .dt-paging-button.current,
+#rekap-skpd_wrapper .dt-paging .dt-paging-button:hover,
+#rekap-ppk_wrapper .dt-paging .dt-paging-button.current,
+#rekap-ppk_wrapper .dt-paging .dt-paging-button:hover {
+  background: #f1f5f9 !important;
+  color: var(--text-dark) !important;
+  border-color: #cbd5e1 !important;
+}
+#table-prioritas_wrapper .dt-info,
+#beban-kerja_wrapper .dt-info,
+#rekap-skpd_wrapper .dt-info,
+#rekap-ppk_wrapper .dt-info {
+  color: var(--text-muted) !important;
+  font-size: 12.5px !important;
+}
+
+/* Status badge */
+.badge-status-orange {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  background: #FFB70073;
+  color: #FF9500;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255,149,0,0.3);
+}
+</style>
 {% endblock %}
 
 {% block script %}
@@ -115,161 +1008,264 @@ Dashboard
 <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/fixedColumns.dataTables.js"></script>
- <script>
+<script>
+// Premium Hero Slider Logic
+const hsWrap = document.getElementById('hsWrap');
+const hsSlides = document.querySelectorAll('.hs-slide');
+const hsPrev = document.getElementById('hsPrev');
+const hsNext = document.getElementById('hsNext');
+const hsDotsContainer = document.getElementById('hsDots');
+let hsIndex = 0;
+let hsInterval;
+
+if (hsSlides.length > 0) {
+    hsSlides.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = `hs-dot ${i === 0 ? 'is-active' : ''}`;
+        dot.addEventListener('click', () => hsGoTo(i));
+        hsDotsContainer.appendChild(dot);
+    });
+
+    const hsDots = document.querySelectorAll('.hs-dot');
+
+    function hsGoTo(index) {
+        hsSlides[hsIndex].classList.remove('is-active');
+        hsDots[hsIndex].classList.remove('is-active');
+        hsIndex = (index + hsSlides.length) % hsSlides.length;
+        hsSlides[hsIndex].classList.add('is-active');
+        hsDots[hsIndex].classList.add('is-active');
+        resetHsInterval();
+    }
+
+    function resetHsInterval() {
+        clearInterval(hsInterval);
+        hsInterval = setInterval(() => hsGoTo(hsIndex + 1), 7000);
+    }
+
+    hsPrev.addEventListener('click', () => hsGoTo(hsIndex - 1));
+    hsNext.addEventListener('click', () => hsGoTo(hsIndex + 1));
+    resetHsInterval();
+}
+
 new DataTable("#table-progress", {
   layout: {
-         topStart: {
-             buttons: ['excel', 'pdf']
-         }
+    topStart: {
+      buttons: [
+        { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Excel' },
+        { extend: 'pdfHtml5', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> PDF' }
+      ]
+    },
+    topEnd: { search: { placeholder: 'Cari Nama SKPD...' } }
   },
-  ajax : "/dashboard/json-progress-rup?tahun={{tahun}}",
+  ajax: "/dashboard/json-progress-rup?tahun={{tahun}}",
   columns: [
-       { data: "nama_satker" , title : "Nama SKPD"},
-       { data: "total_belanja", title : "Total APBD", width:'15%' },
-       { data: "belanja", title : "Total Belanja" , width:'15%'},
-       { data: "pagu" , title : "Total Pagu Penyedia", width:'15%'},
-       { data: "pagu_swakelola" , title : "Total Pagu Swakelola" , width:'15%'},
-       { data: "prosentase", title : "Persentase", width:'5%' }
-  ]
+    { data: "nama_satker",    title: "NAMA SKPD" },
+    { data: "total_belanja",  title: "TOTAL APBD" },
+    { data: "belanja",        title: "TOTAL BELANJA" },
+    { data: "pagu",           title: "TOTAL PAGU PENYEDIA" },
+    { data: "pagu_swakelola", title: "TOTAL PAGU SWAKELOLA" },
+    {
+      data: "prosentase",
+      title: "PERSENTASE",
+      render: function(data, type, row) {
+        if (type !== 'display') return data;
+        var raw = parseFloat(String(data).replace('%','').replace(',','.')) || 0;
+        var cls, pct;
+
+        if (raw >= 100) {
+          // Tepat 100% → hijau | Lebih dari 100% → kuning (bar tetap penuh 100%)
+          cls = (raw === 100) ? 'green' : 'yellow';
+          pct = 100;
+        } else if (raw >= 50) {
+          // 50% s/d 99% → kuning
+          cls = 'yellow';
+          pct = raw;
+        } else {
+          // Di bawah 50% → merah
+          cls = 'red';
+          pct = raw;
+        }
+
+        return '<div class="rup-progress-wrap">' +
+          '<div class="rup-progress-bar-bg">' +
+            '<div class="rup-progress-fill ' + cls + '" style="width:' + pct + '%"></div>' +
+          '</div>' +
+          '<span class="rup-progress-pct ' + cls + '">' + data + '</span>' +
+        '</div>';
+      }
+    }
+  ],
+  scrollX: true,
+  scrollCollapse: true
 });
+
 new DataTable("#table-prioritas", {
   layout: {
-         topStart: {
-             buttons: ['excel', 'pdf']
-         }
-     },
-  ajax : "/dashboard/json-paket-prioritas?tahun={{tahun}}",
+    topStart: {
+      buttons: [
+        { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Excel' },
+        { extend: 'pdfHtml5', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> PDF' }
+      ]
+    },
+    topEnd: { search: { placeholder: 'Cari Paket...' } }
+  },
+  ajax: "/dashboard/json-paket-prioritas?tahun={{tahun}}",
   columns: [
-          { data: "id" , title : "Kode"},
-          { data: "nama_paket", title : "Nama Paket" },
-          { data: "nama_ppk" , title : "PPK"},
-          { data: "status", title : "Status" }
-     ]
+    { data: "id",         title: "Kode" },
+    { data: "nama_paket", title: "Nama Paket" },
+    { data: "nama_ppk",   title: "PPK" },
+    { data: "pagu",       title: "Pagu", render: function(data){ return rupiah(data); } },
+    { data: "metode",     title: "Metode" },
+    { data: "status",     title: "Status",
+      render: function(data, type) {
+        if (type !== 'display') return data;
+        return '<span class="badge-status-orange">'+data+'</span>';
+      }
+    }
+  ],
+  scrollX: true,
+  scrollCollapse: true
 });
 
 function renderProgress(data, bulan) {
-  return '<table class="table table-sm"><tbody><tr><td>Rencana</td><td><a href="#" onclick="showDetilRencana(\''+data.kd_satker+'\', '+bulan+')" data-bs-toggle="modal" data-bs-target="#theModal"><span class="badge bg-blue text-blue-fg badge-pill">'+rupiah(data.rencana[bulan - 1])+'</span></a></td></tr>'+
-      '<tr><td>Realisasi</td><td><a href="#" onclick="showDetilRealisasi(\''+data.kd_satker+'\', '+bulan+')" data-bs-toggle="modal" data-bs-target="#theModal"><span class="badge bg-blue text-blue-fg badge-pill">'+rupiah(data.realisasi[bulan - 1] + data.purchase[bulan - 1])+'</span></a></td></tr></tbody></table>';
+  var id = data.kd_satker || '';
+  var rencana   = rupiah(data.rencana[bulan - 1] || 0);
+  var realisasi = rupiah((data.realisasi[bulan - 1] || 0) + (data.purchase[bulan - 1] || 0));
+  return '<div class="rr-cell">'+
+    '<div class="rr-row"><span class="rr-label">Rencana</span><a href="#" onclick="showDetilRencana(\''+id+'\', '+bulan+')" data-bs-toggle="modal" data-bs-target="#theModal" class="rr-pill rr-pill-rencana">'+rencana+'</a></div>'+
+    '<div class="rr-row"><span class="rr-label">Realisasi</span><a href="#" onclick="showDetilRealisasi(\''+id+'\', '+bulan+')" data-bs-toggle="modal" data-bs-target="#theModal" class="rr-pill rr-pill-realisasi">'+realisasi+'</a></div>'+
+  '</div>';
 }
 
 new DataTable("#rekap-rencana-skpd", {
-  ajax : "/dashboard/json-rekap-satker?tahun={{tahun}}",
+  ajax: "/dashboard/json-rekap-satker?tahun={{tahun}}",
   columns: [
-    {data:"nama_satker", title: "SKPD", width : '200px'},
-    {data : null, title: "Januari", render : function (data, type, row, meta){ return renderProgress(data, 1); } },
-    {data : null, width: '10%', title: "Februari", render : function (data, type, row, meta){ return renderProgress(data, 2); }},
-    {data : null, title: "Maret", render : function (data, type, row, meta){ return renderProgress(data, 3); }},
-    {data : null, title: "April", render : function (data, type, row, meta){ return renderProgress(data, 4); }},
-    {data : null, title: "Mei", render : function (data, type, row, meta){ return renderProgress(data, 5); }},
-    {data : null, title: "Juni", render : function (data, type, row, meta){ return renderProgress(data, 6); }},
-    {data : null, title: "Juli", render : function (data, type, row, meta){ return renderProgress(data, 7); }},
-    {data : null, title: "Agustus", render : function (data, type, row, meta){ return renderProgress(data, 8); }},
-    {data : null, title: "September", render : function (data, type, row, meta){ return renderProgress(data, 9);}},
-    {data : null, title: "Oktober", render : function (data, type, row, meta){ return renderProgress(data, 10); }},
-    {data : null, title: "November", render : function (data, type, row, meta){ return renderProgress(data, 11);}},
-    {data : null, title: "Desember", render : function (data, type, row, meta){ return renderProgress(data, 12); }},
+    {data:"nama_satker", title: "SKPD", width: '200px'},
+    {data: null, title: "Januari",   render: function(d,t,r,m){ return renderProgress(d, 1);  }},
+    {data: null, title: "Februari",  render: function(d,t,r,m){ return renderProgress(d, 2);  }},
+    {data: null, title: "Maret",     render: function(d,t,r,m){ return renderProgress(d, 3);  }},
+    {data: null, title: "April",     render: function(d,t,r,m){ return renderProgress(d, 4);  }},
+    {data: null, title: "Mei",       render: function(d,t,r,m){ return renderProgress(d, 5);  }},
+    {data: null, title: "Juni",      render: function(d,t,r,m){ return renderProgress(d, 6);  }},
+    {data: null, title: "Juli",      render: function(d,t,r,m){ return renderProgress(d, 7);  }},
+    {data: null, title: "Agustus",   render: function(d,t,r,m){ return renderProgress(d, 8);  }},
+    {data: null, title: "September", render: function(d,t,r,m){ return renderProgress(d, 9);  }},
+    {data: null, title: "Oktober",   render: function(d,t,r,m){ return renderProgress(d, 10); }},
+    {data: null, title: "November",  render: function(d,t,r,m){ return renderProgress(d, 11); }},
+    {data: null, title: "Desember",  render: function(d,t,r,m){ return renderProgress(d, 12); }},
   ],
   scrollX: true,
   ordering: false,
-  fixedColumns: { start: 1},
+  fixedColumns: window.matchMedia("(min-width: 768px)").matches ? { start: 1 } : false,
   layout: {
-         topStart: {
-             buttons: ['excel',
-                            {
-                                   extend: 'pdfHtml5',
-                                   orientation: 'landscape',
-                                   pageSize: 'LEGAL',
-                                   customize: function (doc) {
-                                       doc.defaultStyle.fontSize = 7; // Adjust the font size as needed
-                                       doc.styles.tableHeader.fontSize = 7; // Optionally adjust header font size
-                                       doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
-                                       // rows = doc.content[1].table.body;
-                                       // console.log(rows);
-                                       // for (i = 1; i < rows.length; i++) {
-                                       //    rows[i][1].text = rows[i][1].text.replace(/ /g, '\n');
-
-                                       // }
-                                    }
-                               }
-
-             ]
-         }
-     }
-});
-new DataTable("#rekap-skpd", {
-  ajax : "/dashboard/json-rekap-satker?tahun={{tahun}}",
-  columns: [
-          { data: "nama_satker" , title : "Nama SKPD"},
-          { data: "paket_realisasi", title : "Jumlah Paket di SPSE", render : function (data, type, row, meta){
-                let sum = 0;
-                data.forEach(number => {
-                  sum += number;
-                });
-                return sum;
-              }
-          },
-          { data: "paket_purchase" , title : "Jumlah Paket di Katalog", render : function (data, type, row, meta){
-                let sum = 0;
-                data.forEach(number => {
-                  sum += number;
-                });
-                return sum;
-              }
+    topStart: {
+      buttons: [
+        { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg> Excel' },
+        {
+          extend: 'pdfHtml5',
+          text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg> PDF',
+          orientation: 'landscape',
+          pageSize: 'LEGAL',
+          customize: function(doc) {
+            doc.defaultStyle.fontSize = 7;
+            doc.styles.tableHeader.fontSize = 7;
+            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
           }
+        }
+      ]
+    },
+    topEnd: { search: { placeholder: 'Cari SKPD...' } }
+  },
+  scrollX: true,
+  scrollCollapse: true
+});
+
+new DataTable("#rekap-skpd", {
+  ajax: "/dashboard/json-rekap-paket-per-satker?tahun={{tahun}}",
+  columns: [
+    { data: "nama",       title: "Nama SKPD" },
+    { data: "tender",     title: "Tender" },
+    { data: "nontender",  title: "Non Tender" },
+    { data: "pencatatan", title: "Pencatatan" },
+    { data: "katalog",    title: "E-Purchasing" }
   ],
   layout: {
-         topStart: {
-             buttons: ['excel', 'pdf']
-         }
-     }
+    topStart: {
+      buttons: [
+        { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Excel' },
+        { extend: 'pdfHtml5', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> PDF' }
+      ]
+    },
+    topEnd: { search: { placeholder: 'Cari SKPD...' } }
+  }
 });
+
 new DataTable("#rekap-ppk", {
-  ajax : "/dashboard/json-rekap-paket-ppk?tahun={{tahun}}",
+  ajax: "/dashboard/json-rekap-paket-ppk?tahun={{tahun}}",
   columns: [
-          { data: "nama_ppk" , title : "Nama PPK", render : function (data, type, row, meta) {
-            if (type === 'display') {
-              data = '<a href="#" onclick="showRekapPaketPpk(\''+row["nip"]+'\', \''+data+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>';
-             }
-            return data;
-           }
-          },
-          { data: "spse", title : "Jumlah Paket di SPSE" },
-          { data: "katalog" , title : "Jumlah Paket di Katalog"}
+    { data: "nama_ppk", title: "Nama PPK",
+      render: function(data, type, row) {
+        if (type === 'display') {
+          return '<a href="#" onclick="showRekapPaketPpk(\''+row["nip"]+'\', \''+data+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>';
+        }
+        return data;
+      }
+    },
+    { data: "spse",    title: "Jumlah Paket di SPSE" },
+    { data: "katalog", title: "Jumlah Paket di Katalog" }
   ],
   layout: {
-         topStart: {
-             buttons: ['excel', 'pdf']
-         }
-     }
+    topStart: {
+      buttons: [
+        { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Excel' },
+        { extend: 'pdfHtml5', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> PDF' }
+      ]
+    },
+    topEnd: { search: { placeholder: 'Cari PPK...' } }
+  },
+  scrollX: true,
+  scrollCollapse: true
 });
+
 new DataTable("#beban-kerja", {
-  ajax : "/dashboard/json-beban-personel?tahun={{tahun}}",
+  ajax: "/dashboard/json-beban-personel?tahun={{tahun}}",
   columns: [
-       { data: "nama_pegawai" , title : "Nama Pegawai"},
-       { data: "jumlah", title : "Jumlah" },
-       { data: "pagu" , title : "Pagu"},
-  ]
+    { data: "nama_pegawai", title: "Nama Pegawai" },
+    { data: "jumlah",       title: "Jumlah" },
+    { data: "pagu",         title: "Pagu" },
+  ],
+  layout: {
+    topStart: {
+      buttons: [
+        { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Excel' },
+        { extend: 'pdfHtml5', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> PDF' }
+      ]
+    },
+    topEnd: { search: { placeholder: 'Cari Pegawai...' } }
+  },
+  scrollX: true,
+  scrollCollapse: true
 });
 
 function showDetilRencana(satkerId, bulan) {
-    $.get('/rekap/rencana-satker?tahun={{tahun}}&bulan='+bulan+'&satker='+satkerId, function(data) {
-        $('.modal-title').html('Rencana Paket');
-        $('.modal-body').html(data);
-    });
+  $.get('/rekap/rencana-satker?tahun={{tahun}}&bulan='+bulan+'&satker='+satkerId, function(data) {
+    $('.modal-title').html('Rencana Paket');
+    $('.modal-body').html(data);
+  });
 }
 
 function showDetilRealisasi(satkerId, bulan) {
-    $.get('/rekap/realisasi-satker?tahun={{tahun}}&bulan='+bulan+'&satker='+satkerId, function(data) {
-        $('.modal-title').html('Realisasi Paket');
-        $('.modal-body').html(data);
-    });
+  $.get('/rekap/realisasi-satker?tahun={{tahun}}&bulan='+bulan+'&satker='+satkerId, function(data) {
+    $('.modal-title').html('Realisasi Paket');
+    $('.modal-body').html(data);
+  });
 }
 
 function showRekapPaketPpk(nipPpk, namaPpk) {
-    $.get('/rekap/rekap-paket-ppk?tahun={{tahun}}&nip='+nipPpk, function(data) {
-        $('.modal-title').html('Paket PPK '+namaPpk);
-        $('.modal-body').html(data);
-    });
+  $.get('/rekap/rekap-paket-ppk?tahun={{tahun}}&nip='+nipPpk, function(data) {
+    $('.modal-title').html('Paket PPK '+namaPpk);
+    $('.modal-body').html(data);
+  });
 }
 </script>
 {% endblock %}

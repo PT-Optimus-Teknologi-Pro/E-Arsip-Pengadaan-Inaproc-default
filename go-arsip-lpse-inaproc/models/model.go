@@ -16,6 +16,10 @@ import (
 
 var db *gorm.DB
 
+func GetDB() *gorm.DB {
+	return db
+}
+
 func init() {
 	var err error
 	db, err = gorm.Open(postgres.Open(config.GetDbUrl()), &gorm.Config{
@@ -31,7 +35,7 @@ func init() {
 		&Tender{}, &Nontender{}, &Pencatatan{}, &Swakelola{})
 	db.AutoMigrate(&Anggaran{}, &Paket{}, &PaketAnggaran{}, &PaketSatker{}, &PaketLokasi{}, &ChecklistPaket{}, &ChecklistPaketHistory{}, &DokPaket{},
 		&BeritaAcara{}, &Reviu{}, &ReviuPaket{}, &KajiUlang{}, &DokPersiapan{}, &PerubahanData{}, &PersetujuanDokPersiapan{}, &PaketPPk{})
-	db.AutoMigrate(&Itkp{})
+	db.AutoMigrate(&Itkp{}, &HeroSlider{}, &SocialLink{}, &QuickLink{}, &ServiceLink{}, &SiteSetting{})
 	fmt.Println("Connected to database...")
 }
 

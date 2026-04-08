@@ -124,3 +124,29 @@ func Rating(star int, name ...string) string {
     builder.WriteString("</select>")
 	return builder.String()
 }
+func ToWebPath(p string) string {
+	if p == "" {
+		return ""
+	}
+	// Remove file:/// or other protocol prefixes if present
+	if strings.HasPrefix(p, "file:///") {
+		p = strings.TrimPrefix(p, "file:///")
+	} else if strings.HasPrefix(p, "file://") {
+		p = strings.TrimPrefix(p, "file://")
+	}
+
+	// Normalisasi file upload path
+	if strings.Contains(p, "fileupload") {
+		idx := strings.Index(p, "fileupload")
+		res := "/" + strings.ReplaceAll(p[idx:], "\\", "/")
+		return strings.ReplaceAll(res, "//", "/")
+	}
+
+	// Handle absolute paths windows
+	if len(p) > 2 && p[1] == ':' && p[2] == '/' {
+		// Possibly C:/... without fileupload? Return it normalized anyway
+		return strings.ReplaceAll(p, "\\", "/")
+	}
+
+	return p
+}

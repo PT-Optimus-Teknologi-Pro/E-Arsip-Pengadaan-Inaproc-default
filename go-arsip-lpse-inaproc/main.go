@@ -28,6 +28,9 @@ func main() {
 	engine := django.New("./views", ".html")
 	engine.SetAutoEscape(false)
 	utils.Setup(engine)
+	engine.AddFunc("GetFooterSocials", handlers.GetFooterSocials)
+	engine.AddFunc("GetFooterQuicks", handlers.GetFooterQuicks)
+	engine.AddFunc("GetFooterServices", handlers.GetFooterServices)
 
 	if config.IsModeDev(){
 		log.Info("application mode development")

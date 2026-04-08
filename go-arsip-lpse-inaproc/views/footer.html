@@ -1,0 +1,142 @@
+<footer class="premium-footer pt-5 pb-4 mt-5">
+    <div class="container-xl">
+        <div class="row g-4">
+            <!-- Kolom 1: Informasi Protal -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="footer-info">
+                    <img src="{{ logo_path }}" alt="{{ app_title }}" class="mb-3 footer-logo" style="max-height: 50px;">
+                    <p class="footer-desc mb-4 text-white-50">
+                        {{ footer_description }}
+                    </p>
+                    <div class="social-links d-flex gap-2">
+                        {% for link in socialLinks %}
+                        <a href="{{ link.URL }}" class="social-icon" title="{{ link.Label }}">
+                            <i data-feather="{{ link.Icon }}"></i>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom 2: Tautan Cepat -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="footer-heading mb-4">Tautan Cepat</h5>
+                <ul class="footer-links list-unstyled">
+                    {% for link in quickLinks %}
+                    <li class="mb-2">
+                        <a href="{{ link.URL }}" class="text-white-50 text-decoration-none hover-link">
+                            <i data-feather="chevron-right" class="me-1" style="width: 14px;"></i> {{ link.Label }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Kolom 3: Layanan -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="footer-heading mb-4">Layanan Kami</h5>
+                <ul class="footer-links list-unstyled">
+                    {% for link in servicesLinks %}
+                    <li class="mb-2">
+                        <a href="{{ link.URL }}" class="text-white-50 text-decoration-none hover-link">
+                            <i data-feather="chevron-right" class="me-1" style="width: 14px;"></i> {{ link.Label }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Kolom 4: Hubungi Kami -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <h5 class="footer-heading mb-4">Hubungi Kami</h5>
+                <ul class="footer-contact list-unstyled text-white-50">
+                    <li class="d-flex mb-3 align-items-start">
+                        <i data-feather="map-pin" class="me-3 mt-1 text-primary"></i>
+                        <span>{{ footer_address }}</span>
+                    </li>
+                    <li class="d-flex mb-3 align-items-center">
+                        <i data-feather="mail" class="me-3 text-primary"></i>
+                        <a href="mailto:{{ footer_email }}" class="text-white-50 text-decoration-none">{{ footer_email }}</a>
+                    </li>
+                    <li class="d-flex mb-3 align-items-center">
+                        <i data-feather="clock" class="me-3 text-primary"></i>
+                        <span>Senin - Jumat: 08:00 - 16:00</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <hr class="border-secondary my-4 opacity-10">
+        
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                <p class="mb-0 text-white-50 small">
+                    &copy; 2026 {{ app_title }}. All rights reserved.
+                </p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <p class="mb-0 text-white-50 small">
+                    {{ site_slogan }}
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+.premium-footer {
+    background: #06113C; /* Navy Blue requested */
+    color: #fff;
+    border-top: 4px solid #0026B4;
+}
+.footer-heading {
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 12px;
+}
+.footer-heading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: #0026B4;
+}
+.footer-desc {
+    font-size: 14px;
+    line-height: 1.8;
+}
+.footer-links a, .footer-contact span, .footer-contact a {
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+.hover-link:hover {
+    color: #fff !important;
+    padding-left: 5px;
+}
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.7);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.social-icon:hover {
+    background: #0026B4;
+    color: #fff;
+    transform: translateY(-3px);
+}
+.footer-contact i {
+    width: 18px;
+    height: 18px;
+}
+</style>

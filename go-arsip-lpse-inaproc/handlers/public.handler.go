@@ -185,8 +185,46 @@ func Home(c *fiber.Ctx) error {
 		rekapFeedback = services.GetRekapFeedback(tahun)
 		cache.Set("rekapFeedback", rekapFeedback)
 	}
-	mp["tahunlist"] = tahunList
 	mp["rekapFeedback"] = rekapFeedback
+	mp["tahunlist"] = tahunList
+
+	var sliders []models.HeroSlider
+	models.GetDB().Where("is_active = ?", true).Order("id desC").Find(&sliders)
+	for i := range sliders {
+		sliders[i].Image = utils.ToWebPath(sliders[i].Image)
+	}
+	mp["heroSliders"] = sliders
+
+	progress := models.GetRupProgress(tahun)
+	var totalPagu, totalBelanja float64
+	var skpdAktif int
+	for _, p := range progress {
+		totalPagu += p.Pagu
+		totalBelanja += p.Belanja
+		if p.Pagu > 0 {
+			skpdAktif++
+		}
+	}
+
+	var totalSelesai int64
+	models.GetDB().Model(&models.Tender{}).Where("tahun_anggaran = ?", tahun).Count(&totalSelesai)
+	var countOther int64
+	models.GetDB().Model(&models.Nontender{}).Where("tahun_anggaran = ?", tahun).Count(&countOther)
+	totalSelesai += countOther
+	models.GetDB().Model(&models.Pencatatan{}).Where("tahun_anggaran = ?", tahun).Count(&countOther)
+	totalSelesai += countOther
+	models.GetDB().Model(&models.Swakelola{}).Where("tahun_anggaran = ?", tahun).Count(&countOther)
+	totalSelesai += countOther
+
+	mp["heroTotalPagu"] = utils.FormatRupiah(totalPagu)
+	mp["heroRealisasi"] = utils.Prosentase(totalBelanja, totalPagu)
+	mp["heroPaketSelesai"] = totalSelesai
+	mp["heroSkpdAktif"] = skpdAktif
+
+	mp["heroBadge"] = models.GetSetting("hero_badge", "Portal Transparansi Pengadaan Daerah")
+	mp["heroTitle"] = models.GetSetting("hero_title", "Sistem Informasi Arsip dan Monitoring Pengadaan")
+	mp["heroSubtitle"] = models.GetSetting("hero_subtitle", "Aplikasi terintegrasi untuk pencatatan, pengarsipan, dan pelaporan progres pengadaan barang dan jasa pemerintah daerah berbasis data RUP.")
+
 	return c.Render("beranda/home", mp)
 }
 
@@ -218,6 +256,9 @@ func getSession(c *fiber.Ctx) *session.Session {
 
 func currentMap(c *fiber.Ctx) fiber.Map {
 	mp := flash.Get(c)
+	if mp == nil {
+		mp = make(fiber.Map)
+	}
 	sess := getSession(c)
 	if sess != nil {
 		mp["id"] = sess.Get("id")
@@ -232,6 +273,30 @@ func currentMap(c *fiber.Ctx) fiber.Map {
 		mp["isPegawai"] = sess.Get("group") == models.PEGAWAI
 	}
 	mp["path"] = string(c.Request().URI().Path())
+
+	appTitle := models.GetSetting("app_title", "e-Arsip Pengadaan")
+	logoPath := utils.ToWebPath(models.GetSetting("logo_path", "/modern/images/logo.png"))
+	faviconPath := utils.ToWebPath(models.GetSetting("favicon_path", "/favicon.ico"))
+
+	mp["app_title"] = appTitle
+	mp["appTitle"] = appTitle
+	mp["site_slogan"] = models.GetSetting("site_slogan", "Sistem Informasi Arsip Digital")
+	mp["logo_path"] = logoPath
+	mp["logoPath"] = logoPath
+	mp["favicon_path"] = faviconPath
+	mp["faviconPath"] = faviconPath
+
+	mp["app_settings"] = map[string]interface{}{
+		"FooterDescription": models.GetSetting("footer_description", "Portal Informasi Monitoring Pengadaan Daerah. Menyediakan transparansi data rencana dan realisasi pengadaan barang/jasa secara real-time."),
+		"FooterAddress":     models.GetSetting("footer_address", "Gedung Sekretariat Daerah, Lantai 2. Bagian Pengadaan Barang dan Jasa."),
+		"FooterEmail":       models.GetSetting("footer_email", "admin@lpse.example.go.id"),
+		"FooterPhone":       models.GetSetting("footer_phone", "(021) 12345678"),
+		"FooterWorkHours":   models.GetSetting("footer_work_hours", "Senin - Jumat: 08:00 - 16:00"),
+		"FooterFacebook":    models.GetSetting("footer_facebook", "#"),
+		"FooterInstagram":   models.GetSetting("footer_instagram", "#"),
+		"FooterTwitter":     models.GetSetting("footer_twitter", "#"),
+	}
+
 	return mp
 }
 
@@ -269,4 +334,57 @@ func FlushCache(c *fiber.Ctx) error {
 func Forbiden(c *fiber.Ctx) error {
 	log.Info("forbidden akses")
 	return c.Status(fiber.StatusForbidden).Render("errors/error-403", fiber.Map{})
+}
+func GetFooterSocials() []map[string]interface{} {
+	var res []map[string]interface{}
+
+	fb := models.GetSetting("footer_facebook", "#")
+	if fb != "#" && fb != "" {
+		res = append(res, map[string]interface{}{"label": "Facebook", "url": fb, "icon": "facebook"})
+	}
+	ig := models.GetSetting("footer_instagram", "#")
+	if ig != "#" && ig != "" {
+		res = append(res, map[string]interface{}{"label": "Instagram", "url": ig, "icon": "instagram"})
+	}
+	tw := models.GetSetting("footer_twitter", "#")
+	if tw != "#" && tw != "" {
+		res = append(res, map[string]interface{}{"label": "Twitter", "url": tw, "icon": "twitter"})
+	}
+
+	var socialLinks []models.SocialLink
+	models.GetDB().Order("sort asc").Find(&socialLinks)
+	for _, s := range socialLinks {
+		res = append(res, map[string]interface{}{
+			"label": s.Label,
+			"url":   s.URL,
+			"icon":  utils.ToWebPath(s.Icon),
+		})
+	}
+	return res
+}
+
+func GetFooterQuicks() []map[string]interface{} {
+	var quickLinks []models.QuickLink
+	models.GetDB().Order("sort asc").Find(&quickLinks)
+	var res []map[string]interface{}
+	for _, q := range quickLinks {
+		res = append(res, map[string]interface{}{
+			"label": q.Label,
+			"url":   q.URL,
+		})
+	}
+	return res
+}
+
+func GetFooterServices() []map[string]interface{} {
+	var serviceLinks []models.ServiceLink
+	models.GetDB().Order("sort asc").Find(&serviceLinks)
+	var res []map[string]interface{}
+	for _, s := range serviceLinks {
+		res = append(res, map[string]interface{}{
+			"label": s.Label,
+			"url":   s.URL,
+		})
+	}
+	return res
 }

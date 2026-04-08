@@ -35,31 +35,127 @@ Dashboard
             </div>
         </div>
     </div>
+    <div class="col-12 pt-2 mb-4">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-header bg-white py-3 border-0 d-flex align-items-center gap-3">
+                <div class="bg-primary bg-opacity-10 p-2 rounded-3 text-primary">
+                    <i data-feather="briefcase" style="width: 24px; height: 24px;"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0 fw-bold" style="color: #11215D;">Daftar Paket Tugas Pokja</h3>
+                    <p class="text-muted small mb-0">Paket yang sedang dikerjakan/selesai/proses</p>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table table-nowrap" id="table-workload">
+                        <thead>
+                            <tr class="bg-light bg-opacity-50">
+                                <th class="text-muted small fw-bold ps-4" style="letter-spacing: 0.05em; font-size: 0.75rem;">NO</th>
+                                <th class="text-muted small fw-bold" style="letter-spacing: 0.05em; font-size: 0.75rem;">NAMA PAKET</th>
+                                <th class="text-muted small fw-bold" style="letter-spacing: 0.05em; font-size: 0.75rem;">METODE</th>
+                                <th class="text-muted small fw-bold text-end" style="letter-spacing: 0.05em; font-size: 0.75rem;">PAGU</th>
+                                <th class="text-muted small fw-bold text-center" style="letter-spacing: 0.05em; font-size: 0.75rem;">STATUS</th>
+                                <th class="text-muted small fw-bold text-center pe-4" style="letter-spacing: 0.05em; font-size: 0.75rem;">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="col-12 pt-2">
-        <div class="card">
+        <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body">
-            <h4>Status Permohonan Akun</h4>
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>Nama</th>
-                    <th width="15%">NIP</th>
-                    <th width="15%">Email</th>
-                    <th width="15%">User ID</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>{{ user.PegNama}}</td>
-                    <td>{{ user.PegNip}}</td>
-                    <td>{{ user.PegEmail}}</td>
-                    <td>{{ user.PegNamauser}}</td>
-                    <td>{{ user.GetStatusVerifikasi}}</td>
-                </tr>
-                </tbody>
-            </table>
+            <h4 class="fw-bold mb-4" style="color: #11215D;">Status Permohonan Akun</h4>
+            <div class="table-responsive">
+                <table class="table table-vcenter">
+                    <thead>
+                    <tr>
+                        <th class="text-muted small fw-bold">NAMA</th>
+                        <th class="text-muted small fw-bold" width="15%">NIP</th>
+                        <th class="text-muted small fw-bold" width="15%">EMAIL</th>
+                        <th class="text-muted small fw-bold" width="15%">USER ID</th>
+                        <th class="text-muted small fw-bold">STATUS</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="fw-medium">{{ user.PegNama}}</td>
+                        <td class="text-muted">{{ user.PegNip}}</td>
+                        <td class="text-muted">{{ user.PegEmail}}</td>
+                        <td class="text-muted">{{ user.PegNamauser}}</td>
+                        <td>
+                            <span class="badge bg-green-lt px-2 py-1 rounded-pill">
+                                {{ user.GetStatusVerifikasi}}
+                            </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new DataTable("#table-workload", {
+        ajax: '/paket/data',
+        processing: true,
+        serverSide: true,
+        pageLength: 5,
+        dom: '<"d-none"f>t<"p-3 d-flex align-items-center justify-content-between"ip>',
+        columns: [
+            {data : "ID", className: "ps-4 text-center", render: function(data, type, row, meta) {
+                return meta.row + meta.settings._iDisplayStart + 1;
+            }},
+            {data : "nama", render : function(data, type, row){
+                    return `
+                        <div class="d-flex flex-column">
+                            <a href="/paket/${row["ID"]}" class="fw-bold text-decoration-none" style="color: #0026B4;">${data}</a>
+                            <small class="text-muted">RUP: ${row["kode_rup"] || '-'} | ID: ${row["ID"]}</small>
+                        </div>
+                    `;
+                }
+            },
+            {data : "metode", render : function(data, type, row){
+                    return `<span class="badge bg-blue-lt text-blue rounded-pill px-3 py-1 fw-medium" style="font-size: 0.7rem;">${metode(data)}</span>`;
+                }
+            },
+            {data : "pagu", className: "text-end fw-bold", render : function(data, type, row){
+                   return `Rp ${data.toLocaleString("id-ID")}`;
+               }
+            },
+            {data : "status", className: "text-center", render : function(data, type, row){
+                    let color = 'orange'; let text = statusPaket(data);
+                    if (data >= 6) color = 'green';
+                    if (data < 4) color = 'blue';
+
+                    return `
+                        <div class="d-inline-flex align-items-center gap-2 px-2 py-1 rounded-pill bg-${color}-lt">
+                            <span class="status-dot status-dot-animated status-${color}"></span>
+                            <span class="fw-bold" style="font-size: 0.75rem;">${text}</span>
+                        </div>
+                    `;
+                }
+            },
+            {data : "ID", className: "text-center pe-4", orderable: false, render: function(data, type, row){
+                    return `
+                        <a href="/paket/${data}" class="btn btn-outline-primary btn-pill btn-sm px-3 py-1">
+                            Detail
+                        </a>
+                    `;
+                }
+            },
+        ],
+        drawCallback: function( settings ) {
+            feather.replace();
+        }
+    });
+</script>
 {% endblock %}

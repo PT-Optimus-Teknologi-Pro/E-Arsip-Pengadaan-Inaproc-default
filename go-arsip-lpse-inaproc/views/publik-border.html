@@ -1,43 +1,225 @@
-<!DOCTYPE html>
-<html lang="en" class="h-100">
+<!doctype html>
+<html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Arsip LPSE</title>
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
-    <link href="/css/style.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet" >
-    {% block css %}
-    {% endblock %}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arsip LPSE - {% block pagetitle %} {% endblock %}</title>
+  <link rel="icon" type="image/x-icon" href="{{ faviconPath|default:'/images/favicon.png' }}">
+  <link rel="stylesheet"  href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
+  
+  <style>
+    /* Mobile navbar: menu collapse rapi */
+    @media (max-width: 767.98px) {
+      #navbar-menu {
+        border-top: 1px solid #e8edf5;
+        margin-top: 8px;
+        padding: 8px 0;
+        background: #fff;
+      }
+      #navbar-menu .navbar-nav { gap: 2px; }
+      #navbar-menu .nav-link {
+        padding: 10px 12px !important;
+        border-radius: 8px;
+        color: #11215D !important;
+      }
+      #navbar-menu .navbar-nav.flex-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 8px 0 4px 0;
+        gap: 8px;
+        border-top: 1px solid #e8edf5;
+        margin-top: 4px;
+      }
+      #navbar-menu .navbar-nav.flex-row .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+    
+    .page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+  {% block css %}
+  {% endblock %}
 </head>
 
-<body class="h-100">
-<div class="authincation h-100">
-    <div class="container-fluid h-100">
-        <div class="row justify-content-center h-100 align-items-center">
-            <div class="col-md-6">
-                <div class="authincation-content">
-                    <div class="row no-gutters">
-                        <div class="col-xl-12">
-                            {% block content %}{% endblock %}
-                        </div>
-                    </div>
-                </div>
-            </div>
+<body>
+    {% include "loading.html" %}
+    <div class="page">
+      {%include 'header.html' %}
+      <div class="page-wrapper">
+        <div class="page-body">
+          <div class="container-xl" style="flex: 1;">
+              {% block content %}{% endblock %}
+          </div>
         </div>
-    </div>
-</div>
+      
+      <!-- Professional Footer -->
+      <footer class="site-footer mt-auto" style="background: #020b26; color: rgba(255,255,255,0.7); padding: 5rem 0 2rem; border-top: 1px solid rgba(255,255,255,0.05);">
+        <div class="container">
+          <div class="row gy-5">
+            <!-- About Section -->
+            <div class="col-lg-4 pe-lg-5">
+              <div class="footer-brand mb-4">
+                <img src="{{ logoPath }}" alt="Logo" style="height: 55px; width: auto; max-height: 55px; display: block; filter: brightness(0) invert(1);" />
+              </div>
+              <p class="mb-4" style="line-height: 1.7; font-size: 0.95rem; text-align: justify;">
+                {{ app_settings.FooterDescription }}
+              </p>
+              <div class="social-links d-flex gap-3 mt-4 flex-wrap">
+                {% for s in GetFooterSocials() %}
+                <a href="{{ s.url }}" target="_blank" class="social-icon-btn d-flex align-items-center justify-content-center" title="{{ s.label }}">
+                  {% if StartWith(s.icon, "http") or StartWith(s.icon, "/") or StartWith(s.icon, "data:") %}
+                    <img src="{{ s.icon }}" alt="{{ s.label }}" style="width: 22px; height: 22px; object-fit: contain; display: block; filter: brightness(0) invert(1);">
+                  {% elif s.icon != "" %}
+                    <i data-feather="{{ s.icon }}"></i>
+                  {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                  {% endif %}
+                </a>
+                {% endfor %}
+              </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6 offset-lg-1">
+              <h5 class="text-white mb-4 pb-2" style="font-weight: 600; font-size: 1.1rem; border-bottom: 2px solid var(--footer-accent); display: inline-block;">Tautan Cepat</h5>
+              <ul class="list-unstyled footer-links">
+                {% for q in GetFooterQuicks() %}
+                <li class="mb-3">
+                  <a href="{{ q.url }}" class="text-decoration-none d-flex align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>
+                    {{ q.label }}
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
 
-<!--**********************************
-    Scripts
-***********************************-->
-<!-- Required vendors -->
-<script src="/vendor/global/global.min.js"></script>
-<script src="/js/quixnav-init.js"></script>
-<!--endRemoveIf(production)-->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-{% block script %}
-{% endblock %}
+            <!-- Services Links -->
+            <div class="col-lg-2 col-md-6">
+              <h5 class="text-white mb-4 pb-2" style="font-weight: 600; font-size: 1.1rem; border-bottom: 2px solid var(--footer-accent); display: inline-block;">Layanan Kami</h5>
+              <ul class="list-unstyled footer-links">
+                {% for v in GetFooterServices() %}
+                <li class="mb-3">
+                  <a href="{{ v.url }}" class="text-decoration-none d-flex align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>
+                    {{ v.label }}
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-4 ps-lg-5">
+              <h5 class="text-white mb-4 pb-2" style="font-weight: 600; font-size: 1.1rem; border-bottom: 2px solid var(--footer-accent); display: inline-block;">Hubungi Kami</h5>
+              <ul class="list-unstyled d-flex flex-column gap-3 contact-info">
+                <li class="d-flex align-items-start gap-3">
+                  <div class="icon-circle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                  </div>
+                  <span style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">{{ app_settings.FooterAddress }}</span>
+                </li>
+                <li class="d-flex align-items-center gap-3">
+                  <div class="icon-circle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                  </div>
+                  <span style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">{{ app_settings.FooterPhone }}</span>
+                </li>
+                <li class="d-flex align-items-center gap-3">
+                  <div class="icon-circle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                  </div>
+                  <span style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">{{ app_settings.FooterEmail }}</span>
+                </li>
+                <li class="d-flex align-items-start gap-3">
+                  <div class="icon-circle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                      <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
+                  <span style="color: rgba(255,255,255,0.7); font-size: 0.95rem;">{{ app_settings.FooterWorkHours }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="row align-items-center mt-5 pt-4" style="border-top: 1px solid rgba(255,255,255,0.08);">
+            <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+              <p class="mb-0 copyright-text">&copy; {{ GetCurrentYear() }} <strong>{{ appTitle }}</strong>. All rights reserved.</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    </div>
+    
+    <style>
+      :root {
+        --footer-bg: #020b26;
+        --footer-accent: #007BFF;
+      }
+      .site-footer {
+        font-family: 'Outfit', sans-serif;
+      }
+      .copyright-text {
+        font-size: 0.85rem;
+        opacity: 0.6;
+      }
+      .footer-links a {
+        color: rgba(255,255,255,0.65);
+        transition: all 0.2s ease;
+      }
+      .footer-links a:hover {
+        color: #fff;
+        transform: translateX(4px);
+      }
+      .social-icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.7);
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: all 0.3s ease;
+      }
+      .social-icon-btn:hover {
+        background: var(--footer-accent);
+        color: #fff;
+        border-color: var(--footer-accent);
+        transform: translateY(-3px);
+      }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        try {
+          feather.replace({
+            width: 22,
+            height: 22,
+            'stroke-width': 2
+          });
+        } catch (err) { }
+      });
+    </script>
+
+    {% block script %}
+    {% endblock %}
 </body>
 </html>

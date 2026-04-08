@@ -1,0 +1,297 @@
+<!-- ============================================================== -->
+<!-- Loading Screen -->
+<!-- ============================================================== -->
+<div id="loading-screen" style="
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #020b26 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 36px;
+  font-family: 'DM Sans', sans-serif;
+  overflow: hidden;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+">
+  <!-- Grid Overlay -->
+  <div style="
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0,123,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,123,255,0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+  "></div>
+
+  <!-- Particle Canvas -->
+  <canvas id="ls-particles" style="position:absolute;inset:0;pointer-events:none;"></canvas>
+
+  <!-- Corner Decorations -->
+  <div style="position:absolute;top:24px;left:24px;width:40px;height:40px;border:2px solid rgba(0,123,255,0.2);border-right:none;border-bottom:none;"></div>
+  <div style="position:absolute;top:24px;right:24px;width:40px;height:40px;border:2px solid rgba(0,123,255,0.2);border-left:none;border-bottom:none;"></div>
+  <div style="position:absolute;bottom:24px;left:24px;width:40px;height:40px;border:2px solid rgba(0,123,255,0.2);border-right:none;border-top:none;"></div>
+  <div style="position:absolute;bottom:24px;right:24px;width:40px;height:40px;border:2px solid rgba(0,123,255,0.2);border-left:none;border-top:none;"></div>
+
+  <!-- Orbit Ring System -->
+  <div style="position:relative;width:160px;height:160px;flex-shrink:0;">
+    <!-- Outer Ring -->
+    <div class="ls-ring ls-ring-outer" style="
+      position:absolute;inset:0;
+      border-radius:50%;
+      border:1.5px solid rgba(0,123,255,0.18);
+      animation:ls-spin 4s linear infinite;
+    ">
+      <div style="
+        position:absolute;top:-4px;left:50%;transform:translateX(-50%);
+        width:8px;height:8px;border-radius:50%;
+        background:#007BFF;
+        box-shadow:0 0 12px 4px #3b9eff;
+      "></div>
+    </div>
+    <!-- Mid Ring -->
+    <div style="
+      position:absolute;inset:22px;
+      border-radius:50%;
+      border:1.5px solid rgba(0,123,255,0.12);
+      animation:ls-spin 3s linear infinite reverse;
+    ">
+      <div style="
+        position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);
+        width:6px;height:6px;border-radius:50%;
+        background:#60b4ff;
+        box-shadow:0 0 10px 3px #60b4ff;
+      "></div>
+    </div>
+    <!-- Inner Ring -->
+    <div style="
+      position:absolute;inset:44px;
+      border-radius:50%;
+      border:1.5px solid rgba(0,123,255,0.10);
+      animation:ls-spin 2s linear infinite;
+    ">
+      <div style="
+        position:absolute;top:-2px;right:-2px;
+        width:5px;height:5px;border-radius:50%;
+        background:#a8d4ff;
+        box-shadow:0 0 8px 2px #a8d4ff;
+      "></div>
+    </div>
+    <!-- Scan Sweep -->
+    <div style="
+      position:absolute;inset:0;border-radius:50%;overflow:hidden;
+      animation:ls-scan 2.5s linear infinite;
+    ">
+      <div style="
+        position:absolute;top:0;left:0;right:0;height:50%;
+        background:conic-gradient(from 0deg, transparent 70%, rgba(0,123,255,0.2) 100%);
+        transform-origin:bottom center;
+      "></div>
+    </div>
+    <!-- Center Logo -->
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+      <div style="
+        width:90px;
+        height:auto;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        animation:ls-pulse-logo 2s ease-in-out infinite;
+      ">
+        <img src="{{ logoPath|default:logo_path|default:'/modern/images/logo.png' }}" alt="Logo" style="width: 100%; height: auto; filter: brightness(0) invert(1);">
+      </div>
+    </div>
+  </div>
+
+  <!-- Brand Text -->
+  <div style="text-align:center;position:relative;z-index:2;">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.55rem;color:#fff;letter-spacing:0.04em;line-height:1.1;">
+      {{ appTitle|default:app_title|default:"e-Arsip Pengadaan" }}
+    </div>
+    <div style="font-size:0.72rem;font-weight:300;letter-spacing:0.22em;color:#007BFF;text-transform:uppercase;margin-top:4px;opacity:0.9;">
+      {{ appSubtitle|default:app_subtitle|default:"Portal Pengarsipan" }}
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div style="width:220px;position:relative;z-index:2;">
+    <div style="width:100%;height:2px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;">
+      <div id="ls-bar" style="
+        height:100%;width:0%;
+        background:linear-gradient(90deg,#0050cc,#007BFF,#60b4ff);
+        border-radius:2px;
+        box-shadow:0 0 8px rgba(0,123,255,0.8);
+      "></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;align-items:center;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;gap:5px;">
+          <div class="ls-dot" style="width:5px;height:5px;border-radius:50%;background:#007BFF;animation:ls-blink 1.4s ease-in-out infinite;"></div>
+          <div class="ls-dot" style="width:5px;height:5px;border-radius:50%;background:#007BFF;animation:ls-blink 1.4s ease-in-out 0.2s infinite;"></div>
+          <div class="ls-dot" style="width:5px;height:5px;border-radius:50%;background:#007BFF;animation:ls-blink 1.4s ease-in-out 0.4s infinite;"></div>
+        </div>
+        <span id="ls-ticker" style="font-size:0.64rem;letter-spacing:0.12em;color:rgba(0,123,255,0.7);text-transform:uppercase;">Memuat sistem...</span>
+      </div>
+      <span id="ls-pct" style="font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:#007BFF;font-weight:500;">0%</span>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Screen Styles & Script -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=DM+Sans:wght@300;400&display=swap');
+  @keyframes ls-spin        { to { transform: rotate(360deg); } }
+  @keyframes ls-scan        { to { transform: rotate(360deg); } }
+  @keyframes ls-pulse-logo   {
+    0%,100% { filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(0,123,255,0.4)); transform:scale(1); }
+    50%     { filter: brightness(0) invert(1) drop-shadow(0 0 20px rgba(0,123,255,0.8)); transform:scale(1.05); }
+  }
+  @keyframes ls-blink {
+    0%,100% { opacity:0.15; }
+    50%     { opacity:1; }
+  }
+  @keyframes ls-fadeout {
+    to { opacity:0; transform:scale(1.05); pointer-events:none; }
+  }
+  #loading-screen.ls-done {
+    animation: ls-fadeout 0.4s ease forwards;
+  }
+</style>
+<script>
+  window.showLoadingScreen = function(autoHide) {
+    var el = document.getElementById('loading-screen');
+    if (el) {
+      el.classList.remove('ls-done');
+      el.style.display = 'flex';
+      el.style.opacity = '1';
+      el.style.transform = 'scale(1)';
+    }
+
+    // Reset canvas and progress
+    var canvas = document.getElementById('ls-particles');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W, H, pts = [], rafId;
+    function lsResize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    lsResize();
+    window.removeEventListener('resize', lsResize);
+    window.addEventListener('resize', lsResize);
+    
+    for (var i = 0; i < 55; i++) {
+      pts.push({ x: Math.random()*W, y: Math.random()*H,
+        r: Math.random()*1.4+0.3, dx:(Math.random()-.5)*.3,
+        dy:(Math.random()-.5)*.3, a:Math.random() });
+    }
+    function lsDraw() {
+      ctx.clearRect(0,0,W,H);
+      pts.forEach(function(p){
+        p.x+=p.dx; p.y+=p.dy;
+        if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+        if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle='rgba(0,123,255,'+p.a*.5+')';
+        ctx.fill();
+      });
+      for(var i=0;i<pts.length;i++){
+        for(var j=i+1;j<pts.length;j++){
+          var dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y;
+          var d=Math.sqrt(dx*dx+dy*dy);
+          if(d<100){
+            ctx.beginPath();
+            ctx.moveTo(pts[i].x,pts[i].y);
+            ctx.lineTo(pts[j].x,pts[j].y);
+            ctx.strokeStyle='rgba(0,123,255,'+(0.06*(1-d/100))+')';
+            ctx.lineWidth=0.5; ctx.stroke();
+          }
+        }
+      }
+      rafId = requestAnimationFrame(lsDraw);
+    }
+    lsDraw();
+
+    /* ── Progress ticker ── */
+    var steps = autoHide ? [
+      { pct:20,  msg:'Memuat sistem...' },
+      { pct:45,  msg:'Data pengadaan...' },
+      { pct:65,  msg:'Sinkronisasi...' },
+      { pct:85,  msg:'Verifikasi akses...' },
+      { pct:100, msg:'Selesai!' }
+    ] : [
+      { pct:20,  msg:'Memuat sistem...' },
+      { pct:50,  msg:'Menyimpan data...' },
+      { pct:80,  msg:'Singkronisasi server...' },
+      { pct:99,  msg:'Menunggu respon...' }
+    ];
+    
+    var cur=0, displayed=0;
+    var bar    = document.getElementById('ls-bar');
+    var pctEl  = document.getElementById('ls-pct');
+    var ticker = document.getElementById('ls-ticker');
+
+    function lsTick() {
+      var target = steps[cur].pct;
+      if (displayed < target) {
+        displayed += 0.4; // Even slower for a more "heavy", premium feel
+        if (displayed > target) displayed = target;
+        if (pctEl) pctEl.textContent = Math.floor(displayed) + '%';
+        if (bar) bar.style.width   = displayed + '%';
+      } else if (cur < steps.length - 1) {
+        cur++;
+        if (ticker) ticker.textContent = steps[cur].msg;
+      }
+
+      var maxPct = autoHide ? 100 : 99;
+
+      if (displayed < maxPct) {
+        requestAnimationFrame(lsTick);
+      } else {
+        if (autoHide) {
+          setTimeout(function(){
+            cancelAnimationFrame(rafId);
+            if (el) {
+              el.classList.add('ls-done');
+              setTimeout(function(){ el.style.display='none'; }, 600);
+            }
+          }, 800);
+        }
+      }
+    }
+    requestAnimationFrame(lsTick);
+  };
+
+  // Run automatically on page load as a splash screen
+  window.showLoadingScreen(true);
+
+  // Show on link clicks
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a');
+    if (link && 
+        link.getAttribute('href') && 
+        !link.target && 
+        !link.hasAttribute('data-no-loader') &&
+        !link.getAttribute('href').startsWith('#') && 
+        !link.getAttribute('href').startsWith('javascript:') &&
+        !link.getAttribute('href').startsWith('mailto:') &&
+        !link.getAttribute('href').startsWith('tel:') &&
+        link.hostname === window.location.hostname) {
+      window.showLoadingScreen(false);
+    }
+  });
+
+  // Show on form submissions
+  document.addEventListener('submit', function(e) {
+    var form = e.target;
+    if (!form.hasAttribute('data-no-loader')) {
+      window.showLoadingScreen(false);
+    }
+  });
+</script>
+<!-- ============================================================== -->
+<!-- End Loading Screen -->
+<!-- ============================================================== -->

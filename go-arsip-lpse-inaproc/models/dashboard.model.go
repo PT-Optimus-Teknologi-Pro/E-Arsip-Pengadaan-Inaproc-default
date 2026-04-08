@@ -43,6 +43,8 @@ type PaketPrioritas struct {
 	Nama 	string
 	PegNama	string
 	Status	int
+	Pagu 	float64
+	Metode 	int
 }
 func (obj PaketPrioritas) StatusLabel() string {
 	return statusPaket[obj.Status]
@@ -53,6 +55,8 @@ func (c PaketPrioritas) MarshalJSON() ([]byte, error) {
 		"nama_ppk" : c.PegNama,
 		"nama_paket" : c.Nama,
 		"status" : c.StatusLabel(),
+		"pagu" : c.Pagu,
+		"metode" : metodePengadaan[c.Metode],
 	})
 }
 
@@ -87,6 +91,16 @@ type RekapPaketSatker struct {
 	Nontender		int
 	Pencatatan		int
 	Katalog			int
+}
+
+func (c RekapPaketSatker) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"nama":       c.NamaSatker,
+		"tender":     c.Tender,
+		"nontender":  c.Nontender,
+		"pencatatan": c.Pencatatan,
+		"katalog":    c.Katalog,
+	})
 }
 
 type RekapFeedback struct {
@@ -206,7 +220,7 @@ func GetRupProgress(tahun int) []RupProgress {
 
 func GetPaketPrioritas(tahun int) []PaketPrioritas {
 	var res []PaketPrioritas
-	db.Raw(`SELECT p.id, p.nama, status, peg_nama FROM paket p, pegawai peg, paket_sirup s WHERE p.rup_id=s.id AND p.ppk_id = peg.id AND prioritas = ? AND s.tahun=?`, true, tahun).Scan(&res)
+	db.Raw(`SELECT p.id, p.nama, p.status, p.pagu, p.metode, peg.peg_nama FROM paket p, pegawai peg, paket_sirup s WHERE p.rup_id=s.id AND p.ppk_id = peg.id AND prioritas = ? AND s.tahun=?`, true, tahun).Scan(&res)
 	return res
 }
 
