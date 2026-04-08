@@ -42,14 +42,83 @@ Daftar Buku Tamu
 {% endblock %}
 
 {% block script %}
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.dataTables.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
 <script>
     new DataTable("#table-data", {
+        layout: {
+            topStart: {
+                buttons: [
+                    { 
+                        extend: 'excel', 
+                        title: 'Daftar Buku Tamu - e-Arsip Pengadaan',
+                        messageTop: 'Laporan Daftar Hadir Tamu',
+                        text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Export Excel',
+                        className: 'btn btn-outline-success btn-sm',
+                        exportOptions: {
+                            columns: ':visible'
+                        },
+                        customize: function (xlsx) {
+                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                            
+                            // Apply style 25 (thin border) to all cells
+                            $('row c', sheet).attr('s', '25');
+                            
+                            // Style for the main title (Row 1)
+                            $('row:first c', sheet).attr('s', '51'); // Bold, larger, centered
+                            
+                            // Style for the top message (Row 2)
+                            $('row:eq(1) c', sheet).attr('s', '2'); // Bold
+                            
+                            // Style for Table Headers (Row 3)
+                            // We use s="42" or similar if we want a different look, but let's stick to s="2" (Bold) plus the border from before
+                            $('row:eq(2) c', sheet).attr('s', '42'); 
+                        }
+                    },
+                    { 
+                        extend: 'pdf', 
+                        title: 'Daftar Buku Tamu - e-Arsip Pengadaan',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Export PDF',
+                        className: 'btn btn-outline-danger btn-sm',
+                        exportOptions: {
+                            columns: ':visible'
+                        },
+                        customize: function (doc) {
+                            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                            doc.styles.tableHeader.fillColor = '#0026B4';
+                            doc.styles.tableHeader.color = 'white';
+                            doc.styles.tableHeader.alignment = 'center';
+                            doc.styles.title = {
+                                color: '#0026B4',
+                                fontSize: '16',
+                                alignment: 'center',
+                                bold: true,
+                                margin: [0, 0, 0, 10]
+                            };
+                            doc.defaultStyle.fontSize = 10;
+                        }
+                    }
+                ]
+            },
+            topEnd: {
+                search: {
+                    placeholder: 'Cari Data Tamu...'
+                }
+            }
+        },
         ajax: '/bukutamu/data',
         processing: true,
         serverSide: true,
         columns: [
             {data : "nama", render : function(data, type, row){
-                    return '<a href="/bukutamu/'+row["ID"]+'">'+data+'</a>'
+                    return '<a href="/bukutamu/'+row["ID"]+'" class="fw-bold text-primary">'+data+'</a>'
                 }
             },
             {data : "nama_perusahaan"},
@@ -57,11 +126,11 @@ Daftar Buku Tamu
             {data : "keperluan"},
             {data : "status", render : function(data, type, row){
                   if(data == 0)
-                      return 'Belum Diproses';
+                      return '<span class="badge bg-warning-lt">Belum Diproses</span>';
                   else if(data == 1)
-                    return 'Diproses';
+                    return '<span class="badge bg-blue-lt">Diproses</span>';
                   else if(data == 2)
-                    return 'Sudah Selesai';
+                    return '<span class="badge bg-success-lt">Sudah Selesai</span>';
               }
             }
         ],

@@ -1,171 +1,379 @@
 {% extends "border.html" %}
 
-{% block pagetitle %}
-Detil Buku Tamu
+{% block pagetitle %}Detail Buku Tamu{% endblock %}
+
+{% block css %}
+<style>
+  .bt-detail-wrapper {
+    max-width: 1100px;
+    margin: 1.5rem auto 5rem;
+    padding: 0 1rem;
+  }
+  
+  /* Header & Breadcrumbs */
+  .bt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .bt-header h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bt-header h2::before {
+    content: "";
+    width: 4px;
+    height: 24px;
+    background: #0026B4;
+    border-radius: 2px;
+  }
+  .bt-breadcrumb {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+  .bt-breadcrumb a { color: inherit; text-decoration: none; }
+  .bt-breadcrumb .active { color: #0026B4; font-weight: 600; }
+
+  /* Main Card */
+  .bt-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    overflow: hidden;
+  }
+  
+  .bt-card-grid {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    min-height: 500px;
+  }
+
+  /* Left Side: Photo & Status */
+  .bt-photo-side {
+    background: #f8fafc;
+    padding: 2.5rem;
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .photo-frame {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #fff;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .photo-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .photo-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+  
+  .status-badge-large {
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .bg-status-0 { background: #fef3c7; color: #92400e; } /* Pending */
+  .bg-status-1 { background: #dbeafe; color: #1e40af; } /* In Progress */
+  .bg-status-2 { background: #dcfce7; color: #166534; } /* Done */
+
+  /* Right Side: Details */
+  .bt-info-side {
+    padding: 2.5rem;
+  }
+  .info-section {
+    margin-bottom: 2rem;
+  }
+  .info-section-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #0026B4;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 8px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .info-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+  }
+  .info-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    word-break: break-word;
+  }
+  
+  .catatan-box {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.95rem;
+    color: #334155;
+    min-height: 60px;
+    line-height: 1.6;
+  }
+
+  /* Actions Bar */
+  .bt-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+  }
+  .btn-premium {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-p-primary {
+    background: #0026B4;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 38, 180, 0.2);
+  }
+  .btn-p-primary:hover { transform: translateY(-2px); background: #001d8a; box-shadow: 0 6px 20px rgba(0, 38, 180, 0.3); }
+  
+  .btn-p-outline {
+    background: #fff;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+  }
+  .btn-p-outline:hover { background: #f8fafc; color: #1e293b; }
+
+  /* Modal Styling */
+  .modal-premium .modal-content {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  }
+  .modal-premium .modal-header {
+    border-bottom: 1px solid #f1f5f9;
+    padding: 1.5rem;
+  }
+  .modal-premium .modal-title { font-weight: 800; color: #1e293b; }
+  .modal-premium .modal-body { padding: 1.5rem; }
+  .modal-premium .form-label { font-weight: 700; font-size: 0.9rem; color: #475569; margin-bottom: 8px; }
+  .modal-premium .form-control { border-radius: 10px; padding: 12px; border: 1px solid #d1d5db; }
+
+  @media (max-width: 900px) {
+    .bt-card-grid { grid-template-columns: 1fr; }
+    .bt-photo-side { border-right: none; border-bottom: 1px solid #e5e7eb; }
+    .info-grid { grid-template-columns: 1fr; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Detil Buku Tamu</h2>
+<div class="bt-detail-wrapper">
+  <!-- Header -->
+  <div class="bt-header">
+    <h2>Detail Buku Tamu</h2>
+    <div class="bt-breadcrumb">
+      <a href="/home">Dashboard</a> &nbsp;>&nbsp; <a href="/bukutamu/list">Buku Tamu</a> &nbsp;>&nbsp; <span class="active">Detail</span>
     </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item"><a href="/bukutamu/list">Daftar Buku Tamu</a></li>
-            <li class="breadcrumb-item active">Detil Buku Tamu</li>
-        </ol>
-    </div>
-</div>
-<div class="col-lg-12">
-    <div class="card">
-       <div class="card-body">
-           <div class="basic-form">
-               {% include "alert.html" %}
-               <form action="/bukutamu/{{ buku.ID }}/update" method="post">
-                   <div class="row">
-                       <div class="col-12 d-flex justify-content-center">
-                           <img src="/preview/image/{{ buku.DokId }}" width="50%" />
-                       </div>
-                   </div>
-                    <div class="row pt-5 mx-auto">
-                        <div class="col-6">
-                            <div class="mb-3">
-                                <label class="label">Nama Lengkap</label>
-                                <p class="form-control-plaintext">{{ buku.Nama }}</p>
-                            </div>
-                        </div>
-                    <div class="col-6 mb-3">
-                        <div class="mb-3">
-                            <label class="label">Perusahaan / Instansi</label>
-                            <p class="form-control-plaintext">{{ buku.NamaPerusahaan }}</p>
-                        </div>
-                    </div>
-                    </div>
-                     <div class="row">
-                        <div class="col-6 mb-3">
-                            <label class="label">Keperluan</label>
-                            <p class="form-control-plaintext">{{ buku.Keperluan }}</p>
-                        </div>
-                        <div class="col-6 mb-3">
-                            <label class="lable">Telepon / Hp / Email</label>
-                            <p class="form-control-plaintext">{{ buku.Phone }}</p>
-                        </div>
-                     </div>
-                     <div class="row">
-                        <div class="col mb-3">
-                            <label class="label">Status</label>
-                           <p class="form-control-plaintext"><span class="badge bg-blue text-blue-fg">{{ buku.StatusLabel }}</span></p>
-                        </div>
-                        <div class="col mb-3">
-                            <label class="label">Layanan</label>
-                           <p class="form-control-plaintext">{{ buku.Layanan }}</p>
-                        </div>
-                     </div>
-                     <div class="row">
-                        {% if buku.Status > 0 %}
-                        <div class="col mb-3">
-                            <label class="label">Tanggal Diproses </label>
-                            <div class="col-sm-7">
-                                <p class="form-control-plaintext">{{ formatDateTime(buku.TglProses) }}</p>
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% if buku.Status == 2 %}
-                        <div class="col mb-3">
-                            <label class="label">Tanggal Selesai</label>
-                            <div class="col-sm-7">
-                                <p class="form-control-plaintext">{{ formatDateTime(buku.TglSelesai) }}</p>
-                            </div>
-                        </div>
-                        {% endif %}
-                     </div>
-                     <div class="row">
-                        <div class="col mb-3">
-                            <label class="label">Catatan</label>
-                            <p class="form-control-plaintext">{{ buku.Catatan }}</p>
-                        </div>
-                        <div class="col mb-3">
-                               <label class="lable">Tindak Lanjut / Progress</label>
-                               <p class="form-control-plaintext">{{ buku.TindakLanjut }}</p>
-                           </div>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3"></label>
-                        <div class="col-sm-7">
-                        {% if buku.Status == 0 %}
-                        <button type="button" class="btn btn-primary btn-block" data-bs-toggle="modal" data-bs-target="#proses-bukutamu">Proses</button>
-                        {% elif buku.Status == 1 %}
-                        <button type="submit" class="btn btn-primary btn-block" name="status" value="2">Selesai</button>
-                        {% endif %}
-                        <a href="/bukutamu/list" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span>Kembali</a>
-                        </div>
-                    </div>
-               </form>
-               <p class="alert alert-info pt-2" role="alert">
-                   Untuk melakukan input penerima buku tamu, silahkan klik tombol proses
-               </p>
+  </div>
+
+  <div class="bt-card">
+    <div class="bt-card-grid">
+      <!-- Left Column: Photo & Status -->
+      <div class="bt-photo-side">
+        <div class="photo-label">Foto Verifikasi</div>
+        <div class="photo-frame">
+          <img src="/preview/image/{{ buku.DokId }}" alt="Foto Tamu">
+        </div>
+        
+        <div class="status-badge-large bg-status-{{ buku.Status }}">
+          {% if buku.Status == 0 %}
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          {% elif buku.Status == 1 %}
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"></path><path d="M12 18v4"></path><path d="M4.93 4.93l2.83 2.83"></path><path d="M16.24 16.24l2.83 2.83"></path><path d="M2 12h4"></path><path d="M18 12h4"></path><path d="M4.93 19.07l2.83-2.83"></path><path d="M16.24 7.76l2.83-2.83"></path></svg>
+          {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          {% endif %}
+          {{ buku.StatusLabel }}
+        </div>
+        
+        <div class="mt-4 text-center">
+            <p class="text-muted small">ID Registrasi: #{{ buku.ID }}</p>
+        </div>
+      </div>
+
+      <!-- Right Column: Info Details -->
+      <div class="bt-info-side">
+        <form action="/bukutamu/{{ buku.ID }}/update" method="post" id="updateForm">
+          {% include "alert.html" %}
+          
+          <!-- Section 1: Data Diri -->
+          <div class="info-section">
+            <div class="info-section-title">Informasi Dasar</div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Nama Lengkap</div>
+                <div class="info-value">{{ buku.Nama }}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Email / No. HP</div>
+                <div class="info-value">{{ buku.Email }}{% if buku.Phone %} / {{ buku.Phone }}{% endif %}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Perusahaan / Instansi</div>
+                <div class="info-value">{{ buku.NamaPerusahaan }}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Jenis Layanan</div>
+                <div class="info-value">{{ buku.Layanan }}</div>
+              </div>
+              <div class="info-item col-span-2" style="grid-column: span 2;">
+                <div class="info-label">Keperluan</div>
+                <div class="info-value">{{ buku.Keperluan }}</div>
+              </div>
             </div>
-       </div>
+          </div>
+
+          <!-- Section 2: Progres & Catatan -->
+          <div class="info-section">
+            <div class="info-section-title">Status & Tindak Lanjut</div>
+            <div class="info-grid mb-4">
+              {% if buku.Status > 0 %}
+              <div class="info-item">
+                <div class="info-label">Waktu Proses</div>
+                <div class="info-value">{{ formatDateTime(buku.TglProses) }}</div>
+              </div>
+              {% endif %}
+              {% if buku.Status == 2 %}
+              <div class="info-item">
+                <div class="info-label">Waktu Selesai</div>
+                <div class="info-value">{{ formatDateTime(buku.TglSelesai) }}</div>
+              </div>
+              {% endif %}
+              {% if buku.PegId > 0 %}
+              <div class="info-item">
+                 <div class="info-label">Diterima Oleh</div>
+                  <div class="info-value">{{ buku.Pegawai.PegNama }}</div>
+              </div>
+              {% endif %}
+            </div>
+            
+            <div class="info-item mb-3">
+              <div class="info-label">Catatan Tamu</div>
+              <div class="catatan-box">{{ buku.Catatan|default:"Tidak ada catatan." }}</div>
+            </div>
+            
+            {% if buku.Status > 0 %}
+            <div class="info-item">
+              <div class="info-label">Tindak Lanjut / Progress</div>
+              <div class="catatan-box" style="border-left: 4px solid #0026B4; background: #f0f7ff;">{{ buku.TindakLanjut|default:"Belum ada tindak lanjut." }}</div>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="bt-actions">
+            <a href="/bukutamu/list" class="btn-premium btn-p-outline">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Kembali
+            </a>
+            
+            {% if buku.Status == 0 %}
+              <button type="button" class="btn-premium btn-p-primary" data-bs-toggle="modal" data-bs-target="#proses-bukutamu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                Proses Sekarang
+              </button>
+            {% elif buku.Status == 1 %}
+              <button type="submit" class="btn-premium btn-p-primary" name="status" value="2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Selesaikan
+              </button>
+            {% endif %}
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
-<div class="modal fade" id="proses-bukutamu" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+
+<!-- Modal Proses -->
+<div class="modal fade modal-premium" id="proses-bukutamu" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h6 class="modal-title" id="exampleModalLabel">Proses Buku tamu</h6>
+        <h5 class="modal-title">Proses Buku Tamu</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form method="post" action="/bukutamu/{{ buku.ID }}/proses">
-      <div class="modal-body">
-          <div class="mb-3">
-              <label class="label">Pegawai Penerima Tamu</label>
-              <select name="peg_id" class="form-control">
-              {%for obj in pegawaiList %}
-              <option value="{{ obj.ID }}" {% if obj.ID == buku.PegId %} selected {% endif %}>{{ obj.PegNama }}</option>
+        <div class="modal-body">
+          <div class="mb-4">
+            <label class="form-label">Pegawai Penerima Tamu</label>
+            <select name="peg_id" class="form-control" required style="cursor: pointer;">
+              <option value="" disabled selected>Pilih Pegawai...</option>
+              {% for obj in pegawaiList %}
+                <option value="{{ obj.ID }}" {% if obj.ID == buku.PegId %} selected {% endif %}>{{ obj.PegNama }}</option>
               {% endfor %}
-              </select>
+            </select>
           </div>
-          <div class="mb-3">
-              <label class="label">Catatan</label>
-              <textarea class="form-control" name="catatan"></textarea>
+          <div class="mb-4">
+            <label class="form-label">Catatan Tambahan</label>
+            <textarea class="form-control" name="catatan" rows="3" placeholder="Masukkan catatan jika ada..."></textarea>
           </div>
-          <div class="mb-3">
-              <label class="label">Tindak Lanjut</label>
-              <textarea class="form-control" name="tindaklanjut"></textarea>
+          <div class="mb-0">
+            <label class="form-label">Rencana Tindak Lanjut</label>
+            <textarea class="form-control" name="tindaklanjut" rows="3" placeholder="Apa yang akan dilakukan selanjutnya..."></textarea>
           </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-success">Simpan</button>
-      </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary px-4 bg-primary" style="background-color: #0026B4 !important; border-radius:10px; font-weight:700;">Simpan & Proses</button>
+        </div>
       </form>
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% block css %}
-<style>
-        #video {
-            width: 100%;
-            max-width: 640px;
-            height: auto;
-            border: 1px solid #ddd;
-        }
-        #canvas {
-            width: 100%;
-            max-width: 640px;
-            height: auto;
-            border: 1px solid #ddd;
-            margin-top: 20px;
-        }
-        #captureButton {
-            font-size: 18px;
-            padding: 10px 20px;
-            margin-top: 20px;
-            cursor: pointer;
-        }
-</style>
 {% endblock %}
