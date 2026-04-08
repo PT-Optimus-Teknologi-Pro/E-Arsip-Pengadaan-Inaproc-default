@@ -58,6 +58,7 @@ type Feedback struct {
 	Kualitas		int 		`json:"kualitas" form:"kualitas"`   // skor kualitas
 	Fasilitas		int			`json:"fasilitas" form:"fasilitas"` // skor fasilitas
 	Kelengkapan		int 		`json:"kelengkapan" form:"kelengkapan"` // skor kelengkapan
+	Komentar		string 		`json:"komentar" form:"komentar"`
 }
 
 func (Feedback) TableName() string {
@@ -84,7 +85,7 @@ func GetFeedback(id uint) Feedback {
 	return feedback
 }
 
-func SaveFeedback(kualitas, fasilitas, kelengkapan []string) error {
+func SaveFeedback(kualitas, fasilitas, kelengkapan []string, komentar string) error {
 	var feedbacks []Feedback
 	for i := range JENIS_LAYANAN {
 		kualitasInt , _ := strconv.Atoi(kualitas[i])
@@ -96,6 +97,7 @@ func SaveFeedback(kualitas, fasilitas, kelengkapan []string) error {
 			Kualitas: kualitasInt,
 			Fasilitas: fasilitasInt,
 			Kelengkapan: kelengkapanInt,
+			Komentar: komentar,
 		})
 	}
 	return  db.Save(&feedbacks).Error

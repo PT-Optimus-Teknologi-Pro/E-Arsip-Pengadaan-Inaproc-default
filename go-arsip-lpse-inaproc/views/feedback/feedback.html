@@ -1,73 +1,344 @@
 {% extends "border.html" %}
 
-{% block pagetitle %}
-Feedback
+{% block pagetitle %}Formulir Evaluasi Layanan{% endblock %}
+
+{% block css %}
+<style>
+  .fb-wrapper {
+    max-width: 900px;
+    margin: 1.5rem auto 5rem;
+    padding: 0 1rem;
+  }
+  
+  /* Header & Breadcrumbs */
+  .fb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+  }
+  .fb-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-left: 4px solid #0026B4;
+    padding-left: 15px;
+  }
+  .fb-title-group h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+  }
+  .fb-title-group p {
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  
+  .fb-breadcrumb {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 8px;
+  }
+  .fb-breadcrumb a { color: inherit; text-decoration: none; }
+  .fb-breadcrumb .active { color: #0026B4; font-weight: 600; }
+
+  /* Service Card */
+  .fb-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .fb-card-header {
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #fff;
+  }
+  .fb-card-icon {
+    width: 48px;
+    height: 48px;
+    background: #f0f7ff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .fb-card-icon img {
+    width: 32px;
+    height: 32px;
+  }
+  .fb-card-title-group {
+    display: flex;
+    flex-direction: column;
+  }
+  .fb-card-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #111827;
+  }
+  .fb-card-subtitle {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+
+  /* Rating Row */
+  .fb-rating-body {
+    padding: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+  }
+  .fb-rating-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+  }
+  .fb-rating-row:not(:last-child) {
+    border-bottom: 1px solid #f8fafc;
+  }
+  .fb-rating-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #374151;
+  }
+  
+  /* Star Interaction */
+  .star-group {
+    display: flex;
+    gap: 6px;
+  }
+  .star-group label {
+    cursor: pointer;
+    color: #e5e7eb;
+    transition: all 0.2s;
+  }
+  .star-group label:hover,
+  .star-group label.active,
+  .star-group label.hover {
+    color: #fbbf24;
+  }
+  .star-group input {
+    display: none;
+  }
+
+  /* Comment Card */
+  .comment-textarea {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    background: #fcfcfc;
+    border-radius: 8px;
+    padding: 1.2rem;
+    font-size: 0.95rem;
+    color: #334155;
+    min-height: 120px;
+    resize: none;
+    transition: all 0.2s;
+  }
+  .comment-textarea:focus {
+    border-color: #0026B4;
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 38, 180, 0.05);
+  }
+
+  /* Submit Button */
+  .btn-fb-submit {
+    background: #0026B4;
+    color: #fff;
+    width: 100%;
+    padding: 18px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 25px rgba(0, 38, 180, 0.2);
+    margin-top: 1rem;
+  }
+  .btn-fb-submit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(0, 38, 180, 0.3);
+    background: #001d8a;
+  }
+
+  @media (max-width: 600px) {
+    .fb-header { flex-direction: column; gap: 15px; }
+    .fb-title-group h2 { font-size: 1.5rem; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Feedback</h2>
+<div class="fb-wrapper">
+  <!-- Header -->
+  <div class="fb-header">
+    <div class="fb-title-group">
+      <h2>Formulir Evaluasi Layanan</h2>
+      <p>Mohon untuk menilai kualitas layanan kami demi peningkatan kinerja sistem E-Arsip Pengadaan.</p>
     </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
-          <li class="breadcrumb-item active">Feedback</li>
-        </ol>
+    <div class="fb-breadcrumb">
+      <a href="/">Dashboard</a> &nbsp;>&nbsp; <span class="active">Feedback</span>
     </div>
-</div>
-<div class="col-12 pt-2 ml-auto">
-    <div class="card">
-        <div class="card-body">
-            <div class="auth-form">
-                {% include "alert.html" %}
-                <form action="/feedback" method="post"  enctype="multipart/form-data" class="form-horizontal">
-                    {% for obj in jenisLayanan %}
-                    <div class="card mt-2">
-                        <div class="card-header">{{ obj }}</div>
-                        <div class="card-body">
-                            <div class="mb-3 row">
-                                <label class="col-sm-3 text-end control-label col-form-label">Kualitas Layanan</label>
-                                <div class="col-sm-7">
-                                    {{ rating(0, "kualitas[]")}}
-                                </div>
-                            </div>
-                            <div class="mb-3 row">
-                                <label class="col-sm-3  text-end control-label col-form-label">Fasilitas Layanan</label>
-                                <div class="col-sm-7">
-                                    {{ rating(0, "fasilitas[]")}}
-                                </div>
-                            </div>
-                            <div class="mb-3 row">
-                                <label class="col-sm-3  text-end control-label col-form-label">Kelengkapan Informasi</label>
-                                <div class="col-sm-7">
-                                     {{ rating(0, "kelengkapan[]")}}
-                                </div>
-                            </div>
-                      </div>
-                    </div>
-                     {% endfor %}
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-primary btn-block">Submit</button>
-                    </div>
-                </form>
+  </div>
+
+  <form action="/feedback" method="post" enctype="multipart/form-data" id="feedbackForm">
+    {% include "alert.html" %}
+    
+    {% for obj in jenisLayanan %}
+    <div class="fb-card">
+      <div class="fb-card-header">
+        <div class="fb-card-icon">
+          <img src="/assets/icon-feedback/Layanan {{ obj }}.png" 
+               onerror="this.src='/assets/icon-feedback/{{ obj }}.png'; this.onerror=function(){this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" alt="Icon">
+        </div>
+        <div class="fb-card-title-group">
+          <div class="fb-card-title">Layanan {{ obj }}</div>
+          <div class="fb-card-subtitle">Evaluasi respon dan bantuan teknis {{ obj }}</div>
+        </div>
+      </div>
+      
+      <div class="fb-rating-body">
+        <!-- Criterion 1 -->
+        <div class="fb-rating-row">
+          <div class="fb-rating-label">Kualitas Layanan</div>
+          <div class="star-group" data-name="kualitas[]">
+            <label><input type="radio" value="1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <input type="hidden" name="kualitas[]" value="0" required>
+          </div>
+        </div>
+
+        <!-- Criterion 2 -->
+        <div class="fb-rating-row">
+          <div class="fb-rating-label">Fasilitas Layanan</div>
+          <div class="star-group" data-name="fasilitas[]">
+            <label><input type="radio" value="1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <input type="hidden" name="fasilitas[]" value="0" required>
+          </div>
+        </div>
+
+        <!-- Criterion 3 -->
+        <div class="fb-rating-row">
+          <div class="fb-rating-label">Kelengkapan Informasi</div>
+          <div class="star-group" data-name="kelengkapan[]">
+            <label><input type="radio" value="1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="4"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <label><input type="radio" value="5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg></label>
+            <input type="hidden" name="kelengkapan[]" value="0" required>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Comment Card -->
+    <div class="fb-card">
+        <div class="fb-card-header">
+            <div class="fb-card-icon" style="background: #fdf2f8;">
+                <img src="/assets/icon-feedback/Komentar Tambahan.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'" alt="Icon">
+            </div>
+            <div class="fb-card-title-group">
+                <div class="fb-card-title">Komentar Tambahan</div>
+                <div class="fb-card-subtitle">Tuliskan komentar yang ingin anda tambahkan</div>
             </div>
         </div>
+        <div class="fb-rating-body">
+            <textarea name="komentar" class="comment-textarea" placeholder="Tuliskan kritik, saran, atau masukan Anda disini (Opsional) ..."></textarea>
+        </div>
     </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn-fb-submit">
+      Submit Evaluasi Layanan
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    </button>
+  </form>
 </div>
 {% endblock %}
 
 {% block script %}
 <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const rating = new StarRating("#rating-default", {
-          tooltip: false,
-          clearable: false,
-          stars: function (el, item, index) {
-            el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon gl-star-full icon-md"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>`;
-          },
-          classNames: {},
+  document.addEventListener("DOMContentLoaded", function () {
+    const starGroups = document.querySelectorAll('.star-group');
+    
+    starGroups.forEach(group => {
+      const labels = group.querySelectorAll('label');
+      const hiddenInput = group.querySelector('input[type="hidden"]');
+      
+      labels.forEach((label, idx) => {
+        // Handle Click
+        label.addEventListener('click', () => {
+          const val = label.querySelector('input').value;
+          hiddenInput.value = val;
+          
+          // Clear and set active
+          labels.forEach((l, i) => {
+            if (i <= idx) {
+              l.classList.add('active');
+            } else {
+              l.classList.remove('active');
+            }
+          });
+        });
+
+        // Handle Hover
+        label.addEventListener('mouseenter', () => {
+          labels.forEach((l, i) => {
+            if (i <= idx) l.classList.add('hover');
+          });
+        });
+        
+        label.addEventListener('mouseleave', () => {
+          labels.forEach(l => l.classList.remove('hover'));
         });
       });
-    </script>
+    });
+
+    // Form validation before submit
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+      let valid = true;
+      const hiddens = document.querySelectorAll('input[type="hidden"][required]');
+      hiddens.forEach(h => {
+        if (h.value == "0") {
+          valid = false;
+          h.parentElement.style.animation = "shake 0.5s";
+          setTimeout(() => h.parentElement.style.animation = "", 500);
+        }
+      });
+      
+      if (!valid) {
+        e.preventDefault();
+        alert("Harap berikan penilaian pada semua kriteria layanan.");
+      }
+    });
+  });
+</script>
+
+<style>
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+</style>
 {% endblock %}

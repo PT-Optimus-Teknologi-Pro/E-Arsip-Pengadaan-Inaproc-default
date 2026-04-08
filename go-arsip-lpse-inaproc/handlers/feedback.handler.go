@@ -36,7 +36,11 @@ func SubmitFeedback(c *fiber.Ctx) error {
 	kualitas := form.Value["kualitas[]"]
 	fasilitas:= form.Value["fasilitas[]"]
 	kelengkapan := form.Value["kelengkapan[]"]
-	err = services.SaveFeedback(kualitas, fasilitas, kelengkapan)
+	komentar := ""
+	if len(form.Value["komentar"]) > 0 {
+		komentar = form.Value["komentar"][0]
+	}
+	err = services.SaveFeedback(kualitas, fasilitas, kelengkapan, komentar)
 	if err != nil {
 		log.Error(err)
 		return flashError(c, "Input Feedback Tamu Gagal","/feedback")
@@ -53,6 +57,8 @@ func FeedbackKonfirmasi(c *fiber.Ctx) error {
 func FeedbackList(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	mp["summary"] = services.GetSummaryFeedback()
+	mp["allFeedbacks"] = services.GetAllFeedbacks()
+	mp["totalResponses"] = services.GetTotalFeedbackResponses()
 	return c.Render("feedback/feedback-list", mp)
 }
 

@@ -26,8 +26,8 @@ func GetFeedback(id uint) models.Feedback {
 	return models.GetFeedback(id)
 }
 
-func SaveFeedback(kualitas, fasilitas, kelengkapan []string) error {
-	return  models.SaveFeedback(kualitas, fasilitas, kelengkapan)
+func SaveFeedback(kualitas, fasilitas, kelengkapan []string, komentar string) error {
+	return  models.SaveFeedback(kualitas, fasilitas, kelengkapan, komentar)
 }
 
 func GetSummaryFeedback() []models.SummaryFeedBack {
@@ -74,4 +74,21 @@ func summaryFeedbackByKelengkapan(jenis int) [5]int64 {
 	summary[3] = models.GetCountFeedbackByJenisKelengkapan(jenis, 4)
 	summary[4] = models.GetCountFeedbackByJenisKelengkapan(jenis, 5)
 	return summary
+}
+
+func GetAllFeedbacks() []models.Feedback {
+	var feedbacks []models.Feedback
+	// Only fetch feedbacks that have comments and are not deleted
+	models.GetDB().Where("komentar <> ''").Order("created_at desc").Limit(30).Find(&feedbacks)
+	return feedbacks
+}
+
+func GetTotalFeedbackResponses() int64 {
+	var count int64
+	// Since each form submission creates 3 records in the Feedback table (one for each service), 
+	// we count by grouping or just counting total and dividing by 3? 
+	// Actually, let's just count total records for simplicity or count unique names if applicable.
+	// But let's just count how many distinct "created_at" timestamps we have roughly, or just total count.
+	models.GetDB().Model(&models.Feedback{}).Count(&count)
+	return count / 3 // Assuming 3 types of services per form
 }

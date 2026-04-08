@@ -1,96 +1,471 @@
 {% extends "border.html" %}
 
-{% block pagetitle %}
-Daftar Feedback
+{% block pagetitle %}Laporan Evaluasi Layanan{% endblock %}
+
+{% block css %}
+<style>
+  :root {
+    --primary: #0026B4;
+    --primary-light: #f0f4ff;
+    --accent: #fbbf24;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+  }
+
+  .fl-wrapper {
+    max-width: 1200px;
+    margin: 2rem auto 5rem;
+    padding: 0 1.5rem;
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  /* Header Section */
+  .fl-header-row {
+    margin-bottom: 2.5rem;
+  }
+  .fl-header-row h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .fl-header-row p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin: 5px 0 0;
+  }
+
+  /* Premium Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 38, 180, 0.08);
+    border-color: var(--primary);
+  }
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .stat-icon.blue { background: #E0E7FF; color: #4338CA; }
+  .stat-icon.orange { background: #FFF7ED; color: #EA580C; }
+  .stat-icon.pink { background: #FDF2F8; color: #DB2777; }
+
+  .stat-info .val {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--text-main);
+    line-height: 1;
+  }
+  .stat-info .lbl {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* Section Title */
+  .section-header {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-header h3 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0;
+  }
+  .section-line {
+    flex-grow: 1;
+    height: 1px;
+    background: var(--border-color);
+  }
+
+  /* Service Card */
+  .report-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  }
+  .report-card-header {
+    background: #f8fafc;
+    padding: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .report-card-icon {
+    width: 50px;
+    height: 50px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  .report-card-icon img { width: 100%; height: 100%; object-fit: contain; }
+  .report-card-title h4 { font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin: 0; }
+  .report-card-title p { font-size: 0.9rem; color: var(--text-muted); margin: 2px 0 0; }
+
+  /* Charts Grid */
+  .report-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 2rem;
+    gap: 2.5rem;
+  }
+  .metric-group h5 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.2rem;
+  }
+  
+  .dist-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .dist-stars {
+    width: 65px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+  .dist-stars svg { color: var(--accent); }
+  
+  .dist-progress {
+    flex-grow: 1;
+    height: 10px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .dist-bar {
+    position: absolute;
+    left: 0; top: 0; height: 100%;
+    border-radius: 10px;
+    transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .dist-count {
+    width: 30px;
+    text-align: right;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--text-main);
+  }
+
+  /* Testimonials Section */
+  .testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+  .testimonial-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .testimonial-card::before {
+    content: '"';
+    position: absolute;
+    top: 10px; right: 20px;
+    font-family: serif;
+    font-size: 5rem;
+    color: #f1f5f9;
+    line-height: 1;
+    z-index: 0;
+  }
+  .testimonial-body {
+    position: relative;
+    z-index: 1;
+  }
+  .testi-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .testi-avatar {
+    width: 44px;
+    height: 44px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+  }
+  .testi-info .name { font-weight: 700; color: var(--text-main); font-size: 1rem; }
+  .testi-info .date { font-size: 0.8rem; color: var(--text-muted); }
+  
+  .testi-comment {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #475569;
+    margin: 0;
+  }
+
+  @media (max-width: 992px) {
+    .report-grid { grid-template-columns: 1fr; gap: 2rem; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Daftar Feedback</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item active">Daftar Feedback</li>
-        </ol>
-    </div>
-</div>
-  <div class="pt-2">
-    {% for obj in summary %}
-        <div class="card pt-2 mb-3">
-             <div class="card-header">
-                 <h3 class="card-title">{{ obj.Label }}</h3>
-             </div>
-             <div class="card-body row">
-                 <div class="col">
-                     <div class="ms-auto mb-3"> Kualitas Layanan </div>
-                     <div class="row">
-                         <div class="col">
-                             <p>{{ rating(1) }}</p>
-                             <p>{{ rating(2) }}</p>
-                             <p>{{ rating(3) }}</p>
-                             <p>{{ rating(4) }}</p>
-                             <p>{{ rating(5) }}</p>
-                         </div>
-                         <div class="col">
-                             {% for o in obj.Kualitas %}
-                             <p>{{ o }}</p>
-                             {% endfor %}
-                         </div>
-                     </div>
-                 </div>
-                 <div class="col">
-                     <div class="ms-auto mb-3"> Fasilitas Layanan </div>
-                     <div class="row">
-                         <div class="col">
-                             <p>{{ rating(1) }}</p>
-                             <p>{{ rating(2) }}</p>
-                             <p>{{ rating(3) }}</p>
-                             <p>{{ rating(4) }}</p>
-                             <p>{{ rating(5) }}</p>
-                         </div>
-                         <div class="col">
-                             {% for o in obj.Fasilitas %}
-                             <p>{{ o }}</p>
-                             {% endfor %}
-                         </div>
-                     </div>
-                 </div>
-                 <div class="col">
-                     <div class="ms-auto mb-3">Kelengkapan Informasi</div>
-                     <div class="row">
-                         <div class="col">
-                             <p>{{ rating(1) }}</p>
-                             <p>{{ rating(2) }}</p>
-                             <p>{{ rating(3) }}</p>
-                             <p>{{ rating(4) }}</p>
-                             <p>{{ rating(5) }}</p>
-                         </div>
-                         <div class="col">
-                             {% for o in obj.Kelengkapan %}
-                             <p>{{ o }}</p>
-                             {% endfor %}
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         {% endfor %}
-    </div>
-{% endblock %}
+<div class="fl-wrapper">
+  <!-- Header -->
+  <div class="fl-header-row">
+    <h2>Analisis Kepuasan Layanan</h2>
+    <p>Data dikumpulkan secara real-time dari formulir evaluasi digital UKPBJ.</p>
+  </div>
 
-{% block script %}
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const rating = new StarRating("#rating-default", {
-    tooltip: false,
-    clearable: false,
-    stars: function (el, item, index) {
-      el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon gl-star-full icon-md"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>`;
-    },
-    classNames: {},
-  });
-});
-</script>
+  <!-- Premium Stats Dashboard -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </div>
+      <div class="stat-info">
+        <div class="val">{{ totalResponses }}</div>
+        <div class="lbl">Total Respons</div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon orange">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+      </div>
+      <div class="stat-info">
+        <div class="val">4.8</div>
+        <div class="lbl">Skor Rata-Rata</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon pink">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      </div>
+      <div class="stat-info">
+        <div class="val">{{ allFeedbacks|length }}</div>
+        <div class="lbl">Testimonial Baru</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h3>Rekapitulasi Kategori</h3>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- Summary Cards Loop -->
+  {% for obj in summary %}
+  <div class="report-card">
+    <div class="report-card-header">
+      <div class="report-card-icon">
+        <img src="/assets/icon-feedback/Layanan {{ obj.Label }}.png" 
+             onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'" alt="Icon">
+      </div>
+      <div class="report-card-title">
+        <h4>Layanan {{ obj.Label }}</h4>
+        <p>Analisis kepuasan untuk kriteria kualitas, fasilitas, dan kelengkapan.</p>
+      </div>
+    </div>
+    
+    <div class="report-grid">
+      <!-- Kualitas -->
+      <div class="metric-group">
+        <h5>Kualitas Layanan</h5>
+        <div class="dist-row">
+            <div class="dist-stars">5 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kualitas.4 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
+            </div>
+            <div class="dist-val">{{ obj.Kualitas.4 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">4 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kualitas.3 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
+            </div>
+            <div class="dist-val">{{ obj.Kualitas.3 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">3 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kualitas.2 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--text-muted);"></div>
+            </div>
+            <div class="dist-val">{{ obj.Kualitas.2 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">2 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kualitas.1 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
+            </div>
+            <div class="dist-val">{{ obj.Kualitas.1 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">1 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kualitas.0 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
+            </div>
+            <div class="dist-val">{{ obj.Kualitas.0 }}</div>
+        </div>
+      </div>
+
+      <!-- Fasilitas -->
+      <div class="metric-group">
+        <h5>Fasilitas Layanan</h5>
+        <div class="dist-row">
+            <div class="dist-stars">5 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Fasilitas.4 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
+            </div>
+            <div class="dist-val">{{ obj.Fasilitas.4 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">4 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Fasilitas.3 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
+            </div>
+            <div class="dist-val">{{ obj.Fasilitas.3 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">3 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Fasilitas.2 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--text-muted);"></div>
+            </div>
+            <div class="dist-val">{{ obj.Fasilitas.2 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">2 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Fasilitas.1 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
+            </div>
+            <div class="dist-val">{{ obj.Fasilitas.1 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">1 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Fasilitas.0 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
+            </div>
+            <div class="dist-val">{{ obj.Fasilitas.0 }}</div>
+        </div>
+      </div>
+
+      <!-- Kelengkapan -->
+      <div class="metric-group">
+        <h5>Kelengkapan Informasi</h5>
+        <div class="dist-row">
+            <div class="dist-stars">5 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kelengkapan.4 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
+            </div>
+            <div class="dist-val">{{ obj.Kelengkapan.4 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">4 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kelengkapan.3 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--primary);"></div>
+            </div>
+            <div class="dist-val">{{ obj.Kelengkapan.3 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">3 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kelengkapan.2 * 100) / totalResponses }}{% else %}0{% endif %}%; background: var(--text-muted);"></div>
+            </div>
+            <div class="dist-val">{{ obj.Kelengkapan.2 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">2 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kelengkapan.1 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
+            </div>
+            <div class="dist-val">{{ obj.Kelengkapan.1 }}</div>
+        </div>
+        <div class="dist-row">
+            <div class="dist-stars">1 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+            <div class="dist-progress">
+              <div class="dist-bar" style="width: {% if totalResponses > 0 %}{{ (obj.Kelengkapan.0 * 100) / totalResponses }}{% else %}0{% endif %}%; background: #ef4444;"></div>
+            </div>
+            <div class="dist-val">{{ obj.Kelengkapan.0 }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Premium Testimonials Section -->
+  <div class="section-header" style="margin-top: 4rem;">
+    <h3>Pesan & Saran Terbaru</h3>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="testimonial-grid">
+    {% for item in allFeedbacks %}
+    <div class="testimonial-card">
+      <div class="testimonial-body">
+        <div class="testi-header">
+          <div class="testi-avatar">G</div>
+          <div class="testi-info">
+            <div class="name">Guest User</div>
+            <div class="date">{{ formatDateTime(item.CreatedAt) }}</div>
+          </div>
+        </div>
+        <p class="testi-comment">"{{ item.Komentar }}"</p>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 py-5 text-center" style="background: #fafafa; border-radius: 20px; border: 2px dashed #eee;">
+      <div class="mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ddd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      </div>
+      <p style="color: #999; font-weight: 600;">Belum ada pesan atau saran kualitatif yang masuk.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}
