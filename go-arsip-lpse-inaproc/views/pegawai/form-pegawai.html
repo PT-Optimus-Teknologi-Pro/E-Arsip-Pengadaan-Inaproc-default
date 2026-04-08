@@ -1,0 +1,147 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Form Pegawai
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Pegawai</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/pegawai">Daftar Pegawai</a></li>
+            <li class="breadcrumb-item active">Edit</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            {% include "alert.html" %}
+            <form class="form-horizontal" action="{{ url }}" method="post">
+                {% if pegawai.ID > 0 %}
+                <input type="hidden" name="ID" value="{{ pegawai.ID }}">
+                {% endif %}
+                <div class="card-body">
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2 text-end control-label col-form-label">Pengangkatan Menjadi </label>
+                        <div class="col-sm-9">
+                            {% if pegawai.ID > 0 %}
+                             <p class="form-control-plaintext">{{ pegawai.RoleLabel }}</p>
+                            {% elif isAdmin%}
+                            <div class="col-sm-7">
+                                <select name="usrgroup" class="form-control" required>
+                                    <!--<option value="ADMIN">Admin</option>-->
+                                    <option value="UKPBJ">UKPBJ</option>
+                                </select>
+                            </div>
+                             {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Nama Pegawai</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="peg_nama" class="form-control" value="{{ pegawai.PegNama }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">NIK</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="peg_nik" class="form-control" value="{{ pegawai.PegNik }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">NIP/NRP</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="peg_nip" class="form-control" value="{{ pegawai.PegNip }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">User ID</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="peg_namauser" class="form-control" value="{{ pegawai.PegNamauser }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Password</label>
+                        <div class="col-sm-9">
+                            <input type="password" name="passw" class="form-control" {%if pegawai.Passw=="" %} required {% endif %}/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Alamat</label>
+                        <div class="col-sm-9">
+                            <textarea name="peg_alamat" class="form-control" required>{{ pegawai.PegAlamat }}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Telepon</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="peg_telepon" class="form-control" value="{{ pegawai.PegTelepon }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Email</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="peg_email" class="form-control" value="{{ pegawai.PegEmail }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Pangkat</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="peg_pangkat" class="form-control" value="{{ pegawai.PegPangkat }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Jabatan</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="peg_jabatan" class="form-control" value="{{ pegawai.PegJabatan }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Golongan</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="peg_golongan" class="form-control" value="{{ pegawai.PegGolongan }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Aktif</label>
+                        <div class="col-sm-9">
+                            <input type="checkbox" name="peg_isactive" class="form-check" value="1" {% if pegawai.PegIsactive == 1 %} checked {% endif %}/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Nomor SK</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="peg_no_sk" class="form-control" value="{{ pegawai.PegNoSk }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Masa Berlaku SK</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="masa_berlaku" class="form-control datepicker" value="{{ pegawai.PegMasaBerlaku }}" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary"><span style="width: 16px;" data-feather="save"></span> Submit</button>
+                        <a href="/pegawai" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    $(".datepicker").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d",
+    });
+</script>
+{% endblock %}

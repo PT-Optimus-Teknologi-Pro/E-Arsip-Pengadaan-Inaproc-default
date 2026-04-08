@@ -1,0 +1,71 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Daftar Buku Tamu
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Buku Tamu</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/bukutamu/list">Daftar Buku Tamu</a></li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                {% include "alert.html" %}
+                <table class="table table-bordered table-striped" id="table-data">
+                    <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Nama Perusahaan</th>
+                        <th>Email</th>
+                        <th>Keperluan</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                {% if isPPK %}
+                <a href="/paket/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new DataTable("#table-data", {
+        ajax: '/bukutamu/data',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "nama", render : function(data, type, row){
+                    return '<a href="/bukutamu/'+row["ID"]+'">'+data+'</a>'
+                }
+            },
+            {data : "nama_perusahaan"},
+            {data : "email"},
+            {data : "keperluan"},
+            {data : "status", render : function(data, type, row){
+                  if(data == 0)
+                      return 'Belum Diproses';
+                  else if(data == 1)
+                    return 'Diproses';
+                  else if(data == 2)
+                    return 'Sudah Selesai';
+              }
+            }
+        ],
+        aaSorting: [[0, 'desc']]
+    });
+</script>
+{% endblock %}

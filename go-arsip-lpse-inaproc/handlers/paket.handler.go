@@ -1,0 +1,472 @@
+package handlers
+
+import (
+	"arsip/models"
+	"arsip/services"
+	"arsip/utils"
+	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
+)
+
+func EditPaket(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	mp["url"] = "/paket"
+	id := utils.StringToUint(c.Params("id"))
+	if id != 0 {
+		paket := services.GetPaket(id)
+		if paket.ID == 0 {
+			return c.SendStatus(404)
+		}
+		mp["paket"] = paket
+		mp["url"] = "/paket/" + utils.UintToString(id)
+		return c.Render("paket/form-paket", mp)
+	} else {
+		now := time.Now().Year()
+		tahun := c.QueryInt("tahun", now)
+		satker := c.Query("satker")
+		mp["tahun"] = tahun
+		mp["tahunlist"] = services.GetTahunRupList()
+		mp["satker"] = satker
+		mp["metode"] = c.Query("metode")
+		mp["jenis"] = c.Query("jenis")
+		mp["jenislist"] = models.GetAllJenisPengadaan()
+		mp["metodelist"] = models.GetAllMetodePengadaan();
+		return c.Render("paket/rencana-paket", mp)
+	}
+}
+
+func CreatePaket(c *fiber.Ctx) error {
+	rupid := utils.StringToUint(c.FormValue("id"))
+	log.Info("create paket from rup ", rupid)
+	mp := currentMap(c)
+	id := mp["id"].(uint)
+	paketId, err := services.CreatePaket(rupid, id)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Tambah Paket Gagal", "/paket/edit")
+	}
+	return flashSuccess(c, "Tambah Paket Sukses", "/paket/"+strconv.Itoa(int(paketId)))
+}
+
+// Get All Users from db
+func GetAllPaket(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	usersession := getUserSession(c)
+	user := usersession.Pegawai()
+	mp["allowBuatPaket"] = user.IsApprove() && usersession.IsPpk() && user.IsAktif()
+	return c.Render("paket/paket", mp)
+}
+
+// GetSingleUser from db
+func GetPaket(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	mp := currentMap(c)
+	paket := services.GetPaket(id)
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+	if paket.IsDraft() && paket.CountChecklist() == 0 {
+		paket.GeneratePersyaratan()
+	}
+	mp["paket"] = paket
+	mp["anggaran"] = paket.Rup().AnggaranLabel()
+	mp["allowAjukan"] = paket.IsAllowAjukan()
+	mp["panitias"] = services.GetPanitias()
+	mp["pps"] = services.GetPPs(paket.SatkerId)
+	mp["ppks"] = services.GetPPKs()
+	mp["prosesOnlyPpk"] = paket.IsOnlyPpk()
+	return c.Render("paket/paket-detil", mp)
+}
+
+// update a user in db
+func UpdatePaket(c *fiber.Ctx) error {
+	var formPaket models.Paket
+	log.Info(c.FormValue("Hps"))
+	// get id params
+	id := utils.StringToUint(c.Params("id"))
+	err := c.BodyParser(&formPaket)
+	if err != nil {
+		log.Error(err)
+		res := fmt.Sprintf("%d", id)
+		return flashError(c, "Edit Paket Gagal", "/paket/" + res)
+	}
+	services.SimpanPaket(id, formPaket)
+	// Return the updated user
+	return flashSuccess(c, "Edit Paket Sukses", "/paket")
+}
+
+// delete user in db by ID
+func DeletePaket(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	err := services.HapusPaket(id)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, err.Error(),"/paket")
+	}
+	return flashSuccess(c, "Hapus Paket Sukses","/paket")
+}
+
+func GetJsonPaket(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := mp["id"].(uint)
+	isPPk := mp["isPPK"].(bool)
+	isUkpbj := mp["isUkpbj"].(bool)
+	isPp  := mp["isPP"].(bool)
+	isPokja := mp["isPokja"].(bool)
+	return services.GetDataTablePaket(c, id, isPPk, isUkpbj, isPokja, isPp)
+}
+
+func UpdateHpsPaket(c *fiber.Ctx) error {
+	formHps := c.FormValue("Hps")
+	formHps = strings.Replace(formHps, ".", "", -1)
+	hps, _ := strconv.ParseFloat(formHps, 64)
+	// get id params
+	id := utils.StringToUint(c.Params("id"))
+	err := services.SimpanHpsPaket(id, hps)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, err.Error(), "/paket/" + utils.UintToString(id))
+	}
+	// Return the updated user
+	return flashSuccess(c, "Update Hps Sukses", "/paket/"+utils.UintToString(id))
+}
+
+func SimpanPersyaratanPaket(c *fiber.Ctx) error {
+	log.Info("SimpanPersyaratanPaket....")
+	mp := currentMap(c)
+	userid := mp["id"].(uint)
+	id := utils.StringToUint(c.Params("id"))
+	err := services.SimpanPersyaratanPaket(c, id, userid)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Simpan Persyaratan Gagal", "/paket/" + utils.UintToString(id))
+	}
+	// Return the updated user
+	return flashSuccess(c, "Simpan Persyaratan Sukses", "/paket/"+utils.UintToString(id))
+}
+
+func ApprovePaket(c *fiber.Ctx) error {
+	// get id params
+	id := utils.StringToUint(c.Params("id"))
+	approve, _ := strconv.ParseBool(c.FormValue("approve"))
+	reject, _ := strconv.ParseBool(c.FormValue("reject"))
+	alasan := c.FormValue("alasan")
+	prioritas, _ := strconv.ParseBool(c.FormValue("prioritas"))
+	err := services.ApprovePaket(id, approve, reject, alasan, prioritas)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Simpan Paket Gagal","/paket/" + utils.UintToString(id))
+	}
+	// Return the updated user
+	return flashSuccess(c, "Simpan Paket Berhasil", "/paket/"+utils.UintToString(id))
+}
+
+func KirimPaketUkpbj(c *fiber.Ctx) error {
+	// get id params
+	id := utils.StringToUint(c.Params("id"))
+	err := services.KirimPaketUkpbj(id)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Gagal Kirim ke UKPBJ", "/paket/" + utils.UintToString(id))
+	}
+	// Return the updated user
+	return flashSuccess(c, "Berhasil Kirim ke UKPBJ","/paket/"+utils.UintToString(id))
+}
+
+func KirimPaketPokja(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	pntId := utils.StringToUint(c.FormValue("pnt_id"))
+	err := services.AssignPaketPokja(id, pntId)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Gagal Assign Pokja", "/paket/" + utils.UintToString(id))
+	}
+	// Return the updated user
+	return flashSuccess(c, "Berhasil Assign Pokja","/paket/"+utils.UintToString(id))
+}
+
+func KirimPaketPp(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	ppId := utils.StringToUint(c.FormValue("pp_id"))
+	err := services.AssignPaketPp(id, ppId)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Gagal Assign PP", "/paket/" + utils.UintToString(id))
+	}
+	// Return the updated user
+	return flashSuccess(c, "Berhasil Assign PP", "/paket/"+utils.UintToString(id))
+}
+
+func PilihPokjaPaket(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	mp["paketId"] = c.Params("id")
+	return c.Render("paket/pilih-pokja", mp)
+}
+
+func PilihPPPaket(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	mp["paketId"] = c.Params("id")
+	return c.Render("paket/pilih-pp", mp)
+}
+
+func SuratPenunjukan(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+	mp["paket"] = paket
+	if paket.PpId != 0 {
+		mp["pegawai"] = paket.Pp()
+		return c.Render("paket/surat-penunjukan-pp", mp)
+	}
+	mp["panitia"] = paket.Pokja()
+	return c.Render("paket/surat-penunjukan-pokja", mp)
+}
+
+func DokPersiapanPaket(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+	dokPersiapans := paket.DokPersiapan()
+	allowCetak := true
+	for _,v := range dokPersiapans {
+		v.CheckPersetujuanPegawai()
+		if !v.IsSudahPersetujuanSemua() {
+			allowCetak = false
+		}
+	}
+	mp["allowCetak"] = allowCetak
+	mp["paket"] = paket
+	mp["dokPersiapan"] = dokPersiapans
+	mp["allowUpload"] = mp["isPPK"].(bool) || mp["isPokja"].(bool) || mp["isPP"].(bool)
+	return c.Render("paket/dok-persiapan", mp)
+}
+
+func SimpanDokumenPersiapanPaket(c *fiber.Ctx) error {
+	log.Info("SimpanDokumenPersiapanPaket....")
+	mp := currentMap(c)
+	userid := mp["id"].(uint)
+	id := utils.StringToUint(c.Params("id"))
+	err := services.SimpanDokPersiapanPaket(c, id, userid)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Simpan Dokumen Persiapan gagal", "/dok-final/" + utils.UintToString(id))
+	}
+	return flashSuccess(c, "Simpan Dokumen Persiapan Sukses","/dok-final/"+utils.UintToString(id))
+}
+
+func DokPersiapanPaketPersetujuan(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	dok_persiapan := services.GetDokPersiapan(id)
+	if dok_persiapan.ID == 0 {
+		return c.SendStatus(404)
+	}
+	// checklist := services.GetChecklistsBYjenis(paket.KgrId)
+	mp["dokPersiapan"] = dok_persiapan
+	mp["allowUpload"] = mp["isPPK"].(bool) || mp["isPokja"].(bool) || mp["isPP"].(bool)
+	return c.Render("paket/dok-persiapan-persetujuan", mp)
+}
+
+func SimpanDokumenPersiapanPaketPersetujuan(c *fiber.Ctx) error {
+	setuju, _ := strconv.ParseBool(c.FormValue("status", "false"));
+	dokId, _ := strconv.Atoi(c.FormValue("id"))
+	mp := currentMap(c)
+	dokPersiapan := services.GetDokPersiapan(uint(dokId));
+	if dokPersiapan.ID == 0 {
+		log.Error("Dok final tidak ditemukan")
+		return flashError(c, "Simpan Dokumen Persiapan gagal", "/dok-final/" + c.Params("id"))
+	}
+	userid := mp["id"].(uint)
+	err := dokPersiapan.SavePersetujuanPegawai(userid, setuju)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Simpan Dokumen Persiapan gagal", "/dok-final/" + c.Params("id"))
+	}
+	return flashSuccess(c, "Simpan Dokumen Persiapan Sukses","/dok-final/"+c.Params("id"))
+}
+
+func PengadaanPaket(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+	mp["paket"] = paket
+	return c.Render("paket/pengadaan", mp)
+}
+
+func SimpanKodeTender(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	kode := utils.StringToUint(c.FormValue("kode"))
+	err := services.SimpanKodeTender(id, kode)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Simpan Kode Tender Gagal", "/pengadaan/" + utils.UintToString(id))
+	}
+	return flashSuccess(c, "Simpan Kode Tender Berhasil", "/pengadaan/"+utils.UintToString(id))
+}
+
+
+func HasilPengadanPaket(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+	mp["paket"] = paket
+	if paket.Metode == 8 {
+		realisasi := paket.GetNontender().GetRealisasi()
+		if len(realisasi) > 0 {
+			log.Info("realisi ", realisasi[0])
+			mp["realisasi"] = realisasi[0]
+		}
+	} else if paket.Metode == 9 {
+		mp["purchase"] = paket.GetPurchase()
+	}else {
+		realisasi := paket.GetTender().GetRealisasi()
+		if len(realisasi) > 0 {
+			log.Info("realisi ", realisasi[0])
+			mp["realisasi"] = realisasi[0]
+		}
+	}
+	return c.Render("paket/hasil-pengadaan", mp)
+}
+
+func SimpanHasilPengadanPaket(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	status := utils.StringToUint(c.FormValue("status"))
+	paket := services.GetPaket(id)
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+	paket.Status = int(status)
+   err := services.SavePaket(paket)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Simpan Hasil tender Gagal", "/hasil/"+ utils.UintToString(id))
+	}
+	return flashSuccess(c, "Simpan Hasil tender Berhasil","/hasil/"+utils.UintToString(id))
+}
+
+func SimpanDokHasilPengadaan(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	userid := mp["id"].(uint)
+	id := utils.StringToUint(c.Params("id"))
+	err := services.SimpanDokHasilPengadaan(c, id, userid)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Simpan Hasil pengadaan Gagal", "/hasil/" + utils.UintToString(id))
+	}
+	// Return the updated user
+	return flashSuccess(c, "Simpan  Hasil pengadaan Sukses", "/hasil/"+utils.UintToString(id))
+}
+
+func SimpanDokPendukungPengadaan(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	userid := mp["id"].(uint)
+	id := utils.StringToUint(c.Params("id"))
+	err := services.SimpanDokPendukungPengadaan(c, id, userid)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Simpan Dokumen Pendukung pengadaan Gagal", "/paket/" + utils.UintToString(id))
+	}
+	// Return the updated user
+	return flashSuccess(c, "Simpan  Dokumen Pendukung pengadaan Sukses", "/paket/"+utils.UintToString(id))
+}
+
+func HapusDokPaket(c *fiber.Ctx) error {
+	log.Info("hapus dok paket")
+	id := utils.StringToUint(c.Params("id"))
+	pktId, err := services.HapusDokPaket(id)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Hapus Dokumen Gagal", "/paket/" + utils.UintToString(pktId))
+	}
+	return flashSuccess(c, "Hapus Dokumen Sukses", "/paket/"+utils.UintToString(pktId))
+}
+
+func GantiPPK(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	userid := mp["id"].(uint)
+	id := utils.StringToUint(c.Params("id"))
+	ppkId := utils.StringToUint(c.FormValue("ppk_id"))
+	err := services.AssignPaketPpk(id, ppkId, userid)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Gagal Ganti PPK", "/paket/" + utils.UintToString(id))
+	}
+	// Return the updated user
+	return flashSuccess(c, "Berhasil Ganti PPK","/paket/"+utils.UintToString(id))
+}
+
+func SavePPk(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+	if paket.IsOnlyPpk() {
+    	paket.Status = 2
+     	paket.TglDisetujui = models.Datetime(time.Now())
+	}
+    err := services.SavePaket(paket)
+    if err != nil {
+		log.Error(err)
+		return flashError(c, "Simpan Paket Gagal","/paket/" + utils.UintToString(id))
+	}
+	// Return the updated user
+	return flashSuccess(c, "Simpan Paket Berhasil", "/paket/"+utils.UintToString(id))
+}
+
+func DownloadPendukung(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id, _ := c.ParamsInt("id") // id paket
+	paket := services.GetPaket(uint(id))
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+	log.Info("create zip file");
+	var files []string
+	for _,v := range paket.DokPendukungList() {
+		files = append(files, v.Document().Filepath)
+	}
+	zipFile,  err := utils.CreateZip(files, "dok-pendukung.zip");
+	if err != nil {
+		log.Error("Error creating ", zipFile, " : ", err)
+	}
+	return c.SendFile(zipFile)
+}
+
+func DownloadHasilPengadaan(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id, _ := c.ParamsInt("id") // id paket
+	paket := services.GetPaket(uint(id))
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+	log.Info("create zip file");
+	var files []string
+	for _,v := range paket.DokHasilList() {
+		files = append(files, v.Document().Filepath)
+	}
+	zipFile,  err := utils.CreateZip(files, "dok-hasil-pengadaan.zip");
+	if err != nil {
+		log.Error("Error creating ", zipFile, " : ", err)
+	}
+	return c.SendFile(zipFile)
+}

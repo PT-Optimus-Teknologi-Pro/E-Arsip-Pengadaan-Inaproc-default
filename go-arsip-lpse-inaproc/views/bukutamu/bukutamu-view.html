@@ -1,0 +1,171 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Detil Buku Tamu
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Detil Buku Tamu</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/bukutamu/list">Daftar Buku Tamu</a></li>
+            <li class="breadcrumb-item active">Detil Buku Tamu</li>
+        </ol>
+    </div>
+</div>
+<div class="col-lg-12">
+    <div class="card">
+       <div class="card-body">
+           <div class="basic-form">
+               {% include "alert.html" %}
+               <form action="/bukutamu/{{ buku.ID }}/update" method="post">
+                   <div class="row">
+                       <div class="col-12 d-flex justify-content-center">
+                           <img src="/preview/image/{{ buku.DokId }}" width="50%" />
+                       </div>
+                   </div>
+                    <div class="row pt-5 mx-auto">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="label">Nama Lengkap</label>
+                                <p class="form-control-plaintext">{{ buku.Nama }}</p>
+                            </div>
+                        </div>
+                    <div class="col-6 mb-3">
+                        <div class="mb-3">
+                            <label class="label">Perusahaan / Instansi</label>
+                            <p class="form-control-plaintext">{{ buku.NamaPerusahaan }}</p>
+                        </div>
+                    </div>
+                    </div>
+                     <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="label">Keperluan</label>
+                            <p class="form-control-plaintext">{{ buku.Keperluan }}</p>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="lable">Telepon / Hp / Email</label>
+                            <p class="form-control-plaintext">{{ buku.Phone }}</p>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col mb-3">
+                            <label class="label">Status</label>
+                           <p class="form-control-plaintext"><span class="badge bg-blue text-blue-fg">{{ buku.StatusLabel }}</span></p>
+                        </div>
+                        <div class="col mb-3">
+                            <label class="label">Layanan</label>
+                           <p class="form-control-plaintext">{{ buku.Layanan }}</p>
+                        </div>
+                     </div>
+                     <div class="row">
+                        {% if buku.Status > 0 %}
+                        <div class="col mb-3">
+                            <label class="label">Tanggal Diproses </label>
+                            <div class="col-sm-7">
+                                <p class="form-control-plaintext">{{ formatDateTime(buku.TglProses) }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if buku.Status == 2 %}
+                        <div class="col mb-3">
+                            <label class="label">Tanggal Selesai</label>
+                            <div class="col-sm-7">
+                                <p class="form-control-plaintext">{{ formatDateTime(buku.TglSelesai) }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                     </div>
+                     <div class="row">
+                        <div class="col mb-3">
+                            <label class="label">Catatan</label>
+                            <p class="form-control-plaintext">{{ buku.Catatan }}</p>
+                        </div>
+                        <div class="col mb-3">
+                               <label class="lable">Tindak Lanjut / Progress</label>
+                               <p class="form-control-plaintext">{{ buku.TindakLanjut }}</p>
+                           </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-3"></label>
+                        <div class="col-sm-7">
+                        {% if buku.Status == 0 %}
+                        <button type="button" class="btn btn-primary btn-block" data-bs-toggle="modal" data-bs-target="#proses-bukutamu">Proses</button>
+                        {% elif buku.Status == 1 %}
+                        <button type="submit" class="btn btn-primary btn-block" name="status" value="2">Selesai</button>
+                        {% endif %}
+                        <a href="/bukutamu/list" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span>Kembali</a>
+                        </div>
+                    </div>
+               </form>
+               <p class="alert alert-info pt-2" role="alert">
+                   Untuk melakukan input penerima buku tamu, silahkan klik tombol proses
+               </p>
+            </div>
+       </div>
+    </div>
+</div>
+<div class="modal fade" id="proses-bukutamu" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel">Proses Buku tamu</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" action="/bukutamu/{{ buku.ID }}/proses">
+      <div class="modal-body">
+          <div class="mb-3">
+              <label class="label">Pegawai Penerima Tamu</label>
+              <select name="peg_id" class="form-control">
+              {%for obj in pegawaiList %}
+              <option value="{{ obj.ID }}" {% if obj.ID == buku.PegId %} selected {% endif %}>{{ obj.PegNama }}</option>
+              {% endfor %}
+              </select>
+          </div>
+          <div class="mb-3">
+              <label class="label">Catatan</label>
+              <textarea class="form-control" name="catatan"></textarea>
+          </div>
+          <div class="mb-3">
+              <label class="label">Tindak Lanjut</label>
+              <textarea class="form-control" name="tindaklanjut"></textarea>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success">Simpan</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<style>
+        #video {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border: 1px solid #ddd;
+        }
+        #canvas {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+        }
+        #captureButton {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+</style>
+{% endblock %}

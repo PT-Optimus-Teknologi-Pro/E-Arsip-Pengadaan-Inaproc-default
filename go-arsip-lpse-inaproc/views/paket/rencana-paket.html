@@ -1,0 +1,143 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Daftar Rencana Paket
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Rencana Paket</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/paket">Daftar Paket</a></li>
+            <li class="breadcrumb-item active">Daftar Rencana Paket</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                {% include "alert.html" %}
+                <div class="basic-form">
+                    <form>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2 text-end control-label col-form-label">Tahun Anggaran {{ tahun }}</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="tahun" onchange="this.form.submit()">
+                                {% for obj in tahunlist %}
+                                <option value="{{ obj }}" {%if obj == tahun  %} selected {% endif %}>{{ obj }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2 text-end control-label col-form-label">Satuan Kerja</label>
+                        <div class="col-sm-9">
+                            <select name="satker" id="satker" class="form-control" onchange="this.form.submit()">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2 text-end control-label col-form-label">Jenis Pengadaan</label>
+                        <div class="col-sm-9">
+                            <select name="jenis" id="jenis" class="form-control" onchange="this.form.submit()">
+                                <option value=""></option>
+                                {% for obj in jenislist %}
+                                <option value="{{ obj }}" {%if obj == jenis  %} selected {% endif %}>{{ obj }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2 text-end control-label col-form-label">Metode</label>
+                        <div class="col-sm-9">
+                            <select name="metode" id="metode" class="form-control" onchange="this.form.submit()">
+                                <option value=""></option>
+                                {% for obj in metodelist %}
+                                <option value="{{ obj }}" {%if obj == metode  %} selected {% endif %}>{{ obj }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+                <table class="table table-bordered table-striped" id="table-data">
+                    <thead>
+                    <tr>
+                        <th width="10%">Kode RUP</th>
+                        <th>Nama</th>
+                        <th width="15%">Pagu</th>
+                        <th width="15%">Metode</th>
+                        <th width="10%">Tahun</th>
+                        <th width="10%">action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+.select2-container--default .select2-selection--single {
+    border-color: var(--tblr-border-color); /* Using Tabler's border color variable */
+ }
+
+ .select2-dropdown {
+   border-radius: var(--tblr-border-radius); /* Using Tabler's border radius variable */
+ }
+ </style>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$('#satker').select2();
+$('#metode').select2();
+
+fetch('/satker/json?tahun={{tahun}}')
+  .then(response => response.json())
+  .then(data => {
+        var options = '<option value=""></option>';
+        for (var i = 0; i < data.length; i++) {
+            options += '<option value="' + data[i].ID + '">' + data[i].Nama + '</option>';
+         }
+         $('#satker').html(options);
+         $('#satker').val({{ satker }});
+  });
+
+  new DataTable("#table-data", {
+        ajax: '/rencana/json?tahun={{ tahun }}&satker={{ satker }}&metode={{ metode }}&jenis={{ jenis }}',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data: "id"},
+            {data : "nama", render : function(data, type, row){
+                    return '<a href="/rencana/'+row["id"]+'">'+data+'</a>'
+                }
+            },
+            {data : "pagu", render : function(data, type, row){
+                    return `Rp ${data.toLocaleString("id-ID")}`;
+                }
+            },
+            {data : 'metode_pengadaan', render : function(data, type, row){
+                    return metode(data);
+                }
+            },
+            {data : "tahun"},
+            {data : "kode_kldi", render: function(data, type, row){
+                    return '<a href="/rencana/'+row["id"]+'" class="btn btn-success btn-sm">pilih paket</a>&nbsp;'
+                }
+            },
+        ],
+        aaSorting: [[0, 'desc']]
+    });
+</script>
+{% endblock %}

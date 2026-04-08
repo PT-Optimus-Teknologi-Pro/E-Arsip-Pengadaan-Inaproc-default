@@ -1,0 +1,109 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Profile
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Profile</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item active">Profile</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+                <div class="card-body">
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2 text-end control-label col-form-label">Pengangkatan Menjadi</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.RoleLabel }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Nama</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.PegNama }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">NIK</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.PegNik }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">NIP/NRP</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.PegNip }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">User ID</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.PegNamauser }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Alamat</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.PegAlamat }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Telepon</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.PegTelepon }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Email</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.PegEmail }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Pangkat</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.PegPangkat }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Jabatan</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.PegJabatan }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Golongan</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.PegGolongan }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Status</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.GetStatusVerifikasi }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Nomor SK</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.PegNoSk }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Masa Berlaku SK</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ user.GetMasaBerlaku }}</p>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+{% endblock %}

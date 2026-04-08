@@ -1,0 +1,62 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Inbox
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Inbox</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">Inbox</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                {% include "alert.html" %}
+                <table class="table table-bordered table-striped" id="table-data">
+                    <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Tanggal</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new DataTable("#table-data", {
+        ajax: '/inbox/data',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "Subject", render : function(data, type, row){
+                    return '<a href="/inbox/'+row["ID"]+'">'+data+'</a>'
+                }
+            },
+            {data : "Status"},
+            {data : "EnqueueDate", render: function(data, type, row) {
+                    if(type === "sort" || type === "type"){
+                        return data;
+                    }
+                    return moment(data).format("MM-DD-YYYY HH:mm");
+                }
+            },
+        ],
+        aaSorting: [[0, 'desc']]
+    });
+</script>
+{% endblock %}

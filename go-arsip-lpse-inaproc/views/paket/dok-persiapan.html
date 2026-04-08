@@ -1,0 +1,163 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Dokument Persiapan Pengadaan
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Dokument Persiapan Pengadaan</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/paket">Daftar Paket</a></li>
+            <li class="breadcrumb-item active">Dokument Persiapan Pengadaan</li>
+        </ol>
+    </div>
+</div>
+<div class="col-lg-12 pt-2">
+    {% include "tabmenu.html" %}
+    <div class="card tab-content">
+        {% include "alert.html" %}
+        <div class="card-body">
+        <form method="post" action="/dok-final/{{ paket.ID }}" enctype="multipart/form-data">
+        <table class="table">
+            <tr>
+                <th>Jenis</th>
+                <th>File</th>
+                <th>Persetujuan</th>
+            </tr>
+            {% for obj in paket.Checklist %}
+            <tr>
+                <td class="align-top">{{ obj.Jenis }}</td>
+                <td> {% if allowUpload and paket.Status > 3 %}
+                    <input type="file" name="checklist_{{ obj.ID }}" class="form-control mt-3">
+                    {% endif %}
+                    <table class="table mt-2" style="width: 70%;">
+                    <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th width="10%">
+                          &nbsp;
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for doc in dokPersiapan %}
+                        {%if doc.ChkId == obj.ID %}
+                        <tr>
+                            <td><a href="/download/{{ obj.DokId }}"><span style="width: 16px;" data-feather="download"></span> {{ doc.Dokumen.Filename }}</a></td>
+                            <td width="5%">{% if allowUpload and doc.IsBelumAdaPersetujuan %}
+                                <a href="/dok-final/{{ paket.ID }}/{{obj.ID}}/hapus" title="Hapus file" onclick="return confirm('apakah anda ingin menghapus file?')">
+                                <span style="width: 16px;" data-feather="trash-2" style="width: 16px;"></span>
+                            </a>{% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                    </table>
+                </td>
+                <td><ol>
+                    {% for doc in dokPersiapan %}
+                        {%if doc.ChkId == obj.ID %}
+                            {% for p in doc.Persetujuan %}
+                            <li>
+                                {{ p.Pegawai.PegNama }}
+                                {%if p.Status %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-square-rounded-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 2c-.218 0 -.432 .002 -.642 .005l-.616 .017l-.299 .013l-.579 .034l-.553 .046c-4.785 .464 -6.732 2.411 -7.196 7.196l-.046 .553l-.034 .579c-.005 .098 -.01 .198 -.013 .299l-.017 .616l-.004 .318l-.001 .324c0 .218 .002 .432 .005 .642l.017 .616l.013 .299l.034 .579l.046 .553c.464 4.785 2.411 6.732 7.196 7.196l.553 .046l.579 .034c.098 .005 .198 .01 .299 .013l.616 .017l.642 .005l.642 -.005l.616 -.017l.299 -.013l.579 -.034l.553 -.046c4.785 -.464 6.732 -2.411 7.196 -7.196l.046 -.553l.034 -.579c.005 -.098 .01 -.198 .013 -.299l.017 -.616l.005 -.642l-.005 -.642l-.017 -.616l-.013 -.299l-.034 -.579l-.046 -.553c-.464 -4.785 -2.411 -6.732 -7.196 -7.196l-.553 -.046l-.579 -.034a28.058 28.058 0 0 0 -.299 -.013l-.616 -.017l-.318 -.004l-.324 -.001zm2.293 7.293a1 1 0 0 1 1.497 1.32l-.083 .094l-4 4a1 1 0 0 1 -1.32 .083l-.094 -.083l-2 -2a1 1 0 0 1 1.32 -1.497l.094 .083l1.293 1.292l3.293 -3.292z" fill="currentColor" stroke-width="0" /><title>Sudah Setuju</title></svg>
+                                {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-square-rounded-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 2l.324 .001l.318 .004l.616 .017l.299 .013l.579 .034l.553 .046c4.785 .464 6.732 2.411 7.196 7.196l.046 .553l.034 .579c.005 .098 .01 .198 .013 .299l.017 .616l.005 .642l-.005 .642l-.017 .616l-.013 .299l-.034 .579l-.046 .553c-.464 4.785 -2.411 6.732 -7.196 7.196l-.553 .046l-.579 .034c-.098 .005 -.198 .01 -.299 .013l-.616 .017l-.642 .005l-.642 -.005l-.616 -.017l-.299 -.013l-.579 -.034l-.553 -.046c-4.785 -.464 -6.732 -2.411 -7.196 -7.196l-.046 -.553l-.034 -.579a28.058 28.058 0 0 1 -.013 -.299l-.017 -.616c-.003 -.21 -.005 -.424 -.005 -.642l.001 -.324l.004 -.318l.017 -.616l.013 -.299l.034 -.579l.046 -.553c.464 -4.785 2.411 -6.732 7.196 -7.196l.553 -.046l.579 -.034c.098 -.005 .198 -.01 .299 -.013l.616 -.017c.21 -.003 .424 -.005 .642 -.005zm-1.489 7.14a1 1 0 0 0 -1.218 1.567l1.292 1.293l-1.292 1.293l-.083 .094a1 1 0 0 0 1.497 1.32l1.293 -1.292l1.293 1.292l.094 .083a1 1 0 0 0 1.32 -1.497l-1.292 -1.293l1.292 -1.293l.083 -.094a1 1 0 0 0 -1.497 -1.32l-1.293 1.292l-1.293 -1.292l-.094 -.083z" fill="currentColor" stroke-width="0" /><title>Tidak Setuju</title></svg>
+                                {% if p.PegId == id %}
+                                <a href="#" onclick="handleSetuju({{ doc.ID }})" class="badge bg-blue text-blue-fg ms-1" value="{{ doc.ID }}">Persetujuan</a>
+                                {% endif %}
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    <ol>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+         <p><smal>Dokumen yang akan diupload pada halaman ini adalah dokumen final hasil dari Proses Kaji Ulang</smal></p>
+        {% if paket.Status > 2  %}
+        <p>
+            <button type="submit" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span> Simpan</button>
+            <a class="btn btn-secondary" href="/preview/ba-kajiulang/{{ paket.ID }}" target="_blank">Berita Acara KajiUlang</a>
+            {% if allowCetak %}
+            <a class="btn btn-secondary" href="/preview/ba-kajiulang/{{ paket.ID }}/print" target="_blank" >Cetak Berita Acara KajiUlang</a>
+            {% endif %}
+        </p>
+        {% endif %}
+        </form>
+        </div>
+    </div>
+    <div class="modal fade" id="theModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title">Persetujuan</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+function formPersetujuan(id) {
+    $.get('/dok-final/{{ paket.ID }}/persetujuan', function(data) {
+        $('.modal-title').html("Persetujuan");
+        console.log(data);
+        $('.modal-body').html(data);
+    });
+}
+
+function handleSetuju(id) {
+  let userConfirmed = confirm("Apakah Anda ingin Setujui Dokumen ini ?");
+  let apiUrl = '/dok-final/{{ paket.ID }}/persetujuan';
+  const formData = new FormData();
+  formData.append("id", id); // id dok, bukan id paket
+  if (userConfirmed) {
+    // Perform the deletion operation
+    formData.append('status', true);
+    console.log("user setuju");
+  } else {
+    // User cancelled the deletion
+    formData.append('status', false);
+    console.log("user setuju");
+  }
+  fetch(apiUrl, {
+     method : 'POST',
+     body : formData
+  })
+    .then(response => {
+      // Check if the response was successful (status code 200-299)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      // Parse the response body as JSON
+      return response.json();
+    })
+    .then(data => {
+      // Process the retrieved data
+      console.log('Fetched data:', data);
+      // Example: Displaying the title in an HTML element
+      document.getElementById('postTitle').textContent = data.title;
+    })
+    .catch(error => {
+      // Handle any errors that occurred during the fetch operation
+      console.error('There was a problem with the fetch operation:', error);
+    });
+  location.reload(true);
+}
+</script>
+{% endblock %}

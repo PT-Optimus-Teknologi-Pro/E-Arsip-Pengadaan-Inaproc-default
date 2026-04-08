@@ -1,0 +1,83 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Form Agency
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Agency</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Daftar Agency</li>
+             <li class="breadcrumb-item active">Edit</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            {% include "alert.html" %}
+            <form class="form-horizontal" action="{{ url }}" method="post">
+                {% if agency.ID > 0 %}
+                <input type="hidden" name="ID" value="{{ agency.ID }}">
+                {% endif %}
+                <div class="card-body">
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Nama Agency</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="agc_nama" class="form-control"  value="{{agency.AgcNama}}"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Alamat Agency</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="agc_alamat" class="form-control" value="{{ agency.AgcAlamat }}"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Telepon</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="agc_telepon" class="form-control" value="{{ agency.AgcTelepon }}"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Fax</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="agc_fax" class="form-control" value="{{ agency.AgcFax }}"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Website</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="agc_website" class="form-control" value="{{ agency.AgcWebsite }}"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Tanggal Pendaftaran</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="tglDaftar" class="form-control datepicker" value="{{ agency.AgcTglDaftar }}"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <div class="col-sm-9">
+                        <button type="submit" class="btn btn-primary"><span style="width: 16px;" data-feather="save"></span> Submit</button>&nbsp;
+                        <a href="/agency" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(".datepicker").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d",
+    });
+</script>
+{% endblock %}

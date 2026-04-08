@@ -1,0 +1,80 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Form Dokumen Template
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Dokumen Template</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/doc-template">Daftar Dokumen Template</a></li>
+            <li class="breadcrumb-item active">Edit</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            {% include "alert.html" %}
+            <form class="form-horizontal" action="{{ url }}" method="post" enctype="multipart/form-data">
+                {% if doktemplate.ID > 0 %}
+                <input type="hidden" name="ID" value="{{ doktemplate.ID }}">
+                {% endif %}
+                <div class="card-body">
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Jenis</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="jenis" class="form-control"  value="{{doktemplate.Jenis}}"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Periode</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                            <input type="text" name="periode_awal" class="form-control datepicker" value="{{ doktemplate.PeriodeAwal }}"/>
+                            <span class="input-group-text">s/d</span>
+                            <input type="text" name="periode_akhir" class="form-control datepicker" value="{{ doktemplate.PeriodeAkhir }}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Template</label>
+                        <div class="col-sm-9">
+                            <input type="file" name="file" class="form-control"/>
+                            {% if file != null %}
+                            <ul class="list-group pt-3">
+                            <li class="list-group-item"><a href="/download/{{ file.ID }}">{{ file.Filename }}</a></li>
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Keterangan</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="Keterangan" class="form-control" value="{{ doktemplate.Keterangan }}"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <div class="col-sm-9">
+                        <button type="submit" class="btn btn-primary"><span style="width: 16px;" data-feather="save"></span> Submit</button>&nbsp;
+                        <a href="/doc-template" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(".datepicker").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d",
+    });
+</script>
+{% endblock %}

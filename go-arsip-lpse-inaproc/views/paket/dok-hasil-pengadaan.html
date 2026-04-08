@@ -1,0 +1,34 @@
+{% if isPokja or isPP or (paket.IsOnlyPpk and isPPK) %}
+ <form method="post" action="/hasil/{{ paket.ID }}/upload" enctype="multipart/form-data">
+     <div class="input-group mt-2">
+         <input type="file" name="file" class="form-control">
+         <button type="submit" class="btn btn-success">Simpan</button>
+     </div>
+ </form>
+ {% endif %}
+ <table class="table mt-2" style="width: 70%;">
+     <thead>
+     <tr>
+         <th>Filename</th>
+         <th width="5%">
+             {%if paket.DokHasilList[0] != null %}
+             <a href="/hasil/{{ paket.ID }}/download" title="Download All">
+             <i style="width: 16px;" data-feather="download"></i>
+             </a>
+             {% endif %}
+         </th>
+     </tr>
+     </thead>
+     <tbody>
+     {% for obj in paket.DokHasilList %}
+     <tr>
+         <td><a href="/download/{{ obj.Document.ID }}">{{ obj.Document.Filename }}</a></td>
+         <td width="5%">{% if isPokja or isPP %}
+             <a href="/paket/dok-paket/{{obj.ID}}/hapus" title="Hapus file" onclick="return confirm('apakah anda ingin menghapus file?')">
+             <span style="width: 16px;" data-feather="trash-2" style="width: 16px;"></span>
+         </a>{% endif %}
+         </td>
+     </tr>
+     {% endfor %}
+     </tbody>
+ </table>

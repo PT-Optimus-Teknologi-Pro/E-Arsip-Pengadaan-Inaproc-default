@@ -1,0 +1,73 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Feedback
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Feedback</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item active">Feedback</li>
+        </ol>
+    </div>
+</div>
+<div class="col-12 pt-2 ml-auto">
+    <div class="card">
+        <div class="card-body">
+            <div class="auth-form">
+                {% include "alert.html" %}
+                <form action="/feedback" method="post"  enctype="multipart/form-data" class="form-horizontal">
+                    {% for obj in jenisLayanan %}
+                    <div class="card mt-2">
+                        <div class="card-header">{{ obj }}</div>
+                        <div class="card-body">
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 text-end control-label col-form-label">Kualitas Layanan</label>
+                                <div class="col-sm-7">
+                                    {{ rating(0, "kualitas[]")}}
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-3  text-end control-label col-form-label">Fasilitas Layanan</label>
+                                <div class="col-sm-7">
+                                    {{ rating(0, "fasilitas[]")}}
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-3  text-end control-label col-form-label">Kelengkapan Informasi</label>
+                                <div class="col-sm-7">
+                                     {{ rating(0, "kelengkapan[]")}}
+                                </div>
+                            </div>
+                      </div>
+                    </div>
+                     {% endfor %}
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const rating = new StarRating("#rating-default", {
+          tooltip: false,
+          clearable: false,
+          stars: function (el, item, index) {
+            el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon gl-star-full icon-md"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>`;
+          },
+          classNames: {},
+        });
+      });
+    </script>
+{% endblock %}

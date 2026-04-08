@@ -1,0 +1,80 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Daftar Dokumen Template
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Dokumen Pra PBJ</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Daftar Dokumen Pra PBJ</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-bordered table-striped" id="table-data">
+                    <thead>
+                    <tr>
+                        <th>Jenis</th>
+                        <th width="15%">Periode Awal</th>
+                        <th width="15%">Periode Akhir</th>
+                        <th>Keterangan</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <a href="/doc-template/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new DataTable("#table-data", {
+        ajax: '/doc-template/data',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "Jenis", render: function (data, type, row){
+                    return '<a href="/doc-template/'+row["ID"]+'">'+data+'</a>';
+                }
+            },
+            {data : "periode_awal", render: function(data, type, row){
+                    if(type === "sort" || type === "type"){
+                        return data;
+                    }
+                    return moment(data).format("MM-DD-YYYY");
+                }
+            },
+            {data : "periode_akhir", render: function(data, type, row){
+                    if(type === "sort" || type === "type"){
+                        return data;
+                    }
+                    return moment(data).format("MM-DD-YYYY");
+                }
+            },
+            {data: "keterangan"},
+            {% if isAdmin %}
+            {data : "ID", title: "action", width : '5%',  render: function(data, type, row){
+                    return '<a href="/doc-template/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>&nbsp;' +
+                        '<a href="/doc-template/hapus/'+data+'"><span style="width: 16px;" data-feather="trash"></span></a>';
+                }
+            },
+            {% endif %}
+        ],
+        aaSorting: [[0, 'desc']],
+        drawCallback: function( settings ) {
+            feather.replace();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,327 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+ITKP
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">ITKP</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/itkpt">ITKP</a></li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                <form class="form-inline form-group mb-3 row">
+                    <div class="input-group">
+                        <div class="input-group-text">Tahun Anggaran</div>
+                        <select class="form-control" name="tahun" onchange="this.form.submit()">
+                            <option value="">pilih tahun</option>
+                            {% for obj in tahunlist %}
+                            <option value="{{obj}}" {%if obj == tahun  %} selected {% endif %}>{{obj}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+                {% include "alert.html" %}
+                <div class="card">
+                  <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+                      <li class="nav-item">
+                        <a href="#tabs-home-ex1" class="nav-link active" data-bs-toggle="tab">Dashboard</a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="#tabs-profile-ex1" class="nav-link"  data-bs-toggle="tab">RUP</a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="#tabs-profile-ex2" class="nav-link"  data-bs-toggle="tab">E-Kontrak</a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="#tabs-profile-ex3" class="nav-link"  data-bs-toggle="tab">E-Tender</a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="#tabs-profile-ex4" class="nav-link"  data-bs-toggle="tab">Purchase</a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="#tabs-profile-ex5" class="nav-link"  data-bs-toggle="tab">NonTender</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="card-body">
+                    <div class="tab-content">
+                      <div class="tab-pane active show" id="tabs-home-ex1">
+                          <table class="table table-bordered table-striped" id="tableItkp">
+                              <thead></thead>
+                          </table>
+                      </div>
+                      <div class="tab-pane" id="tabs-profile-ex1">
+                          <table class="table table-bordered table-striped" id="tableItkpRup">
+                              <thead></thead>
+                          </table>
+                      </div>
+                      <div class="tab-pane" id="tabs-profile-ex2">
+                          <table class="table table-bordered table-striped" id="tableItkpPemilihan">
+                              <thead></thead>
+                          </table>
+                      </div>
+                      <div class="tab-pane" id="tabs-profile-ex3">
+                          <table class="table table-bordered table-striped" id="tableItkpTender">
+                              <thead></thead>
+                          </table>
+                      </div>
+                      <div class="tab-pane" id="tabs-profile-ex4">
+                          <table class="table table-bordered table-striped" id="tableItkpPurchase">
+                              <thead></thead>
+                          </table>
+                      </div>
+                      <div class="tab-pane" id="tabs-profile-ex5">
+                          <table class="table table-bordered table-striped" id="tableItkpNontender">
+                              <thead></thead>
+                          </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="theModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title">Title</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                              aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block css%}
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.3/css/buttons.dataTables.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.css">
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.dataTables.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/fixedColumns.dataTables.js"></script>
+<script>
+    new DataTable("#tableItkp", {
+        ajax: '/itkp/rekap?tahun={{tahun}}',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "kd_satker", title:"Kode", visible: false},
+            {data : "nama", title: "SKPD"},
+            {data : "itkp_sdm", title:"SDM"},
+            {data : "itkp_rup", title:"SIRUP",  render : function (data, type, row, meta){
+              return '<a href="#" onclick="showDetilRencana(\''+row["kd_satker"]+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>'
+            }},
+            {data : "itkp_tender", title:"E-Tendering", render : function (data, type, row, meta){
+              return '<a href="#" onclick="showDetilTender(\''+row["kd_satker"]+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>'
+            }},
+            {data : "itkp_purchase", title:"E-Purchasing", render : function (data, type, row, meta){
+              return '<a href="#" onclick="showDetilPurchase(\''+row["kd_satker"]+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>'
+            }},
+            {data : "itkp_pemilihan", title:"E-Kontrak", render : function (data, type, row, meta){
+              return '<a href="#" onclick="showDetilPemilihan(\''+row["kd_satker"]+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>'
+            }},
+            {data : "itkp_nontender", title:"Non Tender", render : function (data, type, row, meta){
+              return '<a href="#" onclick="showDetilNontender(\''+row["kd_satker"]+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>'
+            }},
+            {data : "itkp_lokal", title:"ITKP"},
+        ],
+        layout: {
+                topEnd: ['search', 'buttons']
+        },
+        buttons: ['excel', 'pdf'],
+        lengthMenu: [
+                [10, 25, 50, -1],
+                [10, 25, 50, 'All']
+            ],
+    });
+    new DataTable("#tableItkpRup", {
+        ajax: '/itkp/rup?tahun={{tahun}}',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "kd_satker", title:"Kode", visible: false},
+            {data : "nama", title: "SKPD", render : function (data, type, row, meta){
+                return '<a href="#" onclick="showDetilRencana(\''+row["kd_satker"]+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>'
+            }},
+            {data : "pagu_rup", title:"Pagu", render : function (data, type, row, meta){
+                  return rupiah(data);
+              }
+            },
+            {data : "belanja", title:"Belanja", render : function (data, type, row, meta){
+                  return rupiah(data);
+              }
+            },
+            {data : "persen_rup", title:"%"},
+            {data : "itkp_rup", title:"ITKP"},
+        ],
+        layout: {
+                topEnd: ['search', 'buttons']
+        },
+        buttons: ['excel', 'pdf'],
+        lengthMenu: [
+                [10, 25, 50, -1],
+                [10, 25, 50, 'All']
+            ],
+    });
+    new DataTable("#tableItkpPemilihan", {
+        ajax: '/itkp/pemilihan?tahun={{tahun}}',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "kd_satker", title:"Kode", visible: false},
+            {data : "nama", title: "SKPD", render : function (data, type, row, meta){
+                return '<a href="#" onclick="showDetilPemilihan(\''+row["kd_satker"]+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>'
+           }},
+            {data : "paket_pemilihan", title:"Jumlah Paket Pemilihan"},
+            {data : "paket_pemilihan_selesai", title:"Jumlah Ekontrak Selesai"},
+            {data : "persen_pemilihan", title:"%"},
+            {data : "itkp_pemilihan", title:"ITKP"},
+        ],
+        layout: {
+                topEnd: ['search', 'buttons']
+        },
+        buttons: ['excel', 'pdf'],
+        lengthMenu: [
+                [10, 25, 50, -1],
+                [10, 25, 50, 'All']
+            ],
+    });
+    new DataTable("#tableItkpTender", {
+        ajax: '/itkp/tender?tahun={{tahun}}',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "kd_satker", title:"Kode", visible: false},
+            {data : "nama", title: "SKPD", render : function (data, type, row, meta){
+               return '<a href="#" onclick="showDetilTender(\''+row["kd_satker"]+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>'
+            }},
+            {data : "pagu_tender", title:"Pagu", render : function (data, type, row, meta){
+                  return rupiah(data);
+              }
+            },
+            {data : "kontrak_tender", title:"E-Kontrak", render : function (data, type, row, meta){
+                  return rupiah(data);
+              }
+            },
+            {data : "persen_tender", title:"%"},
+            {data : "itkp_tender", title:"ITKP"},
+        ],
+        layout: {
+                topEnd: ['search', 'buttons']
+        },
+        buttons: ['excel', 'pdf'],
+        lengthMenu: [
+                [10, 25, 50, -1],
+                [10, 25, 50, 'All']
+            ],
+    });
+    new DataTable("#tableItkpPurchase", {
+        ajax: '/itkp/purchase?tahun={{tahun}}',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "kd_satker", title:"Kode", visible: false},
+            {data : "nama", title: "SKPD", render : function (data, type, row, meta){
+               return '<a href="#" onclick="showDetilPurchase(\''+row["kd_satker"]+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>'
+            }},
+            {data : "purchase", title:"Paket Aktif"},
+            {data : "purchase_selesai", title:"Paket Selesai"},
+            {data : "persen_purchase", title:"%"},
+            {data : "itkp_purchase", title:"ITKP"},
+        ],
+        layout: {
+                topEnd: ['search', 'buttons']
+        },
+        buttons: ['excel', 'pdf']
+    });
+    new DataTable("#tableItkpNontender", {
+        ajax: '/itkp/nontender?tahun={{tahun}}',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "kd_satker", title:"Kode", visible: false},
+            {data : "nama", title: "SKPD", render : function (data, type, row, meta){
+              return '<a href="#" onclick="showDetilNontender(\''+row["kd_satker"]+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>'
+            }},
+            {data : "pagu_nontender", title:"Pagu", render : function (data, type, row, meta){
+                  return rupiah(data);
+              }
+            },
+            {data : "kontrak_nontender", title:"E-Kontrak", render : function (data, type, row, meta){
+                  return rupiah(data);
+              }
+            },
+            {data : "persen_nontender", title:"%"},
+            {data : "itkp_nontender", title:"ITKP"},
+        ],
+        layout: {
+                topEnd: ['search', 'buttons']
+        },
+        buttons: ['excel', 'pdf'],
+        lengthMenu: [
+                [10, 25, 50, -1],
+                [10, 25, 50, 'All']
+            ],
+    });
+
+    function showDetilRencana(satkerId) {
+        $.get('/itkp/rup/detil?tahun={{tahun}}&satker='+satkerId, function(data) {
+            $('.modal-title').html('Rencana Paket');
+            $('.modal-body').html(data);
+        });
+    }
+
+    function showDetilPemilihan(satkerId) {
+      $.get('/itkp/pemilihan/detil?tahun={{tahun}}&satker='+satkerId, function(data) {
+          $('.modal-title').html('Pemilihan Paket');
+          $('.modal-body').html(data);
+      });
+    }
+
+    function showDetilTender(satkerId) {
+      $.get('/itkp/tender/detil?tahun={{tahun}}&satker='+satkerId, function(data) {
+          $('.modal-title').html('Tender');
+          $('.modal-body').html(data);
+      });
+    }
+
+    function showDetilPurchase(satkerId) {
+      $.get('/itkp/purchase/detil?tahun={{tahun}}&satker='+satkerId, function(data) {
+          $('.modal-title').html('Paket Katalog');
+          $('.modal-body').html(data);
+      });
+    }
+
+    function showDetilNontender(satkerId) {
+      $.get('/itkp/nontender/detil?tahun={{tahun}}&satker='+satkerId, function(data) {
+          $('.modal-title').html('Paket Nontender');
+          $('.modal-body').html(data);
+      });
+    }
+
+</script>
+{% endblock %}

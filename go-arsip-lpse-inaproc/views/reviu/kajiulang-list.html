@@ -1,0 +1,28 @@
+{% for obj in datas %}
+<div class="card card-border mt-2">
+  <div class="card-header">
+    <h6 class="card-title mt-2">Dokumen {{ obj.Dokumen}}</h6>
+    <small class="ms-auto">Dikirim {{ obj.Pengirim }} pada {{ formatDateTime(obj.CreatedAt) }}</small>
+  </div>
+  <div class="card-body">
+    <p class="card-text">
+        {{ obj.Uraian }}
+        {% if obj.DokId > 0 %}
+        <a href="/download/{{ obj.DokId }}"> <span style="width: 16px;" data-feather="download"></span> {{ obj.DokUpload.Filename }}</a>
+        {% endif %}
+        {% if obj.IsAllowJawab(group, id) %}
+        <a href="#" onclick="formJawab('{{ obj.ID }}')" data-bs-toggle="modal" data-bs-target="#theModal" class="badge bg-blue text-blue-fg jawab ms-1" value="{{ obj.ID }}">jawab</a>
+        {% endif %}
+    </p>
+    {% for jawab in obj.Penjelasan %}
+     <p class="p-3">
+            {{ jawab.Uraian }}
+            {% if jawab.DokId > 0 %}
+            <a href="/download/{{ jawab.DokId }}"> <span style="width: 16px;" data-feather="download"></span> {{ jawab.DokUpload.Filename }}</a>
+            {% endif %}
+            <small class="text-end">(Dikirim {{ jawab.Pengirim }} pada {{ formatDateTime(jawab.CreatedAt) }})</small>
+     </p>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}

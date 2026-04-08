@@ -1,0 +1,68 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Daftar Reviu
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Reviu</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Daftar Reviu</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                {% include "alert.html" %}
+                <table class="table table-bordered table-striped" id="table-data">
+                    <thead>
+                    <tr>
+                        <th>Bidang</th>
+                        <th>Content</th>
+                        <th>Opsi 1</th>
+                        <th>Opsi 2</th>
+                        <th width="5%">action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <a href="/reviu/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new DataTable("#table-data", {
+        ajax: '/reviu/data',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "bidang"},
+            {data : "content", render : function(data, type, row){
+                    return '<a href="/reviu/'+row["ID"]+'">'+data+'</a>'
+                }
+            },
+            {data : "opsi1"},
+            {data : "opsi2"},
+            {data : "ID", render: function(data, type, row){
+                    return '<a href="/reviu/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>&nbsp;' +
+                        '<a href="/reviu/hapus/'+data+'"><span style="width: 16px;" data-feather="trash"></span></a>'
+                }
+            },
+        ],
+        aaSorting: [[0, 'desc']],
+        drawCallback: function( settings ) {
+            feather.replace();
+        }
+    });
+</script>
+{% endblock %}

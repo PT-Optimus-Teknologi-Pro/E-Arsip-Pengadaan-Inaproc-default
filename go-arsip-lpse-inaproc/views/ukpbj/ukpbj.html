@@ -1,0 +1,74 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Daftar UKPBJ
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar UKPBJ</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Daftar UKPBJ</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                {% include "alert.html" %}
+                <table class="table table-bordered table-striped" id="table-data">
+                    <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Alamat</th>
+                        <th width="15%">Tanggal Daftar</th>
+                        <th width="10%">action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                {% if count == 0 %}
+                <a href="/ukpbj/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new DataTable("#table-data", {
+        ajax: '/ukpbj/data',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "nama", render : function(data, type, row){
+                    return '<a href="/ukpbj/'+row["ID"]+'">'+data+'</a>'
+                }
+            },
+            {data : "alamat"},
+            {data : "tgl_daftar", render: function(data, type, row){
+                    if(type === "sort" || type === "type"){
+                        return data;
+                    }
+                    return moment(data).format("MM-DD-YYYY");
+                }
+            },
+            {data : "ID", render : function (data, type, row){
+                    return '<a href="/ukpbj/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>&nbsp;' +
+                        '<a href="/ukpbj/hapus/'+data+'"><span style="width: 16px;" data-feather="trash"></span></a>'
+                }
+            },
+        ],
+        aaSorting: [[0, 'desc']],
+        drawCallback: function( settings ) {
+            feather.replace();
+        }
+    });
+</script>
+{% endblock %}

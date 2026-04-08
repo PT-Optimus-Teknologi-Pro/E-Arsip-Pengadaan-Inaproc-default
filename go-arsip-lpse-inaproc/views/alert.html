@@ -1,0 +1,6 @@
+{% if error == 'true' %}
+<div class="alert alert-danger"><span style="width: 16px;" data-feather="alert-circle"></span> {{ message }}</div>
+{% endif %}
+{% if success == 'true' %}
+<div class="alert alert-success"><span style="width: 16px;" data-feather="check-circle"></span> {{ message }}</div>
+{% endif %}

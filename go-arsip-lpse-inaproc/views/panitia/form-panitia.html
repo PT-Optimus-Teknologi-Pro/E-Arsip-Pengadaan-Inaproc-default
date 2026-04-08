@@ -1,0 +1,81 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Form Pokja
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Pokja</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/pokja">Daftar Pokja</a></li>
+            <li class="breadcrumb-item active">Edit</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            {% include "alert.html" %}
+            <form class="form-horizontal" action="{{ url }}" method="post">
+                {% if panitia.ID > 0 %}
+                <input type="hidden" name="ID" value="{{ panitia.ID }}">
+                {% endif %}
+                <div class="card-body">
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Nama Pokja</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="nama" class="form-control"  value="{{panitia.Nama}}"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Tahun</label>
+                        <div class="col-sm-9">
+                            <input type="hidden" name="tahun" value="{{ panitia.Tahun }}">
+                            <p class="form-control-plaintext">{{ panitia.Tahun }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Anggota</label>
+                        <div class="col-sm-9">
+                            <table class="table">
+                                <tr>
+                                <th></th>
+                                <th>Nama</th>
+                                <th>NIP</th>
+                                <th>User ID</th>
+                                </tr>
+                                {% for obj in anggotas %}
+                                <tr>
+                                    <td><input type="checkbox" name="anggota" value="{{ obj.ID }}" {%if panitia.IsAnggota(obj.ID) %} checked  {% endif %}></td>
+                                    <td>{{ obj.PegNama }}</td>
+                                    <td>{{ obj.PegNip }}</td>
+                                    <td>{{ obj.PegNamauser }}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <div class="col-sm-9">
+                        <button type="submit" class="btn btn-primary"><span style="width: 16px;" data-feather="save"></span> Submit</button>&nbsp;
+                        <a href="/pokja" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(".datepicker").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d",
+    });
+</script>
+{% endblock %}

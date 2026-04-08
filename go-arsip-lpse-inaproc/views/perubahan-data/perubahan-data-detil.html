@@ -1,0 +1,76 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Detil Pegawai
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Perubahan Data Akun</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/perubahan-data">Permohonan Perubahan Data Akun</a></li>
+            <li class="breadcrumb-item active">Detil</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            {% include "alert.html" %}
+            <form class="form-horizontal" action="/pegawai" method="post">
+                <div class="card-body">
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Nomor Surat</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ perubahan.Nomor }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Perihal</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ perubahan.Perihal }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Surat Permohonan Perubahan Data</label>
+                        <div class="col-sm-9">
+                           <p class="form-control-plaintext"><a href="/download/{{ perubahan.DokId }}"><span style="width: 16px;" data-feather="download"></span> {{ perubahan.Dokumen.Filename }}</a></p>
+                        </div>
+                    </div>
+                    {% if isUkpbj %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Status</label>
+                        <div class="col-sm-9">
+                         <p class="form-control-plaintext">{{ perubahan.StatusLabel }}</p>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        Harap Lakukan Update data di menu Pegawai terlebih dahulu sebelum melakukan update status permohoan
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="border-top">
+                    <div class="card-body">
+                        {%if isAdmin %}
+                        <a href="/perubahan-data/edit/{{perubahan.ID}}" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span> Edit</a>
+                        {% endif %}
+                        <a href="/perubahan-data" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    $(".datepicker").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d",
+    });
+</script>
+{% endblock %}

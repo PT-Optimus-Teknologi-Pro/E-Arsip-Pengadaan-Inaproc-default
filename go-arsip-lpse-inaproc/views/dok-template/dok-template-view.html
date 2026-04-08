@@ -1,0 +1,71 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Detil Dokumen Templates
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Dokumen Template</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/doc-template">Daftar Dokumen Template</a></li>
+            <li class="breadcrumb-item active">Detil</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+                <div class="card-body">
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Jenis</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ doktemplate.Jenis }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Periode</label>
+                        <div class="col-sm-5">
+                            <p class="form-control-plaintext">{% if !doktemplate.PeriodeAwal.IsZero %} {{ formatDate(doktemplate.PeriodeAwal) }} s/d {{ formatDate(doktemplate.PeriodeAkhir) }} {% endif %}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Template</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">
+                            {% if file != null %}
+                            <a href="/download/{{ file.ID }}"> {{ file.Filename }}</a>
+                            {% else %}
+                            Tidak ada file
+                            {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Keterangan</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ doktemplate.Keterangan }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <div class="col-sm-9">
+                            <a href="/doc-template/edit/{{doktemplate.ID}}" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span>&nbsp;Edit</a>&nbsp;&nbsp;
+                            <a href="/doc-template" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(".datepicker").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d",
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Daftar Template
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Template</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/templates">Daftar Template</a></li>
+            <li class="breadcrumb-item active">Detil</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-lg-12 pt-2">
+        <div class="card">
+                {% include "alert.html" %}
+                <div class="card-body">
+                    <div class="basic-form">
+                          <div class="form-group mb-3 row">
+                              <label class="col-sm-2  text-end control-label col-form-label">Nama</label>
+                              <div class="col-sm-9">
+                                  <p class="form-control-plaintext">{{ templates.Nama }}</p>
+                              </div>
+                          </div>
+                          <div class="form-group mb-3 row">
+                              <label class="col-sm-2  text-end control-label col-form-label">Periode</label>
+                              <div class="col-sm-5">
+                                  <p class="form-control-plaintext">{% if !templates.PeriodeAwal.IsZero  %} {{ formatDate(templates.PeriodeAwal) }} s/d {{ formatDate(templates.PeriodeAkhir) }} {% endif %}</p>
+                              </div>
+                          </div>
+                          <div class="form-group mb-3 row">
+                              <label class="col-sm-2  text-end control-label col-form-label">Variable</label>
+                              <div class="col-sm-9">
+                                  <p class="form-control-plaintext">{{ templates.Variable }}</p>
+                              </div>
+                          </div>
+                          <div class="form-group mb-3 row">
+                              <label class="col-sm-2  text-end control-label col-form-label">Preview</label>
+                              <div class="col-sm-9">
+                                  <div class="form-control-plaintext" id="pdf">
+                                      {{ templates.Content }}
+                                  </div>
+                                  <button type="submit" id="btnPrint" class="btn btn-success"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Cetak</button>
+                                  <a class="btn btn-info" href="/templates/preview/{{templates.ID}}" target="_blank">preview</a>
+                              </div>
+                          </div>
+                        <div class="form-group mb-3 row">
+                            <div class="col-sm-9">
+                            <a href="/templates/edit/{{templates.ID}}" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span>&nbsp;Edit</a>&nbsp;&nbsp;
+                            <a href="/templates" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                            </div>
+                        </div>
+                    </div>
+               </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript">
+        $("#btnPrint").on("click", function () {
+            // var content = document.getElementById('pdf').innerHTML;
+            $.get("/templates/preview/{{templates.ID}}", function( content ) {
+                // console.log(content);
+                // html2pdf(content);
+                const converted = htmlToPdfmake(content);
+                const docDefinition = { content: converted,  };
+                pdfMake.createPdf(docDefinition).download('document.pdf');
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,27 @@
+ <ul class="nav nav-tabs" role="tablist">
+     <li class="nav-item">
+         <a class="nav-link {%if StartWith(path, '/paket/') %} active {% endif %}" href="/paket/{{ paket.ID }}">Informasi Paket</a>
+     </li>
+     {% if !paket.IsDraft and !paket.IsPengajuan %}
+     {% if !paket.IsOnlyPpk %}
+     <li class="nav-item">
+         <a class="nav-link {%if StartWith(path, '/kajiulang/') %} active {% endif %}" href="/kajiulang/{{ paket.ID }}">Kaji Ulang</a>
+     </li>
+     <li class="nav-item">
+         <a class="nav-link {%if StartWith(path, '/dok-final/') %} active {% endif %}" href="/dok-final/{{ paket.ID }}">Dokumen Final</a>
+     </li>
+     <li class="nav-item">
+         <a class="nav-link {%if StartWith(path, '/pengadaan/') %} active {% endif %}" href="/pengadaan/{{ paket.ID }}">Proses Pengadaan</a>
+     </li>
+     {% endif %}
+     <li class="nav-item">
+         <a class="nav-link {%if StartWith(path, '/hasil/') %} active {% endif %}" href="/hasil/{{ paket.ID }}">Hasil Pengadaan</a>
+     </li>
+     <li class="nav-item">
+         <a class="nav-link {%if StartWith(path, '/kontrak/') %} active {% endif %}" href="/kontrak/{{ paket.ID }}">Kontrak</a>
+     </li>
+     <li class="nav-item">
+         <a class="nav-link {%if StartWith(path, '/hasil-pekerjaan/') %} active {% endif %}" href="/hasil-pekerjaan/{{ paket.ID }}">Hasil Pekerjaan</a>
+     </li>
+     {% endif %}
+ </ul>

@@ -1,0 +1,30 @@
+{% extends "border.html" %} {% block pagetitle %} Form Registrasi {% endblock %}
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Form Registrasi</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Login</a></li>
+            <li class="breadcrumb-item active">Form Registrasi</li>
+        </ol>
+    </div>
+</div>
+<div class="col-12 pt-2">
+    <div class="card">
+        <div class="card-body">
+            {% include "alert.html" %}
+            <p>
+                Anda sudah menyelesaikan Tahapan pembuatan akun. Silahkan login
+                menggunkan User ID Anda untuk melihat status permohonan akun
+                anda
+            </p>
+            <p>
+                Untuk Login silahkan
+                <a href="/login" class="btn-success">klik disini</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

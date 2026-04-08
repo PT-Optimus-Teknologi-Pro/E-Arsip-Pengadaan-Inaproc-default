@@ -1,0 +1,60 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Daftar Dokumen
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Dokumen</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Daftar Dokumen</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-bordered table-striped" id="table-data">
+                    <thead>
+                    <tr>
+                        <th width="10%">ID</th>
+                        <th>Nama Dokumen</th>
+                        <th>Ukuran</th>
+                        <th width="15%">Tanggal</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new DataTable("#table-data", {
+        ajax: '/document/data',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "ID"},
+            {data : "filename"},
+            {data : "filesize"},
+            {data : "filedate", render: function(data, type, row){
+                    if(type === "sort" || type === "type"){
+                        return data;
+                    }
+                    return moment(data).format("MM-DD-YYYY h:mm");
+                }
+            },
+        ],
+        aaSorting: [[0, 'desc']]
+    });
+</script>
+{% endblock %}

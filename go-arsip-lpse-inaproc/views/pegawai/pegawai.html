@@ -1,0 +1,66 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Daftar Pegawai
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Pegawai</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Daftar Pegawai</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                {% include "alert.html" %}
+                <table class="table table-bordered table-striped" id="table-data">
+                </table>
+                {%if isAdmin %}
+                <a href="/pegawai/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
+                {%endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        new DataTable("#table-data", {
+            ajax: '/pegawai/data',
+            processing: true,
+            serverSide: true,
+            columns: [
+                {data : "peg_nama", title: 'Nama', width : '15%', render : function(data, type, row){
+                        return '<a href="/pegawai/'+row["ID"]+'">'+data+'</a>'
+                    }
+                },
+                {data : "peg_nip", title: 'NIP', width : '15%'},
+                {data : "peg_email", title: 'Email', width : '15%'},
+                {data : "peg_namauser", title: 'User ID', width : '15%'},
+                {data : "usrgroup", title: 'Role', width : '15%'},
+                {%if isAdmin or isUkpbj %}
+                {data : "ID", title: "action", width : '5%',  render: function(data, type, row){
+                        {%if isAdmin %}
+                        return '<a href="/pegawai/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>&nbsp;' +
+                            '<a href="/pegawai/hapus/'+data+'"><span style="width: 16px;" data-feather="trash"></span></a>';
+                        {%elif isUkpbj %}
+                        return '<a href="/pegawai/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>';
+                        {% endif %}
+                    }
+                },
+                {% endif %}
+            ],
+            aaSorting: [[0, 'desc']],
+            drawCallback: function( settings ) {
+                feather.replace();
+            }
+        });
+    </script>
+{% endblock %}

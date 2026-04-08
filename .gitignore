@@ -1,0 +1,8 @@
+.env
+*.log
+.idea
+/tmp
+go-arsip-lpse-inaproc/fileupload
+go-arsip-lpse-inaproc/theme
+sync-inaproc-main-scheduller/fileupload
+sync-inaproc-main-scheduller/theme

@@ -1,0 +1,175 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Detil Verifikasi
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Verifikasi</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/verifikasi">Verifikasi</a></li>
+            <li class="breadcrumb-item active">Detil</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 pt-2">
+        <div class="card">
+            {% include "alert.html" %}
+            <form class="form-horizontal" action="/verifikasi/{{ pegawai.ID }}" method="post">
+                <div class="card-body">
+                    <div class="col">
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2 text-end control-label col-form-label">Pengangkatan Menjadi</label>
+                            <div class="col-sm-5">
+                                <p class="form-control-plaintext">{{ pegawai.RoleLabel }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Nama Pegawai</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.PegNama }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">NIK</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.PegNik }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">NIP/NRP</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.PegNip }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">User ID</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.PegNamauser }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Alamat</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.PegAlamat }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Telepon</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.PegTelepon }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Email</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.PegEmail }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Pangkat</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.PegPangkat }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Jabatan</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-plaintext">{{ pegawai.PegJabatan }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Golongan</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.PegGolongan }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Status</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{%if pegawai.PegIsActive == 1 %} Aktif {% else %} Non Aktif {% endif %}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Nomor SK</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.PegNoSk }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Masa Berlaku SK</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.GetMasaBerlaku }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Status Verifikasi</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.GetStatusVerifikasi }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Dibuat Tanggal</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ pegawai.GetTglBuat }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if isAdmin %}
+                <div class="border-top">
+                    {% for obj in documents %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">{{ obj.Label }}</label>
+                        <div class="col-sm-9">
+                            {% if obj.Jenis == "TTD" %}
+                            <p class="form-control-plaintext"><img src="/preview/image/{{ obj.ID }}" width="200"/></p>
+                            {% else %}
+                            <p class="form-control-plaintext"><a href="/download/{{ obj.ID }}"> <span style="width: 16px;" data-feather="download"></span> {{ obj.Filename }}</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="border-top">
+                    <div class="card-body">
+                        {% if group == "UKPBJ" %}
+                        <button type="submit" class="btn btn-primary " name="action" value="approve">
+                            <span style="width: 16px;" data-feather="save"></span> Approve
+                        </button>
+                        <button type="submit" class="btn btn-danger " name="action" value="reject">
+                            <span style="width: 16px;" data-feather="save"></span> Rejected
+                        </button>
+                        {% elif isAdminAgency %}
+                        <button type="submit" class="btn btn-primary " name="action" value="approve">
+                            <span style="width: 16px;" data-feather="save"></span> Approve & Akun SPSE sudah dibuatkan
+                        </button>
+                        {% endif %}
+
+                        <a href="/verifikasi" class="btn btn-secondary  text-white"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    $(".datepicker").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d",
+    });
+</script>
+{% endblock %}

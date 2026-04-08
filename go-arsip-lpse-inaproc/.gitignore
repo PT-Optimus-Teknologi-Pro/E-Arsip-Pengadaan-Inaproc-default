@@ -1,0 +1,10 @@
+
+/.idea
+/tmp
+public/.DS_Store
+public/assets/.DS_Store
+.DS_Store
+/fileupload
+/theme
+.env
+*.log

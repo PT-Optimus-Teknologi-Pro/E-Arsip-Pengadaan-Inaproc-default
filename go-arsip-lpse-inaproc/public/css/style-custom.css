@@ -1,0 +1,135 @@
+body {
+    color: #575962;
+    background: #f9fbfd;
+}
+
+.page-title {
+    color: #444444;
+}
+
+.metismenu a {
+    color: white !important;
+}
+.metismenu a:hover {
+    color: white !important;
+}
+
+.nav-label {
+    color: #575962;
+}
+
+.table , .form-control, .form-control-plaintext, .bootstrap-select>select,
+    .bootstrap-select .dropdown-toggle .filter-option-inner-inner {
+    color: #555;
+}
+
+.btn-default {
+    background: #282a3c !important;
+    color: #ffffff !important; }
+.btn-default:hover, .btn-default:focus, .btn-default:disabled {
+    background: #282a3c !important;
+    color: #ffffff !important;
+}
+
+.btn-primary {
+    background: #177dff !important;
+    border-color: #177dff !important; }
+.btn-primary:hover, .btn-primary:focus, .btn-primary:disabled {
+    background: #177dff !important;
+    border-color: #177dff !important; }
+
+.btn-secondary {
+    background: #716aca !important;
+    border-color: #716aca !important;
+    color: white !important;
+}
+.btn-secondary:hover, .btn-secondary:focus, .btn-secondary:disabled {
+    background: #716aca !important;
+    border-color: #716aca !important;
+    color: white !important;
+}
+
+.btn-info {
+    background: #36a3f7 !important;
+    border-color: #36a3f7 !important;
+    color: white !important;
+}
+.btn-info:hover, .btn-info:focus, .btn-info:disabled {
+    background: #36a3f7 !important;
+    border-color: #36a3f7 !important;
+    color: white !important;
+}
+
+.btn-success {
+    background: #35cd3a !important;
+    border-color: #35cd3a !important;
+    color: white !important;
+}
+.btn-success:hover, .btn-success:focus, .btn-success:disabled {
+    background: #35cd3a !important;
+    border-color: #35cd3a !important;
+    color: white !important;
+}
+
+.btn-warning {
+    background: #ffa534 !important;
+    border-color: #ffa534 !important;
+    color: #ffffff !important;
+}
+
+.btn-warning:hover, .btn-warning:focus, .btn-warning:disabled {
+    background: #ffa534 !important;
+    border-color: #ffa534 !important;
+    color: #ffffff !important;
+}
+
+.btn-danger {
+    background: #f3545d !important;
+    border-color: #f3545d !important;
+}
+
+.btn-danger:hover, .btn-danger:focus, .btn-danger:disabled {
+    background: #f3545d !important;
+    border-color: #f3545d !important;
+}
+
+.btn-light {
+    background: #ffffff !important;
+    border-color: transparent;
+}
+.btn-light:hover, .btn-light:focus, .btn-light:disabled {
+    background: #ebecec !important;
+    border-color: transparent;
+}
+.btn-dropdown-card-header {
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 15px;
+}
+.btn-dropdown-card-header:after {
+    display: none;
+}
+
+.bootstrap-select .btn-light {
+    color: black;
+}
+
+.table a {
+    color: #0a0a4e;
+}
+.table a:hover {
+    color: #0a0a4e;
+}
+
+.card-header {
+  padding:.75rem 1.25rem;
+  margin-bottom: 0;
+  background-color: rgba(0,0,0,.03);
+  border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.card-border {
+    border:1px solid rgba(0,0,0,.125);
+    border-radius:.25rem;
+}

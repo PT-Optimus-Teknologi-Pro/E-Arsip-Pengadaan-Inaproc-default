@@ -1,0 +1,70 @@
+{% extends "border-preview.html" %}
+
+{% block pagetitle %}
+Berita Acara Negosiasi
+{% endblock %}
+
+{% block content %}
+<h4 class="text-center">{{ berita_acara.Judul }} Teknis dan Harga/Biaya </h4>
+<h4 class="text-center" style="text-transform: uppercase!important;">{{ lelang.pkt_nama }}</h4>
+<p class="text-center">Nomor : {{ berita_acara.brt_no }}</p><br/>
+{% if !aution %}
+<p>Pada hari ini {{ berita_acara.Hari }} tanggal {{ formatDate(berita_acara.brt_tgl_evaluasi) }}
+ telah dibuat {{ berita_acara.Judul }} Teknis dan Harga/Biaya  bertempat di {{ berita_acara.brt_tempat }},
+ terhadap {{ pesertaprint }}  untuk paket  pekerjaan :
+</p>
+{% endif %}
+
+<table  border="0" valign="top" >
+<tr>
+    <td width="100">Kode Tender</td><td> : </td><td> ${lelang.lls_id}</td>
+</tr>
+<tr align="top">
+    <td valign="top">Nama Tender</td><td valign="top"> : </td><td valign="top"> ${lelang.pkt_nama}</td>
+</tr>
+</table>
+<br><br>
+<ol type="1." style="font-weight: bold;padding-left: 1.2em;">
+	@if(!lelang.isAuction())
+    <li>Hasil dari Negosiasi Teknis sebagai berikut:
+        <p style="font-weight: normal;">@if(!isEmpty(berita_acara.brt_info)) ${berita_acara.brt_info} @else Tidak ada negosiasi teknis @endif</p>
+    </li>
+    @endif
+    <li>
+        Hasil Negosiasi Biaya sebagai berikut:<br/>
+        @for(var akhir_detail : pesertaHargaSorted)
+        !{Peserta p = Peserta.findBy(akhir_detail.psr_id);}
+            @template.lelang.nama-peserta-kso(peserta = p)
+            <ol type="1" style="font-weight: normal;">
+                <li>
+                    Nilai Total HPS: <i>${StringFormat.rupiah(lelang.pkt_hps)}</i>
+                </li>
+                <li>
+                    Nilai Penawaran: <i>${StringFormat.rupiah(akhir_detail.psr_harga)} (${StringFormat.calculatePrecentage(akhir_detail.psr_harga, lelang.pkt_hps)} %)</i>
+                </li>
+                <li>
+                    Nilai Penawaran Terkoreksi: <i>${StringFormat.rupiah(akhir_detail.nev_harga_terkoreksi)} (${StringFormat.calculatePrecentage(akhir_detail.nev_harga_terkoreksi,lelang.pkt_hps)} %)</i>
+                </li>
+                <li>
+                    Nilai Negosiasi Biaya:
+                    @if(akhir_detail.nev_harga_negosiasi != null)
+                        <i>${StringFormat.rupiah(akhir_detail.nev_harga_negosiasi)} (${StringFormat.calculatePrecentage(akhir_detail.nev_harga_negosiasi, lelang.pkt_hps)} %)</i>
+                    @else
+                        <i>${StringFormat.rupiah(akhir_detail.nev_harga_terkoreksi)} (${StringFormat.calculatePrecentage(akhir_detail.nev_harga_terkoreksi, lelang.pkt_hps)} %)</i>
+                    @endif
+                </li>
+            </ol>
+        @endfor
+    </li>
+</ol>
+<br /> <br />
+<p>Demikian Berita Acara ini dibuat dan ditandatangani pada Hari, Tanggal dan Bulan sebagaimana tersebut di atas untuk dipergunakan sebagaimana mestinya.</p><br/>
+
+<table><tr><td width="70%"></td>
+    <td width="30%" style="text-align:center">
+        ${instansi} <br/><br/><br/>
+        ttd,<br/><br/><br/>
+        ${pnt_nama}
+    </td>
+</tr></table>
+{% endblock %}

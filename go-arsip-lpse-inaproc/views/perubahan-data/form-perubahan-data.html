@@ -1,0 +1,84 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Form Permohonan Perubahan Data Akun
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Permohonan Perubahan Data Akun</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/perubahan-data">Permohonan Perubahan Data Akun</a></li>
+            <li class="breadcrumb-item active">Edit</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            {% include "alert.html" %}
+            <form class="form-horizontal" action="{{ url }}" method="post"  enctype="multipart/form-data">
+                {% if perubahan.ID > 0 %}
+                <input type="hidden" name="ID" value="{{ perubahan.ID }}">
+                {% endif %}
+                <div class="card-body">
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Nomor Surat</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="nomor" class="form-control"  value="{{perubahan.Nomor}}"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Perihal</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="perihal" class="form-control"  value="{{perubahan.Perihal}}"/>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Surat Permohonan Perubahan Data</label>
+                        <div class="col-sm-9">
+                            <input type="file" name="file" class="form-control" {% if perubahan.DokId == 0 %} required {% endif %}/>
+                            {% if perubahan.DokId > 0 %}
+                            <ul class="list-group pt-3">
+                                <li class="list-group-item">
+                                    <a href="/download/{{ perubahan.DokId }}"><span style="width: 16px;" data-feather="download"></span> {{ perubahan.Dokumen.Filename }}</a>
+                                </li>
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if isAdmin %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Status</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="status">
+                                <option value ="0" {% if perubahan.Status == 0 %} selected {% endif %}>Draft</option>
+                                <option value ="1" {% if perubahan.Status == 1 %} selected {% endif %}>Proses</option>
+                                <option value ="2" {% if perubahan.Status == 2 %} selected {% endif %}>Selesai</option>
+                            </select>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="border-top">
+                        <div class="card-body">
+                            <button type="submit" class="btn btn-primary"><span style="width: 16px;" data-feather="save"></span> Submit</button>
+                            <a href="/perubahan-data" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    $(".datepicker").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d",
+    });
+</script>
+{% endblock %}

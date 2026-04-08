@@ -1,0 +1,61 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Detil Reviu
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Reviu</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/reviu">Daftar Reviu</a></li>
+            <li class="breadcrumb-item active">Detil</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-lg-12 pt-2">
+        <div class="card">
+                {% include "alert.html" %}
+                <div class="card-body">
+                    <div class="basic-form">
+                    <form>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Bidang</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ reviu.Bidang }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Content</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ reviu.Content  }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Opsi 1</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ reviu.Opsi1 }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row">
+                            <label class="col-sm-2  text-end control-label col-form-label">Opsi 2</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-plaintext">{{ reviu.Opsi2 }}</p>
+                            </div>
+                        </div>
+                    <div class="form-group mb-3 row">
+                        <div class="col-sm-9">
+                        <a href="/reviu/edit/{{reviu.ID}}" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span>&nbsp;Edit</a>&nbsp;&nbsp;
+                        <a href="/reviu" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        </div>
+                    </div>
+                      </form>
+                    </div>
+               </div>
+        </div>
+    </div>
+{% endblock %}

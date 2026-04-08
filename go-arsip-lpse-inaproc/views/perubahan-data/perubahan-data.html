@@ -1,0 +1,63 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Permohonan Perubahan Data Akun
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Permohonan Perubahan Data Akun</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Permohonan Perubahan Data Akun</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                {% include "alert.html" %}
+                <table class="table table-bordered table-striped" id="table-data">
+                </table>
+                {%if allow %}
+                <a href="/perubahan-data/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
+                {%endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        new DataTable("#table-data", {
+            ajax: '/perubahan-data/data',
+            processing: true,
+            serverSide: true,
+            columns: [
+                {data : "nomor", title: 'Surat Permohonan', width : '15%', render : function(data, type, row){
+                        return '<a href="/perubahan-data/'+row["ID"]+'">'+data+'</a>'
+                    }
+                },
+                {data : 'perihal', title : 'Perihal'},
+                {data : "created_at", title: 'Tanggal', width : '15%', render : function(data, type, row){
+                        return moment(data).format("MM-DD-YYYY");
+                    }
+                },
+                {data : "status", title: 'Status', width : '15%', render : function(data, type, row){
+                        return statusPerubahan(data);
+                    }
+                },
+                {data : "Pegawai", title : "Nama Pengirim", render : function(data, type, row){
+                        return data.peg_nama;
+                }}
+            ],
+            aaSorting: [[0, 'desc']],
+            drawCallback: function( settings ) {
+                feather.replace();
+            }
+        });
+    </script>
+{% endblock %}

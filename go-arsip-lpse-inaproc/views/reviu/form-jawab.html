@@ -1,0 +1,22 @@
+<form action="/kajiulang/penjelasan/{{ data.ID }}" method="post" enctype="multipart/form-data">
+    <div class="form-group mb-3 row">
+        <label class="col-sm-2  text-end control-label col-form-label">Pertanyaan</label>
+        <div class="col-sm-9">
+            <p class="form-control-plaintext">{{ data.Uraian }}</p>
+        </div>
+    </div>
+    <div class="form-group mb-3 row">
+        <label class="col-sm-2  text-end control-label col-form-label">Jawaban</label>
+        <div class="col-sm-9">
+            <textarea class="form-control" name="uraian"></textarea>
+        </div>
+    </div>
+    <div class="form-group mb-3 row">
+        <label class="col-sm-2  text-end control-label col-form-label">Dokumen</label>
+        <div class="col-sm-9">
+            <input type="file" class="form-control" name="dok_id">
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">Simpan</button>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</form>

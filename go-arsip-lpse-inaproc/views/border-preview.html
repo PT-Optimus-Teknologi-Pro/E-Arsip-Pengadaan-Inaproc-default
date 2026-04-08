@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>e-Arsip Pengadaan - {% block pagetitle %} {% endblock %}</title>
+  <link rel="stylesheet"  href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap4.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/ui/trumbowyg.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+  <link rel="stylesheet" href="https://preview.tabler.io/dist/libs/star-rating.js/dist/star-rating.min.css" />
+  {% block css %}
+  {% endblock %}
+  <style>
+  body {
+      background-color: #fff;
+  }
+  hr {
+      border: 0;
+      height: 5px;
+      background-color: black; /* For modern browsers */
+      border-color: black; /* For older browsers/email clients */
+  }
+  </style>
+</head>
+
+<body>
+    <div class="page">
+      <div class="page-wrapper">
+        <div class="page-body">
+          <div class="container-xl">
+              <table class="table-borderless">
+                  <tr>
+                      <td width="40%" class="text-end">
+                           <img src="/images/logo-instansi.jpeg" width="150" />
+                      </td>
+                      <td>
+                          <h1>PEMERINTAH KOTA BANJARMASIN
+                          <br />S E K R E T A R I A T D A E R A H</h1>
+                          <h3>J . RE. Martadinata No.1 Banjarmasin 70111  (0511) 4368142 4368145
+                            <br />  Fax. 3353933 http://www.banjarmasinkota.go.id/</h3>
+                      </td>
+                  </tr>
+              </table>
+              <hr />
+              {% block content %}{% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/pdfmake.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/vfs_fonts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html-to-pdfmake/browser.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/trumbowyg.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/plugins/indent/trumbowyg.indent.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-mask-plugin@1.14.16/dist/jquery.mask.min.js"></script>
+    <script src="https://preview.tabler.io/dist/libs/star-rating.js/dist/star-rating.min.js"></script>
+    <script src="/js/app.js"></script>
+    {% block script %}
+    {% endblock %}
+</body>
+</html>

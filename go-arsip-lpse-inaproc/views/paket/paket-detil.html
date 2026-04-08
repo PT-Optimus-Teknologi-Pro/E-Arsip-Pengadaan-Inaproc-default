@@ -1,0 +1,307 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Detil Paket</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/paket">Daftar Paket</a></li>
+            <li class="breadcrumb-item active">Detil Paket</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-lg-12 pt-2">
+        {% include "tabmenu.html" %}
+        <div class="card tab-content">
+                {% include "alert.html" %}
+                <div class="card-body">
+                    <div class="basic-form">
+                     <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Kode Paket</label>
+                         <div class="col-sm-4">
+                              <p class="form-control-plaintext">{{ paket.ID }}</p>
+                         </div>
+                         <label class="col-sm-2  text-end control-label col-form-label">Kode RUP</label>
+                         <div class="col-sm-4">
+                             <p class="form-control-plaintext">{{ paket.RupId }}</p>
+                         </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Nama </label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ paket.Nama }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Jenis Pengadaan </label>
+                        <div class="col-sm-4">
+                            <p class="form-control-plaintext">{{ paket.Jenis }}</p>
+                        </div>
+                        <label class="col-sm-2  text-end control-label col-form-label">Metode Pengadaan </label>
+                        <div class="col-sm-4">
+                            <p class="form-control-plaintext">{{ paket.MetodePengadaan }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Pagu</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-plaintext">{{ rupiah(paket.Pagu) }}</p>
+                        </div>
+                        <label class="col-sm-2  text-end control-label col-form-label">HPS</label>
+                        <div class="col-sm-4">
+                            {% if isPPK and paket.Status < 2 %}
+                            <form method="post" action="/paket/hps/{{ paket.ID }}">
+                            <div class="input-group">
+                             <span class="input-group-text">Rp</span>
+                             <input type="text" name="Hps" {% if paket.Hps > 0 %} value="{{ number(paket.Hps) }}" {% endif %} class="form-control rupiah" />
+                             <button type="submit" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span> Simpan HPS</button>
+                            </div>
+                            </form>
+                            {% else %}
+                            <p class="form-control-plaintext">{{ rupiah(paket.Hps) }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Status</label>
+                        <div class="col-sm-4">
+                            <p class="form-control-plaintext"><span class="badge bg-blue text-blue-fg">{{ paket.StatusLabel }}</span></p>
+                        </div>
+                        <label class="col-sm-2  text-end control-label col-form-label">Anggaran</label>
+                        <div class="col-sm-4">
+                             <p class="form-control-plaintext">{{ anggaran }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">PPK</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ paket.Ppk.PegNama }}
+                            {% if isPokja or isPP %}
+                            <a href="#" class="badge bg-blue text-blue-fg" data-bs-toggle="modal" data-bs-target="#pilih-ppk">
+                               {%if paket.PpkId > 0 %} Ganti PPK {% endif %}
+                            </a>
+                            {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Satker</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ paket.Satker.Nama }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Persyaratan Dokumen</label>
+                        <div class="col-sm-9">
+                            {% include "paket/checklist.html" %}
+                        </div>
+                    </div>
+                    {% if !paket.IsDraft %}
+                    {%if paket.IsPaketPokja %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Tanggal Pengajuan</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ paket.TglAssignUkpbj.Format() }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Tanggal Persetujuan</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ paket.TglDisetujui.Format() }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                     {% if !paket.IsDraft and !paket.IsPengajuan %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Paket Prioritas</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{% if paket.Prioritas %} Ya {% else %} Tidak {% endif %}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    {% if !prosesOnlyPpk and paket.IsPaketPp %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Pejabat Pengadaan</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ paket.Pp.PegNamauser }} - {{ paket.Pp.PegNama }} &nbsp;&nbsp;
+                            {% if isPPK %}
+                            <a href="#" class="badge bg-blue text-blue-fg" data-bs-toggle="modal" data-bs-target="#pilih-pp">
+                               {%if paket.PpId > 0 %} Ganti PP {% else %} Pilih PP {% endif %}
+                            </a>
+                            {% endif %}
+                            </p>
+                             {% if paket.Pp.PegNamauser %}
+                            <p><a href="/preview/sk-pp/{{ paket.ID }}/print" target="_blank" class="badge bg-green text-green-fg">cetak Surat Penunjukan</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% elif paket.IsPaketPokja %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Pokja</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-plaintext">{{ paket.Pokja.Nama }} &nbsp;&nbsp;
+                                {% if isUkpbj %}
+                                <a href="#" class="badge bg-blue text-blue-fg" data-bs-toggle="modal" data-bs-target="#pilih-pokja">
+                                   {%if paket.PntId > 0 %} Ganti Pokja {% else %} Pilih Pokja {% endif %}
+                                </a>
+                                {% endif %}
+                            </p>
+                            {% if paket.Pokja.Nama %}
+                            <p><a href="/preview/sk-pokja/{{ paket.ID }}/print" target="_blank" class="badge bg-green text-green-fg">cetak Surat Penunjukan</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if !paket.IsDraft and isPPK %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Dokumen Pendukung</label>
+                        <div class="col-sm-9">
+                            {% include "paket/dok-pendukung.html" %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if isUkpbj and paket.Status == 1 %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Persetujuan</label>
+                        <div class="col-sm-9">
+                            <form method="post" action="/paket/approve/{{ paket.ID }}">
+                                <div class="form-group mb-3 row">
+                                    <label class="col-sm-2  text-end control-label col-form-label">Alasan (Jika Ditolak)</label>
+                                    <div class="col-sm-9">
+                                        <textarea name="alasan" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3 row">
+                                    <label class="col-sm-2  text-end control-label col-form-label">Paket Prioritas</label>
+                                    <div class="col-sm-9">
+                                        <div class="form-check form-check-inline">
+                                          <input type="radio" name="prioritas" class="form-check-input" value="true" {% if paket.Prioritas %} checked {% endif %}>
+                                          <label class="form-check-label">Ya</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                          <input type="radio" name="prioritas" class="form-check-input" value="false" {% if !paket.Prioritas %} checked {% endif %}>
+                                          <label class="form-check-label">Tidak</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            <button type="submit" name="approve" class="btn btn-success" value="true"><span style="width: 16px;" data-feather="send"></span>Setujui</button>
+                            <button type="submit" name="reject" class="btn btn-danger" value="true"><span style="width: 16px;" data-feather="send"></span>Tolak</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="form-group mb-3 row">
+                        <div class="col-sm-9">
+                        {% if isPPK and allowAjukan %}
+                        {% if paket.Metode != 8 and paket.Metode != 9 %}
+                        <form method="post" action="/paket/send-ukpbj/{{ paket.ID }}">
+                        <button type="submit" name="kirim" class="btn btn-primary"><span style="width: 16px;" data-feather="send"></span>Kirim ke UKPBJ</button>
+                        <a href="/paket" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        </form>
+                        {% elif paket.Metode == 8 or paket.Metode == 9 %}
+                        <form method="post" action="/paket/save/{{ paket.ID }}">
+                        <button type="submit" name="simpan" class="btn btn-primary"><span style="width: 16px;" data-feather="send"></span> Simpan </button>
+                        <a href="/paket" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        </form>
+                        {% endif %}
+                        {% else %}
+                        <a href="/paket" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        {% endif %}
+                        </div>
+                    </div>
+                    </div>
+               </div>
+        </div>
+    </div>
+    {% if isPPK %}
+    <div class="modal fade" id="pilih-pp" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="exampleModalLabel">Pilih PP</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form method="post" action="/paket/send-pp/{{ paket.ID }}">
+          <div class="modal-body">
+              <select name="pp_id" class="form-control">
+              {%for obj in pps %}
+              <option value="{{ obj.ID }}" {% if obj.ID == paket.PpId %} selected {% endif %}>{{ obj.PegNama }}</option>
+              {% endfor %}
+              </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success">Simpan</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+     {% if isUkpbj and paket.Status > 1 %}
+    <div class="modal fade" id="pilih-pokja" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="exampleModalLabel">Pilih Pokja</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+           <form method="post" action="/paket/send-pokja/{{ paket.ID }}">
+            <div class="modal-body">
+                <select name="pnt_id" class="form-control">
+                {%for obj in panitias %}
+                <option value="{{ obj.ID }}" {% if obj.ID == paket.PntId %} selected {% endif %}>{{ obj.Nama }}</option>
+                {% endfor %}
+                </select>
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success">Simpan</button>
+          </div>
+           </form>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% if isPokja or isPP %}
+    <div class="modal fade" id="pilih-ppk" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title" id="exampleModalLabel">Pilih PPK</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+           <form method="post" action="/paket/ganti-ppk/{{ paket.ID }}">
+            <div class="modal-body">
+                <select name="ppk_id" class="form-control">
+                {% for obj in ppks %}
+                <option value="{{ obj.ID }}" {% if obj.ID == paket.PpkId %} selected {% endif %}>{{ obj.PegNama }} - {{ obj.PegNamauser }}</option>
+                {% endfor %}
+                </select>
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success">Simpan</button>
+          </div>
+           </form>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+<script>
+ feather.replace();
+$(document).ready(function(){
+   $( '.rupiah' ).mask('000.000.000.000.000', {reverse: true});
+})
+</script>
+{% endblock %}

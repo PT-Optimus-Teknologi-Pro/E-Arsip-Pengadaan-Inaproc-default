@@ -1,0 +1,97 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Form Persyaratan
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Persyaratan</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/checklist">Daftar Persyaratan</a></li>
+            <li class="breadcrumb-item active">Edit</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            {% include "alert.html" %}
+            <form class="form-horizontal" action="{{ url }}" method="post">
+                {% if checklist.ID > 0 %}
+                <input type="hidden" name="ID" value="{{ checklist.ID }}">
+                {% endif %}
+                <div class="card-body">
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Jenis Pengadaan</label>
+                        <div class="col-sm-9">
+                            <select name="jenis" class="form-control">
+                                {% for obj in jenisPengadaan %}
+                                <option value="{{ forloop.Counter0 }}" {%if forloop.Counter0  == checklist.Jenis %} selected {%endif %}>{{ obj }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Metode Pengadaan</label>
+                        <div class="col-sm-9">
+                            <select name="metode" class="form-control">
+                                {% for obj in metodePengadaan %}
+                                <option value="{{ forloop.Counter0 }}" {%if forloop.Counter0  == checklist.Metode %} selected {%endif %}>{{ obj }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Periode</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                            <input type="text" name="periode_awal" class="form-control datepicker" value="{{ checklist.PeriodeAwal }}"/>
+                            <span class="input-group-text">s/d</span>
+                            <input type="text" name="periode_akhir" class="form-control datepicker" value="{{ checklist.PeriodeAkhir }}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Persyaratan</label>
+                        <div class="col-sm-9">
+                            <table class="table">
+                                <tr>
+                                    <th width="5%">&nbsp;</th>
+                                    <th>Dokumen</th>
+                                    <th>Template</th>
+                                </tr>
+                                {% for obj in templateList %}
+                                <tr>
+                                    <td><input type="checkbox" name="syarat" value="{{ obj.ID }}" {%if checklistDok != null && obj.IsInChecklist(checklistDok) %} checked="checked" {% endif %}  /></td>
+                                    <td>{{ obj.Jenis }}</td>
+                                    <td><a href="/download/{{ obj.Template.DokId }}"><span style="width: 16px;" data-feather="download"></span> Download template</a></td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <div class="col-sm-9">
+                        <button type="submit" class="btn btn-primary"><span style="width: 16px;" data-feather="save"></span> Submit</button>&nbsp;
+                        <a href="/checklist" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(".datepicker").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d",
+        defaultDate: "today",
+    });
+</script>
+{% endblock %}

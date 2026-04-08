@@ -1,0 +1,96 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Daftar Feedback
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Feedback</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Daftar Feedback</li>
+        </ol>
+    </div>
+</div>
+  <div class="pt-2">
+    {% for obj in summary %}
+        <div class="card pt-2 mb-3">
+             <div class="card-header">
+                 <h3 class="card-title">{{ obj.Label }}</h3>
+             </div>
+             <div class="card-body row">
+                 <div class="col">
+                     <div class="ms-auto mb-3"> Kualitas Layanan </div>
+                     <div class="row">
+                         <div class="col">
+                             <p>{{ rating(1) }}</p>
+                             <p>{{ rating(2) }}</p>
+                             <p>{{ rating(3) }}</p>
+                             <p>{{ rating(4) }}</p>
+                             <p>{{ rating(5) }}</p>
+                         </div>
+                         <div class="col">
+                             {% for o in obj.Kualitas %}
+                             <p>{{ o }}</p>
+                             {% endfor %}
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col">
+                     <div class="ms-auto mb-3"> Fasilitas Layanan </div>
+                     <div class="row">
+                         <div class="col">
+                             <p>{{ rating(1) }}</p>
+                             <p>{{ rating(2) }}</p>
+                             <p>{{ rating(3) }}</p>
+                             <p>{{ rating(4) }}</p>
+                             <p>{{ rating(5) }}</p>
+                         </div>
+                         <div class="col">
+                             {% for o in obj.Fasilitas %}
+                             <p>{{ o }}</p>
+                             {% endfor %}
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col">
+                     <div class="ms-auto mb-3">Kelengkapan Informasi</div>
+                     <div class="row">
+                         <div class="col">
+                             <p>{{ rating(1) }}</p>
+                             <p>{{ rating(2) }}</p>
+                             <p>{{ rating(3) }}</p>
+                             <p>{{ rating(4) }}</p>
+                             <p>{{ rating(5) }}</p>
+                         </div>
+                         <div class="col">
+                             {% for o in obj.Kelengkapan %}
+                             <p>{{ o }}</p>
+                             {% endfor %}
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+         {% endfor %}
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const rating = new StarRating("#rating-default", {
+    tooltip: false,
+    clearable: false,
+    stars: function (el, item, index) {
+      el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon gl-star-full icon-md"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>`;
+    },
+    classNames: {},
+  });
+});
+</script>
+{% endblock %}

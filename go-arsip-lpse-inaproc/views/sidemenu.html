@@ -1,0 +1,38 @@
+<ul class="nav flex-column">
+    {% if group %}
+    <li class="nav-item"><a href="/home" class="nav-link {% if path == "/home" %} active {% endif %}"><span style="width: 16px;" data-feather="home"></span> Dashboard</a></li>
+    {% if isAdmin %}
+<!--<li class="nav-item"><a href="/agency" class="navlink {% if path == "/agency" %} active {% endif %}"><span style="width: 16px;" data-feather="map"></span>Agency</a></li> -->
+    <li class="nav-item"><a href="/ukpbj" class="nav-link {% if path == "/ukpbj" %} active {% endif %}"><span style="width: 16px;" data-feather="map"></span><span class="nav-text">Ukpbj</span></a></li>
+    <li class="nav-item"><a href="/document" class="nav-link {% if path == "/document" %} active {% endif %}"><span style="width: 16px;" data-feather="file-text"></span><span class="nav-text">Dokumen</span></a></li>
+    <li class="nav-item"><a href="/doc-template" class="nav-link {% if path == "/doc-template" %} active {% endif %}"><span style="width: 16px;" data-feather="briefcase"></span><span class="nav-text">Dokumen Template</span></a></li>
+    <li class="nav-item"><a href="/checklist" class="nav-link {% if path == "/checklist" %} active {% endif %}"><span style="width: 16px;" data-feather="file-text"></span><span class="nav-text">Persyaratan</span></a></li>
+    <li class="nav-item"><a href="/reviu" class="nav-link {% if path == "/reviu" %} active {% endif %}"><span style="width: 16px;" data-feather="briefcase"></span><span class="nav-text">Reviu</span></a></li>
+    <li class="nav-item"><a href="/templates" class="nav-link {% if path == "/templates" %} active {% endif %}"><span style="width: 16px;" data-feather="align-left"></span><span class="nav-text">Template</span></a></li>
+    {% endif %}
+    {% if isAdmin or isUkpbj or isAdminAgency %}
+    <li class="nav-item"><a href="/pegawai" class="nav-link {% if path == "/pegawai" %} active {% endif %}"><span style="width: 16px;" data-feather="users"></span><span class="nav-text">Pegawai</span></a></li>
+    {% endif %}
+    {% if isUkpbj %}
+    <li class="nav-item"><a href="/verifikasi" class="nav-link {% if path == "/verifikasi" %} active {% endif %}"><span style="width: 16px;" data-feather="bookmark"></span><span class="nav-text">Permohonan</span></a></li>
+    <li class="nav-item"><a href="/perubahan-data" class="nav-link {% if path == "/perubahan-data" %} active {% endif %}"><span style="width: 16px;" data-feather="bookmark"></span><span class="nav-text">Perubahan Data</span></a></li>
+    <li class="nav-item"><a href="/pokja" class="nav-link {% if path == "/pokja" %} active {% endif %}"><span style="width: 16px;" data-feather="users"></span><span class="nav-text">Pokja</span></a></li>
+    <li class="nav-item"><a href="/paket" class="nav-link {% if path == "/paket" %} active {% endif %}"><span style="width: 16px;" data-feather="package"></span><span class="nav-text">Paket</span></a></li>
+    <li class="nav-item"><a href="/bukutamu/list" class="nav-link {% if path == "/bukutamu/list" %} active {% endif %}"><span style="width: 16px;" data-feather="book"></span><span class="nav-text">Buku</span></a></li>
+    <li class="nav-item"><a href="/feedback/list" class="nav-link {% if path == "/feedback/list" %} active {% endif %}"><span style="width: 16px;" data-feather="rss"></span><span class="nav-text">Feedback</span></a></li>
+    {% endif %}
+    {% if isPPK or isPokja or isPP %}
+    <li class="nav-item"><a href="/paket" class="nav-link {% if path == "/paket" %} active {% endif %}"><span style="width: 16px;" data-feather="package"></span>&nbsp;<span class="nav-text">Paket</span></a></li>
+    <li class="nav-item"><a href="/perubahan-data" class="nav-link {% if path == "/perubahan-data" %} active {% endif %}"><span style="width: 16px;" data-feather="user-minus"></span>&nbsp;<span class="nav-text">Perubahan Data</span></a></li>
+    <li class="nav-item"><a href="/inbox" class="nav-link {% if path == "/inbox" %} active {% endif %}"><span style="width: 16px;" data-feather="inbox"></span>&nbsp;<span class="nav-text">Inbox</span></a></li>
+    {% endif %}
+    {% else %}
+    <li class="nav-item"><a href="/" class="nav-link {% if path == "/" %} active {% endif %}"><span style="width: 16px;" data-feather="home"></span> Dashboard</a></li>
+    <li class="nav-item"><a href="/login" class="nav-link {% if path == "/login" %} active {% endif %}"><span style="width: 16px;" data-feather="lock"></span> Login</a></li>
+    <li class="nav-item"><a href="/register" class="nav-link {% if path == "/register" %} active {% endif %}"><span style="width: 16px;" data-feather="user-plus"></span> Registrasi Akun</a></li>
+    <li class="nav-item"><a href="/bukutamu" class="nav-link {% if path == "/bukutamu" %} active {% endif %}"><span style="width: 16px;" data-feather="file-plus"></span>Buku Tamu</a></li>
+    <li class="nav-item"><a href="/feedback" class="nav-link {% if path == "/feedback" %} active {% endif %}"><span style="width: 16px;" data-feather="rss"></span>Feedback</a></li>
+    {% endif %}
+</ul>
+</div>
+</nav>

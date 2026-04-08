@@ -1,0 +1,14 @@
+<table class="table">
+    <tr>
+        <th>Mak</th>
+        <th>Pagu</th>
+        <th>Sumber Dana</th>
+    </tr>
+    {% for obj in anggaran %}
+    <tr>
+        <td>{{ obj.Mak }}</td>
+        <td>{{ rupiah(obj.Pagu) }}</td>
+        <td>{{ obj.SumberDanaLabel }}</td>
+    </tr>
+    {% endfor %}
+</table>

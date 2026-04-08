@@ -1,0 +1,63 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Pilih Pokja
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Pilih Pokja</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/paket">Daftar Paket</a></li>
+            <li class="breadcrumb-item"><a href="/paket/{{ paketId }}">Detil Paket</a></li>
+            <li class="breadcrumb-item active">Pilih Pokja</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                {% include "alert.html" %}
+                <table class="table table-bordered table-striped" id="table-data">
+                    <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <ht>Anggota</ht>
+                        <th width="15%">Tahun</th>
+                        <th width="5%">action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new DataTable("#table-data", {
+        ajax: '/pokja/data',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "nama", render : function(data, type, row){
+                    return '<a href="/pokja/'+row["ID"]+'">'+data+'</a>'
+                }
+            },
+            {data : "Anggota"},
+            {data : "tahun"},
+            {data : "ID", render: function(data, type, row){
+                    return '<a class="btn btn-success" href="/paket/pilih-pokja-paket/'+data+'">Pilih</a>'
+                }
+            },
+        ],
+        aaSorting: [[0, 'desc']]
+    });
+</script>
+{% endblock %}

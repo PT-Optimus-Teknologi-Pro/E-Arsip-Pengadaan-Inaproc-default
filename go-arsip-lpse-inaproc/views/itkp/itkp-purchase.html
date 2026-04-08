@@ -1,0 +1,33 @@
+ <div class="form-group mb-3 row">
+     <label class="col-sm-2 col-form-label">Satuan Kerja</label>
+     <div class="col-sm-10">
+         <p class="form-control-plaintext">{{namaSatker}}</p>
+     </div>
+ </div>
+ <div class="form-group mb-3 row">
+     <label class="col-sm-2 col-form-label">Tahun Anggaran </label>
+     <div class="col-sm-10">
+        <p class="form-control-plaintext">{{tahun}}</p>
+     </div>
+ </div>
+ <table class="table" id="rekap-paket">
+      <thead>
+      <tr>
+          <th width="10%">Kode Paket</th>
+          <th>Nama Paket</th>
+          <th width="15%">Nomor Paket</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for obj in paket %}
+      <tr>
+          <td>{{ obj.KdPaket }}</td>
+          <td>{{ obj.NamaPaket }}</td>
+          <td>{{ obj.NoPaket }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+  </table>
+<script>
+  new DataTable("#rekap-paket");
+</script>

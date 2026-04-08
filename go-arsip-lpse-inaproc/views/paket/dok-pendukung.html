@@ -1,0 +1,34 @@
+ {% if isPPK %}
+ <form method="post" action="/paket/dok-pendukung/{{ paket.ID }}" enctype="multipart/form-data">
+     <div class="input-group mt-2">
+         <input type="file" name="file" class="form-control">
+         <button type="submit" class="btn btn-success">Simpan</button>
+     </div>
+ </form>
+  {% endif %}
+  <table class="table mt-2" style="width: 70%;">
+      <thead>
+      <tr>
+          <th>Filename</th>
+          <th width="5%">
+              {%if paket.DokPendukungList[0] != null %}
+              <a href="/paket/dok-pendukung/{{ paket.ID }}/download" title="Download All">
+              <i style="width: 16px;" data-feather="download"></i></a>
+              {% endif %}
+          </th>
+      </tr>
+      </thead>
+      <tbody>
+     {% for obj in paket.DokPendukungList %}
+     <tr>
+         <td><a href="/download/{{ obj.Document.ID }}">{{ obj.Document.Filename }}</a></td>
+         <td width="5%">
+             {% if isPokja or isPP %}
+             <a href="/paket/dok-paket/{{obj.ID}}/hapus" title="Hapus file" onclick="return confirm('apakah anda ingin menghapus file?')">
+             <span style="width: 16px;" data-feather="trash-2" style="width: 16px;"></span>
+         </a> {% endif %}
+         </td>
+     </tr>
+     {% endfor %}
+      </tbody>
+ </table>

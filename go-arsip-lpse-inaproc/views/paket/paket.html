@@ -1,0 +1,103 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Daftar Paket
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Paket</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Daftar Paket</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                {% include "alert.html" %}
+                <table class="table table-bordered table-striped" id="table-data">
+                    <thead>
+                    <tr>
+                        <th width="5%">ID</th>
+                        <th>Nama</th>
+                        <th width="12%">Pagu</th>
+                        <th width="12%">HPS</th>
+                        <th width="15%">Metode</th>
+                        <th width="10%">Tanggal buat</th>
+                        <th width="5%">Status</th>
+                        {% if isPPK %}
+                        <th width="5%">action</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                {% if allowBuatPaket %}
+                <a href="/paket/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new DataTable("#table-data", {
+        ajax: '/paket/data',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "ID"},
+            {data : "nama", render : function(data, type, row){
+                    return '<a href="/paket/'+row["ID"]+'">'+data+'</a>'
+                }
+            },
+            {data : "pagu", render : function(data, type, row){
+                  return `Rp ${data.toLocaleString("id-ID")}`;
+              }
+            },
+            {data : "hps", render : function(data, type, row){
+                  return `Rp ${data.toLocaleString("id-ID")}`;
+              }
+            },
+            {data : "metode", render : function(data, type, row){
+                  return metode(data);
+              }
+            },
+            {data : "CreatedAt", render: function(data, type, row){
+                    if(type === "sort" || type === "type"){
+                        return data;
+                    }
+                    return moment(data).format("MM-DD-YYYY");
+                }
+            },
+            {data : "status",render : function(data, type, row){
+                  return statusPaket(data)
+              }
+            },
+            {data : "created_by", render: function(data, type, row){
+                    {% if isPPK %}
+                    if(row["status"] < 2) {
+                      return '<a href="/paket/hapus/'+row["ID"]+'"><span style="width: 16px;" data-feather="trash"></span></a>'
+                    }
+                    {% endif %}
+                    if(row["status"] > 2) {
+                      return '<a href="/download-all/'+row["ID"]+'"><span style="width: 16px;" data-feather="download"></span></a>'
+                    }
+                    return "";
+                }
+            },
+        ],
+        aaSorting: [[0, 'desc']],
+        drawCallback: function( settings ) {
+            feather.replace();
+        }
+    });
+</script>
+{% endblock %}

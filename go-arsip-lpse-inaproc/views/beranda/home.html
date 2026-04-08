@@ -1,0 +1,275 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <h2 class="page-title">Dashboard</h2>
+    </div>
+    <div class="col-auto">
+        <form class="form-inline form-group mb-3 row">
+            <div class="input-group">
+                <div class="input-group-text">Tahun Anggaran</div>
+                <select class="form-control" name="tahun" onchange="this.form.submit()">
+                    <option value="">pilih tahun</option>
+                    {% for obj in tahunlist %}
+                    <option value="{{obj}}" {%if obj == tahun  %} selected {% endif %}>{{obj}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">Progress RUP</h6>
+               <table class="table" id="table-progress">
+               </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 pt-3">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">Rencana dan Realisasi Per SKPD</h6>
+               <table class="table" id="rekap-rencana-skpd"></table>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 pt-3 row">
+         <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Paket Skala Prioritas</h6>
+                    <table class="table" id="table-prioritas"></table>
+                </div>
+            </div>
+         </div>
+          <div class="col">
+              <div class="card">
+                  <div class="card-body">
+                      <h6 class="card-title">Detil Beban Kerja Pelaksana</h6>
+                      <table class="table" id="beban-kerja"></table>
+                  </div>
+              </div>
+          </div>
+    </div>
+    <div class="col-12 pt-3 row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Rekap Pekerjaan Paket Per SKPD</h6>
+                    <table class="table" id="rekap-skpd"></table>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Rekap Pekerjaan Paket Per PPK</h6>
+                   <table class="table" id="rekap-ppk"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div class="col-12 pt-3">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">Indesk Kepuasan Layanan</h6>
+                {% include "beranda/rekap-feedback.html" %}
+            </div>
+        </div>
+    </div>-->
+    <div class="modal fade" id="theModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title">Title</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                              aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block css%}
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.3/css/buttons.dataTables.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.css">
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.dataTables.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/fixedColumns.dataTables.js"></script>
+ <script>
+new DataTable("#table-progress", {
+  layout: {
+         topStart: {
+             buttons: ['excel', 'pdf']
+         }
+  },
+  ajax : "/dashboard/json-progress-rup?tahun={{tahun}}",
+  columns: [
+       { data: "nama_satker" , title : "Nama SKPD"},
+       { data: "total_belanja", title : "Total APBD", width:'15%' },
+       { data: "belanja", title : "Total Belanja" , width:'15%'},
+       { data: "pagu" , title : "Total Pagu Penyedia", width:'15%'},
+       { data: "pagu_swakelola" , title : "Total Pagu Swakelola" , width:'15%'},
+       { data: "prosentase", title : "Persentase", width:'5%' }
+  ]
+});
+new DataTable("#table-prioritas", {
+  layout: {
+         topStart: {
+             buttons: ['excel', 'pdf']
+         }
+     },
+  ajax : "/dashboard/json-paket-prioritas?tahun={{tahun}}",
+  columns: [
+          { data: "id" , title : "Kode"},
+          { data: "nama_paket", title : "Nama Paket" },
+          { data: "nama_ppk" , title : "PPK"},
+          { data: "status", title : "Status" }
+     ]
+});
+
+function renderProgress(data, bulan) {
+  return '<table class="table table-sm"><tbody><tr><td>Rencana</td><td><a href="#" onclick="showDetilRencana(\''+data.kd_satker+'\', '+bulan+')" data-bs-toggle="modal" data-bs-target="#theModal"><span class="badge bg-blue text-blue-fg badge-pill">'+rupiah(data.rencana[bulan - 1])+'</span></a></td></tr>'+
+      '<tr><td>Realisasi</td><td><a href="#" onclick="showDetilRealisasi(\''+data.kd_satker+'\', '+bulan+')" data-bs-toggle="modal" data-bs-target="#theModal"><span class="badge bg-blue text-blue-fg badge-pill">'+rupiah(data.realisasi[bulan - 1] + data.purchase[bulan - 1])+'</span></a></td></tr></tbody></table>';
+}
+
+new DataTable("#rekap-rencana-skpd", {
+  ajax : "/dashboard/json-rekap-satker?tahun={{tahun}}",
+  columns: [
+    {data:"nama_satker", title: "SKPD", width : '200px'},
+    {data : null, title: "Januari", render : function (data, type, row, meta){ return renderProgress(data, 1); } },
+    {data : null, width: '10%', title: "Februari", render : function (data, type, row, meta){ return renderProgress(data, 2); }},
+    {data : null, title: "Maret", render : function (data, type, row, meta){ return renderProgress(data, 3); }},
+    {data : null, title: "April", render : function (data, type, row, meta){ return renderProgress(data, 4); }},
+    {data : null, title: "Mei", render : function (data, type, row, meta){ return renderProgress(data, 5); }},
+    {data : null, title: "Juni", render : function (data, type, row, meta){ return renderProgress(data, 6); }},
+    {data : null, title: "Juli", render : function (data, type, row, meta){ return renderProgress(data, 7); }},
+    {data : null, title: "Agustus", render : function (data, type, row, meta){ return renderProgress(data, 8); }},
+    {data : null, title: "September", render : function (data, type, row, meta){ return renderProgress(data, 9);}},
+    {data : null, title: "Oktober", render : function (data, type, row, meta){ return renderProgress(data, 10); }},
+    {data : null, title: "November", render : function (data, type, row, meta){ return renderProgress(data, 11);}},
+    {data : null, title: "Desember", render : function (data, type, row, meta){ return renderProgress(data, 12); }},
+  ],
+  scrollX: true,
+  ordering: false,
+  fixedColumns: { start: 1},
+  layout: {
+         topStart: {
+             buttons: ['excel',
+                            {
+                                   extend: 'pdfHtml5',
+                                   orientation: 'landscape',
+                                   pageSize: 'LEGAL',
+                                   customize: function (doc) {
+                                       doc.defaultStyle.fontSize = 7; // Adjust the font size as needed
+                                       doc.styles.tableHeader.fontSize = 7; // Optionally adjust header font size
+                                       doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                                       // rows = doc.content[1].table.body;
+                                       // console.log(rows);
+                                       // for (i = 1; i < rows.length; i++) {
+                                       //    rows[i][1].text = rows[i][1].text.replace(/ /g, '\n');
+
+                                       // }
+                                    }
+                               }
+
+             ]
+         }
+     }
+});
+new DataTable("#rekap-skpd", {
+  ajax : "/dashboard/json-rekap-satker?tahun={{tahun}}",
+  columns: [
+          { data: "nama_satker" , title : "Nama SKPD"},
+          { data: "paket_realisasi", title : "Jumlah Paket di SPSE", render : function (data, type, row, meta){
+                let sum = 0;
+                data.forEach(number => {
+                  sum += number;
+                });
+                return sum;
+              }
+          },
+          { data: "paket_purchase" , title : "Jumlah Paket di Katalog", render : function (data, type, row, meta){
+                let sum = 0;
+                data.forEach(number => {
+                  sum += number;
+                });
+                return sum;
+              }
+          }
+  ],
+  layout: {
+         topStart: {
+             buttons: ['excel', 'pdf']
+         }
+     }
+});
+new DataTable("#rekap-ppk", {
+  ajax : "/dashboard/json-rekap-paket-ppk?tahun={{tahun}}",
+  columns: [
+          { data: "nama_ppk" , title : "Nama PPK", render : function (data, type, row, meta) {
+            if (type === 'display') {
+              data = '<a href="#" onclick="showRekapPaketPpk(\''+row["nip"]+'\', \''+data+'\')" data-bs-toggle="modal" data-bs-target="#theModal">'+data+'</a>';
+             }
+            return data;
+           }
+          },
+          { data: "spse", title : "Jumlah Paket di SPSE" },
+          { data: "katalog" , title : "Jumlah Paket di Katalog"}
+  ],
+  layout: {
+         topStart: {
+             buttons: ['excel', 'pdf']
+         }
+     }
+});
+new DataTable("#beban-kerja", {
+  ajax : "/dashboard/json-beban-personel?tahun={{tahun}}",
+  columns: [
+       { data: "nama_pegawai" , title : "Nama Pegawai"},
+       { data: "jumlah", title : "Jumlah" },
+       { data: "pagu" , title : "Pagu"},
+  ]
+});
+
+function showDetilRencana(satkerId, bulan) {
+    $.get('/rekap/rencana-satker?tahun={{tahun}}&bulan='+bulan+'&satker='+satkerId, function(data) {
+        $('.modal-title').html('Rencana Paket');
+        $('.modal-body').html(data);
+    });
+}
+
+function showDetilRealisasi(satkerId, bulan) {
+    $.get('/rekap/realisasi-satker?tahun={{tahun}}&bulan='+bulan+'&satker='+satkerId, function(data) {
+        $('.modal-title').html('Realisasi Paket');
+        $('.modal-body').html(data);
+    });
+}
+
+function showRekapPaketPpk(nipPpk, namaPpk) {
+    $.get('/rekap/rekap-paket-ppk?tahun={{tahun}}&nip='+nipPpk, function(data) {
+        $('.modal-title').html('Paket PPK '+namaPpk);
+        $('.modal-body').html(data);
+    });
+}
+</script>
+{% endblock %}

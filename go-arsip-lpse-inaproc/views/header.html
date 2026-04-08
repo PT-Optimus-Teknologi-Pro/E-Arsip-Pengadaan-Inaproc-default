@@ -1,0 +1,271 @@
+<header class="navbar navbar-expand-md d-print-none">
+  <div class="container-xl">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbar-menu" aria-controls="navbar-menu"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a href="/" aria-label="Tabler" class="navbar-brand navbar-brand-autodark me-3">
+        <img src="/modern/images/logo.png" alt="Logo"  width="140" height="60" class="logo"/>
+    </a>
+    <ul class="navbar-nav">
+     {% if group %}
+     <li class="nav-item {% if path == "/" %} active {% endif %}">
+       <a class="nav-link" href="/">
+         <span class="nav-link-icon">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+             <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+             <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+             <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+           </svg>
+         </span>
+         <span class="nav-link-title"> Dashboard </span>
+       </a>
+     </li>
+     {% if isAdmin %}
+    <li class="nav-item {% if path == "/ukpbj" %} active {% endif %}">
+       <a class="nav-link" href="/ukpbj">
+         <span class="nav-link-icon">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+             <path d="M9 11l3 3l8 -8" />
+             <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+           </svg>
+         </span>
+         <span class="nav-link-title"> UKPBJ </span>
+       </a>
+     </li>
+     <li class="nav-item dropdown {% if path == '/document' or path == '/doc-template' or path == '/templates' or path == '/checklist' or path == '/reviu' %} active {% endif %}">
+         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+           role="button" aria-expanded="false">Manajemen Data</a>
+         <ul class="dropdown-menu">
+           <li><a class="dropdown-item" href="/doc-template">Dokumen Pra PBJ</a></li>
+           <li><a class="dropdown-item" href="/templates">Manajemen Template</a></li>
+           <li><a class="dropdown-item" href="/checklist">Persyaratan Dokumen Pra PBJ</a></li>
+           <li><a class="dropdown-item" href="/reviu">Manajemen Reviu</a></li>
+         </ul>
+       </li>
+     {% endif %}
+     {% if isAdmin or isUkpbj %}
+     <li class="nav-item dropdown {% if path == '/perubahan-data' or  path == '/verifikasi' %} active {% endif %}">
+         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+           role="button" aria-expanded="false">Manajemen Akun</a>
+         <ul class="dropdown-menu">
+           <li><a class="dropdown-item" href="/verifikasi">Permohonan Akun</a></li>
+           <li><a class="dropdown-item" href="/perubahan-data">Perubahan Data Akun</a></li>
+         </ul>
+       </li>
+     {% endif %}
+     {% if isAdmin or isAdminAgency %}
+     <li class="nav-item {% if path == "/pegawai" %} active {% endif %}">
+       <a class="nav-link" href="/pegawai">
+         <span class="nav-link-icon">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+             <path d="M9 11l3 3l8 -8" />
+             <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+           </svg>
+         </span>
+         <span class="nav-link-title"> Pegawai </span>
+       </a>
+     </li>
+     {% endif %}
+     {% if isUkpbj %}
+     <li class="nav-item {% if path == "/pokja" %} active {% endif %}">
+       <a class="nav-link" href="/pokja">
+         <span class="nav-link-icon">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+             <path d="M9 11l3 3l8 -8" />
+             <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+           </svg>
+         </span>
+         <span class="nav-link-title"> Pokja </span>
+       </a>
+     </li>
+     <li class="nav-item {% if path == "/pp" %} active {% endif %}">
+       <a class="nav-link" href="/pp">
+         <span class="nav-link-icon">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+             <path d="M9 11l3 3l8 -8" />
+             <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+           </svg>
+         </span>
+         <span class="nav-link-title"> Pejabat Pengadaan </span>
+       </a>
+     </li>
+     <li class="nav-item {% if path == "/paket" %} active {% endif %}">
+       <a class="nav-link" href="/paket">
+         <span class="nav-link-icon">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+             <path d="M9 11l3 3l8 -8" />
+             <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+           </svg>
+         </span>
+         <span class="nav-link-title"> Paket </span>
+       </a>
+     </li>
+     <li class="nav-item {% if path == "/feedback/list" %} active {% endif %}">
+       <a class="nav-link" href="/feedback/list">
+         <span class="nav-link-icon">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+             <path d="M9 11l3 3l8 -8" />
+             <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+           </svg>
+         </span>
+         <span class="nav-link-title"> Feedback </span>
+       </a>
+     </li>
+     <li class="nav-item {% if path == "/bukutamu/list" %} active {% endif %}">
+       <a class="nav-link" href="/bukutamu/list">
+         <span class="nav-link-icon">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+             <path d="M9 11l3 3l8 -8" />
+             <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+           </svg>
+         </span>
+         <span class="nav-link-title"> Buku Tamu </span>
+       </a>
+     </li>
+     {% endif %}
+     {% if isPPK or isPokja or isPP or isPegawai %}
+     <li class="nav-item {% if path == "/paket" %} active {% endif %}">
+       <a class="nav-link" href="/paket">
+         <span class="nav-link-icon">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+             <path d="M9 11l3 3l8 -8" />
+             <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+           </svg>
+         </span>
+         <span class="nav-link-title"> Paket </span>
+       </a>
+     </li>
+     <li class="nav-item {% if path == "/perubahan-data" %} active {% endif %}">
+       <a class="nav-link" href="/perubahan-data">
+         <span class="nav-link-icon">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+             <path d="M9 11l3 3l8 -8" />
+             <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+           </svg>
+         </span>
+         <span class="nav-link-title"> Perubahan Data </span>
+       </a>
+     </li>
+     <li class="nav-item {% if path == "/inbox" %} active {% endif %}">
+       <a class="nav-link" href="/inbox">
+         <span class="nav-link-icon">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+             <path d="M9 11l3 3l8 -8" />
+             <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+           </svg>
+         </span>
+         <span class="nav-link-title"> Inbox </span>
+       </a>
+     </li>
+     {% endif %}
+     {% else %}
+      <li class="nav-item {% if path == "/" %} active {% endif %}">
+        <a class="nav-link" href="/">
+          <span class="nav-link-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+              <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+              <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+            </svg>
+          </span>
+          <span class="nav-link-title"> Dashboard </span>
+        </a>
+      </li>
+      <li class="nav-item {% if path == "/login" %} active {% endif %}">
+        <a class="nav-link" href="/login">
+          <span class="nav-link-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+              <path d="M9 11l3 3l8 -8" />
+              <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+            </svg>
+          </span>
+          <span class="nav-link-title"> Login </span>
+        </a>
+      </li>
+      <li class="nav-item {% if path == "/register" %} active {% endif %}">
+        <a class="nav-link" href="/register">
+          <span class="nav-link-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+              <path d="M9 11l3 3l8 -8" />
+              <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+            </svg>
+          </span>
+          <span class="nav-link-title"> Registrasi Akun </span>
+        </a>
+      </li>
+      <li class="nav-item {% if path == "/bukutamu" %} active {% endif %}">
+        <a class="nav-link" href="/bukutamu">
+          <span class="nav-link-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+              <path d="M9 11l3 3l8 -8" />
+              <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+            </svg>
+          </span>
+          <span class="nav-link-title"> Buku Tamu </span>
+        </a>
+      </li>
+      <li class="nav-item {% if path == "/feedback" %} active {% endif %}">
+        <a class="nav-link" href="/feedback">
+          <span class="nav-link-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+              <path d="M9 11l3 3l8 -8" />
+              <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+            </svg>
+          </span>
+          <span class="nav-link-title"> Feedback </span>
+        </a>
+      </li>
+      <li class="nav-item {% if path == "/itkp" %} active {% endif %}">
+        <a class="nav-link" href="/itkp">
+          <span class="nav-link-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+              <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+              <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+            </svg>
+          </span>
+          <span class="nav-link-title"> ITKP </span>
+        </a>
+      </li>
+       {% endif %}
+    </ul>
+    <div class="navbar-nav flex-row order-md-last ms-auto">
+    {% if group %}
+      <div class="nav-item dropdown">
+        <a href="#" class="nav-link d-flex lh-1 text-reset" data-bs-toggle="dropdown" aria-label="Open user menu">
+            <svg width="24"  height="24"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-user">
+               <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 2a5 5 0 1 1 -5 5l.005 -.217a5 5 0 0 1 4.995 -4.783z" />
+                <path d="M14 14a5 5 0 0 1 5 5v1a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-1a5 5 0 0 1 5 -5h4z" />
+            </svg>
+            <div class="d-none d-xl-block ps-2">
+                {{ name }} <span class="badge badge-sm bg-red text-red-fg fs-6">{{ group }}</span>
+            </div>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+          <a href="/profile" class="dropdown-item">Profile</a>
+          <a href="/logout" class="dropdown-item">Logout</a>
+        </div>
+      </div>
+       {% endif %}
+    </div>
+  </div>
+</header>

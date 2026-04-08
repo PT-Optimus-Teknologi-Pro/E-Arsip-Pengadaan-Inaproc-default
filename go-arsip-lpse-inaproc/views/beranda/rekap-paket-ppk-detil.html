@@ -1,0 +1,73 @@
+ <div class="form-group mb-3 row">
+     <label class="col-sm-2 col-form-label">Tahun Anggaran</label>
+     <div class="col-sm-10">
+        <p class="form-control-plaintext">{{tahun}}</p>
+     </div>
+ </div>
+ <div class="card">
+     <div class="card-header">Tender</div>
+    <table class="table" id="rekap-skpd">
+        <thead>
+            <tr>
+                <th width="10%">Kode Paket</th>
+                <th>Nama Paket</th>
+                <th width="15%">Pagu</th>
+                <th width="20%">HPS</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for obj in tender %}
+        <tr>
+            <td>{{ obj.KdTender }}</td>
+            <td>{{ obj.NamaPaket }}</td>
+            <td>{{ rupiah(obj.Pagu) }}</td>
+            <td>{{ rupiah(obj.Hps) }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+ </div>
+ <div class="card mt-2">
+     <div class="card-header">Non Tender</div>
+    <table class="table" id="rekap-skpd">
+        <thead>
+        <tr>
+            <th width="10%">Kode Paket</th>
+            <th>Nama Paket</th>
+            <th width="15%">Pagu</th>
+            <th width="20%">HPS</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for obj in nontender %}
+        <tr>
+            <td>{{ obj.KdNontender }}</td>
+            <td>{{ obj.NamaPaket }}</td>
+            <td>{{ rupiah(obj.Pagu) }}</td>
+            <td>{{ rupiah(obj.Hps) }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+ </div>
+ <div class="card mt-2">
+     <div class="card-header">Pencatatan</div>
+    <table class="table" id="rekap-skpd">
+        <thead>
+            <tr>
+                <th width="10%">Kode Paket</th>
+                <th>Nama Paket</th>
+                <th width="15%">Pagu</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for obj in pencatatan %}
+        <tr>
+            <td>{{ obj.KdNontenderPct }}</td>
+            <td>{{ obj.NamaPaket }}</td>
+            <td>{{ rupiah(obj.Pagu) }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+ </div>

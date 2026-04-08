@@ -1,0 +1,66 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Daftar Pokja
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Daftar Pejabat Pengadaan</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Daftar Pejabat Pengadaan</li>
+        </ol>
+    </div>
+</div>
+    <div class="col-12 pt-2">
+        <div class="card">
+            <div class="card-body">
+                {% include "alert.html" %}
+                <table class="table table-bordered table-striped" id="table-data">
+                    <thead>
+                    <tr>
+                        <th>Group</th>
+                        <th>Tahun</th>
+                        <th>Nomor SK</th>
+                        <th width="5%">action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <a href="/pp/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    new DataTable("#table-data", {
+        ajax: '/pp/data',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "groups", render : function(data, type, row){
+                    return '<a href="/pp/'+row["ID"]+'">'+data+'</a>'
+                }
+            },
+            {data : "tahun"},
+            {data : "no_sk"},
+            {data : "ID", render: function(data, type, row){
+                    return '<a href="/pp/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>&nbsp;' +
+                        '<a href="/pp/hapus/'+data+'"><span style="width: 16px;" data-feather="trash"></span></a>'
+                }
+            },
+        ],
+        aaSorting: [[0, 'desc']],
+        drawCallback: function( settings ) {
+            feather.replace();
+        }
+    });
+</script>
+{% endblock %}

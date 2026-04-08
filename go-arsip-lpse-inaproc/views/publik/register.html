@@ -1,0 +1,211 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Registrasi Akun
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Registrasi Akun</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item active">Registrasi Akun</li>
+        </ol>
+    </div>
+</div>
+
+<div class="col-12 pt-2 ml-auto">
+    <div class="card">
+        <div class="card-body">
+            <div class="auth-form">
+                <h4 class="text-center mb-4">Form Registrasi</h4>
+                {% include "alert.html" %}
+                <form action="/register" method="post"  enctype="multipart/form-data" class="form-horizontal">
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 text-end control-label col-form-label">Pengangkatan Menjadi</label>
+                        <div class="col-sm-7">
+                            <select name="usrgroup" class="form-control" required>
+                                <option value="PEGAWAI">PP / POKJA</option>
+                                <option value="PPK">PPK</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Nama Pegawai</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="peg_nama" class="form-control" value="{{ pegawai.PegNama }}" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">NIK</label>
+                        <div class="col-sm-7">
+                            <input type="number" onkeypress="return isNumberKey(event)" name="peg_nik" class="form-control" value="{{ pegawai.PegNik }}" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">NIP/NRP</label>
+                        <div class="col-sm-7">
+                            <input type="number" onkeypress="return isNumberKey(event)" name="peg_nip" class="form-control" value="{{ pegawai.PegNip }}" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">User ID</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="peg_namauser" class="form-control" value="{{ pegawai.PegNamauser }}" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Password</label>
+                        <div class="col-sm-7">
+                            <input type="password" name="passw" class="form-control" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Alamat</label>
+                        <div class="col-sm-7">
+                            <textarea name="peg_alamat" class="form-control" required>{{ pegawai.PegAlamat }}</textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 text-end control-label col-form-label">Telepon</label>
+                        <div class="col-sm-7">
+                            <input type="number" name="peg_telepon" class="form-control" value="{{ pegawai.PegTelepon }}" required onkeypress="return isNumberKey(event)"/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Email</label>
+                        <div class="col-sm-7">
+                            <input type="email" name="peg_email" class="form-control" value="{{ pegawai.PegEmail }}" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Pangkat</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="peg_pangkat" class="form-control" value="{{ pegawai.PegPangkat }}" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Jabatan</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="peg_jabatan" class="form-control" value="{{ pegawai.PegJabatan }}" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Golongan</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="peg_golongan" class="form-control" value="{{ pegawai.PegGolongan }}" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">No Sertifikat PBJ</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="peg_no_pbj" class="form-control" value="{{ pegawai.peg_no_pbj }}" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Nomor SK</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="peg_no_sk" class="form-control" value="{{ pegawai.PegNoSk }}" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Masa Berlaku SK</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="masa_berlaku" class="form-control datepicker" value="{{ pegawai.PegMasaBerlaku }}" required/>
+                        </div>
+                    </div>
+                    <h4>Mohon lengkapi persyaratan dokumen dibawah ini</h4>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">KTP</label>
+                        <div class="col-sm-7">
+                            <input type="file" name="ktp" class="form-control" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">SK</label>
+                        <div class="col-sm-7">
+                            <input type="file" name="sk" class="form-control" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Sertifikat</label>
+                        <div class="col-sm-7">
+                            <input type="file" name="sertifikat" class="form-control" required/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3  text-end control-label col-form-label">Tanda Tangan</label>
+                        <div class="col-sm-7">
+                            <div class="signature-container">
+                                <canvas id="signature-pad" width="400" height="200"></canvas>
+                                <button type="button" id="clear">Clear</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="ttd" name="ttd" value="">
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-block">Sign me up</button>
+                    </div>
+                </form>
+                <div class="new-account mt-3">
+                    <p>Already have an account? <a class="text-primary" href="/login">Sign in</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<style>
+    .signature-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    canvas {
+        border: 1px solid #000;
+        background-color: #eee;
+    }
+</style>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<script>
+    $(".datepicker").flatpickr({
+        enableTime: true,
+        dateFormat: "Y-m-d",
+    });
+    var signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
+        backgroundColor: 'rgba(128,128,128, 0)',
+        penColor: 'rgb(0, 0, 0)'
+    });
+    var cancelButton = document.getElementById('clear');
+
+    cancelButton.addEventListener('click', function (event) {
+        signaturePad.clear();
+    });
+
+    $("form").submit(function(){
+      if(signaturePad.isEmpty()){
+        return false
+      }
+      var imageData = signaturePad.toDataURL();
+      if(imageData == null)
+          return false
+       document.getElementsByName("ttd")[0].setAttribute("value", imageData);
+       return true;
+    });
+    function isNumberKey(evt)
+	{
+		var charCode = (evt.which) ? evt.which : evt.keyCode;
+		if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57))
+				return false;
+		return true;
+	}
+</script>
+{% endblock %}

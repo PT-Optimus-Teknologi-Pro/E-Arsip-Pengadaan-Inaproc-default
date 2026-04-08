@@ -1,0 +1,180 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Buku Tamu
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Buku Tamu</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item active">Buku Tamu</li>
+        </ol>
+    </div>
+</div>
+<div class="col-12 pt-2 ml-auto">
+    <div class="card">
+        <div class="card-body">
+            <div class="auth-form">
+                {% include "alert.html" %}
+                <form action="/bukutamu" method="post"  enctype="multipart/form-data" class="form-horizontal">
+                    <div class="row">
+                        <div class="col">
+                            <div id="camera-container">
+                                <video id="video" autoplay></video>
+                                <button id="capture-btn" type="button">Capture Photo</button>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <canvas id="canvas"></canvas>
+                            <div id="upload-container" style="display: none;">
+                                <input type="file" id="file-input" accept="image/*" name="gambar" class="form-controla">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row pt-5">
+                        <div class="col">
+                            <input type="text" name="nama" class="form-control" value="{{ buku.Nama }}" required placeholder="Nama Lengkap"/>
+                        </div>
+                        <div class="col">
+                            <input type="text" name="email" class="form-control" value="{{ buku.Email }}" required placeholder="Email / No.Hp / Telepon"/>
+                        </div>
+                    </div>
+                    <div class="row pt-5">
+                        <div class="col">
+                            <input type="text" name="keperluan" class="form-control" value="{{ buku.keperluan }}" required placeholder="Keperluan"/>
+                        </div>
+                        <div class="col">
+                            <input type="text" name="nama_perusahaan" class="form-control" value="{{ buku.nama_perusahaan }}" required placeholder="Dari Perusahaan / Instansi"/>
+                        </div>
+                    </div>
+                    <div class="row pt-5">
+                        <div class="col-12">
+                            <select id="keperluan" name="layanan" class="form-control" required aria-placeholder="Pilih Layanan">
+                                <option class="pengadaan" value="Pembuktian Kualifikasi">Pembuktian Kualifikasi</option>
+                                <option class="non-pengadaan" value="Konsultasi">Konsultasi SPSE</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-block" style="width: 100%;">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<style>
+        #video {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border: 1px solid #ddd;
+        }
+        #canvas {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border: 1px solid #ddd;
+        }
+        #captureButton {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+</style>
+{% endblock %}
+
+{% block script %}
+<script>
+const cameraContainer = document.getElementById('camera-container');
+const uploadContainer = document.getElementById('upload-container');
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const captureBtn = document.getElementById('capture-btn');
+const fileInput = document.getElementById('file-input');
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => {
+    video.srcObject = stream;
+    video.play();
+  })
+  .catch(err => {
+    // If access to webcam is denied or not available, show file upload
+    alert('No webcam found, showing file upload input.');
+    cameraContainer.style.display = 'none';
+    uploadContainer.style.display = 'block';
+  });
+captureBtn.addEventListener('click', () => {
+  const context = canvas.getContext('2d');
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  canvas.toBlob((blob) => {
+    let date = Date.now();
+    const file = new File([blob], `captured_image_${date}.png`, { type: 'image/png' });
+    console.log('file:::::::::::file', file); // This file object can now be uploaded to the server
+    // Create a DataTransfer object and use it to set the file into the input element
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    fileInput.files = dataTransfer.files;
+    // Optionally, trigger an event to handle the file upload logic if needed
+    const event = new Event('change');
+    fileInput.dispatchEvent(event);
+    // You can also create a temporary URL to download the file
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(file);
+    link.download = `captured_image_${date}.png`;
+    link.click();
+  }, 'image/png');
+});
+fileInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const context = canvas.getContext('2d');
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+$("#finalUpload").on('click',function(){
+  let file = $("#file-input")[0].files[0]
+  console.log('upload file:::::::', file)
+})
+// var options = [];
+// $('#keperluan option').each(function(index, element){
+//     options.push(element);
+// });
+// $(document).on('change', '#kategori', function() {
+//     let value = $(this).val();
+//     console.log(value);
+//     if(value == 'pengadaan') {
+//       $("#keperluan").empty();
+//       for (let i = 0; i < options.length; i++) {
+//            if($(options[i]).hasClass("pengadaan"))
+//               $("#keperluan").append(options[i])
+//       };
+//     }
+//     else if(value == 'non-pengadaan') {
+//       $("#keperluan").empty();
+//       for (let i = 0; i < options.length; i++) {
+//            if($(options[i]).hasClass("non-pengadaan"))
+//               $("#keperluan").append(options[i])
+//       };
+//     }
+// });
+// $('#kategori').trigger('change');
+</script>
+{% endblock %}
