@@ -327,15 +327,16 @@ func HasilPengadanPaket(c *fiber.Ctx) error {
 		return Forbiden(c)
 	}
 	mp["paket"] = paket
-	if paket.Metode == 8 {
+	switch paket.Metode {
+	case 8:
 		realisasi := paket.GetNontender().GetRealisasi()
 		if len(realisasi) > 0 {
 			log.Info("realisi ", realisasi[0])
 			mp["realisasi"] = realisasi[0]
 		}
-	} else if paket.Metode == 9 {
+	case 9:
 		mp["purchase"] = paket.GetPurchase()
-	}else {
+	default:
 		realisasi := paket.GetTender().GetRealisasi()
 		if len(realisasi) > 0 {
 			log.Info("realisi ", realisasi[0])

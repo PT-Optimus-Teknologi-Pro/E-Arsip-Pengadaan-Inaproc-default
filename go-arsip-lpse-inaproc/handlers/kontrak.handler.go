@@ -16,15 +16,16 @@ func HasilPekerjaan(c *fiber.Ctx) error {
 		return c.SendStatus(404)
 	}
 	mp["paket"] = paket
-	if paket.Metode == 8 {
+	switch paket.Metode {
+	case 8:
 		realisasi := paket.GetNontender().GetRealisasi()
 		if len(realisasi) > 0 {
 			log.Info("realisi ", realisasi[0])
 			mp["realisasi"] = realisasi[0]
 		}
-	} else if paket.Metode == 9 {
+	case 9:
 		mp["purchase"] = paket.GetPurchase()
-	}else {
+	default:
 		realisasi := paket.GetTender().GetRealisasi()
 		if len(realisasi) > 0 {
 			log.Info("realisi ", realisasi[0])
@@ -58,15 +59,16 @@ func KontrakPaket(c *fiber.Ctx) error {
 		return c.SendStatus(404)
 	}
 	mp["paket"] = paket
-	if paket.Metode == 8 {
+	switch paket.Metode {
+	case 8:
 		realisasi := paket.GetNontender().GetRealisasi()
 		if len(realisasi) > 0 {
 			log.Info("realisi ", realisasi[0])
 			mp["realisasi"] = realisasi[0]
 		}
-	} else if paket.Metode == 9 {
+	case 9:
 		mp["purchase"] = paket.GetPurchase()
-	}else {
+	default:
 		realisasi := paket.GetTender().GetRealisasi()
 		if len(realisasi) > 0 {
 			log.Info("realisi ", realisasi[0])

@@ -3,7 +3,6 @@ package models
 import (
 	"arsip/utils"
 	"database/sql"
-	"errors"
 	"fmt"
 	"time"
 
@@ -58,11 +57,12 @@ func (c ChecklistDok) Template() DokTemplate {
 }
 
 func (c ChecklistDok) StatusLabel() string {
-	if c.Status == 0 {
+	switch c.Status {
+	case 0:
 		return "opsional"
-	} else if c.Status == 1 {
+	case 1:
 		return "wajib"
-	} else  {
+	default:
 		return "belom ditentukan"
 	}
 }
@@ -303,7 +303,7 @@ func SaveChecklist(checklist *Checklist) error {
 func HapusChecklist(id uint) error {
 	checklist := GetChecklist(id)
 	if checklist.ID == 0 {
-		return errors.New(fmt.Sprintf("Checklist %s tidak ditemukan", id))
+		return fmt.Errorf("Checklist %d tidak ditemukan", id)
 	}
 	return db.Delete(&checklist, id).Error
 }

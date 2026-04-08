@@ -82,13 +82,14 @@ func (s KajiUlang) Penjelasan() []KajiUlang {
 }
 
 func (s KajiUlang) IsAllowJawab(group string, id uint) bool {
-	if group == ADMIN || group == UKPBJ {
+	switch group {
+	case ADMIN, UKPBJ:
 		return false
-	} else if group == PPK {
+	case PPK:
 		return s.PpkId != id
-	} else if group == PP {
+	case PP:
 		return s.PpId != id
-	} else if group == POKJA {
+	case POKJA:
 		return s.PegId != id
 	}
 	return false

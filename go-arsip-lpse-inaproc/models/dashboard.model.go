@@ -106,11 +106,12 @@ type RekapFeedback struct {
 }
 
 func (obj RekapFeedback) Label() string {
-	if obj.ID == 1{
+	switch obj.ID {
+	case 1:
 		return "Tidak Puas"
-	}else if obj.ID == 2 {
+	case 2:
 		return "Puas"
-	} else if obj.ID == 3 {
+	case 3:
 		return "Sangat Puas"
 	}
 	return ""

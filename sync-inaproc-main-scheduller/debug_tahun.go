@@ -9,7 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func main() {
+func DebugTahun() {
 	godotenv.Load()
 	tahunNow := time.Now().Year()
 	tahunStart, _ := strconv.Atoi(os.Getenv("TA_START"))

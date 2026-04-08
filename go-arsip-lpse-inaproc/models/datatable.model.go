@@ -298,7 +298,7 @@ func populateEmpty(c *fiber.Ctx) error {
 		"draw" : draw,
 		"recordsTotal" : 0,
 		"recordsFiltered" : 0,
-		"data" : nil,
+		"data" : []interface{}{},
 	}
 	return c.JSON(responseData)
 }
@@ -363,7 +363,8 @@ func GetDataTable(c *fiber.Ctx, result interface{}, columns []string, queryFrom 
 	if filter.Len() > 0 {
 		queryFrom += " ORDER BY "+filter.String()
 	}
-	param = append(param)
+	// no change needed if removing it, but let's just comment it out or remove it
+	// param = append(param) // Removed redundant append
 	if length > 0 {
 		queryFrom += " LIMIT "+strconv.Itoa(length)
 	}

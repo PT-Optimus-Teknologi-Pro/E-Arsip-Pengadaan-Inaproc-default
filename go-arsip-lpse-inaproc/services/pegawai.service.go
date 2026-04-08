@@ -71,15 +71,17 @@ func UpdatePegawai(pegawai models.Pegawai) error {
 }
 
 func VerifikasiAkun(pegawai models.Pegawai, action string, usrgroup string) error {
-	if action == "approve" {
-		if usrgroup == models.UKPBJ {
+	switch action {
+	case "approve":
+		switch usrgroup {
+		case models.UKPBJ:
 			pegawai.PegStatus = models.APPROVED_UKPBJ
-		} else if usrgroup == models.ADMIN {
+		case models.ADMIN:
 			pegawai.PegStatus = models.APPROVED
 		}
 		pegawai.TglApprove = time.Now()
 		pegawai.PegIsactive = 1
-	} else if action == "reject" {
+	case "reject":
 		pegawai.PegStatus = models.REJECT
 		pegawai.TglReject = time.Now()
 		pegawai.PegIsactive = 0

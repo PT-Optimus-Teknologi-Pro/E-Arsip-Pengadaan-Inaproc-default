@@ -10,7 +10,7 @@
         <p class="form-control-plaintext">{{bulanLabel(bulan)}} {{tahun}}</p>
      </div>
  </div>
- <table class="table" id="rekap-paket">
+ <table class="table table-modal-detail" id="rekap-paket">
      <thead>
      <tr>
          <th width="10%">Kode RUP</th>
@@ -32,5 +32,5 @@
  </table>
 
 <script>
-  new DataTable("#rekap-paket");
+  new DataTable(".table-modal-detail");
 </script>

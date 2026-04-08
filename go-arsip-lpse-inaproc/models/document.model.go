@@ -49,15 +49,16 @@ func (Document) TableName() string {
 }
 
 func (c Document) Label() string {
-	if c.Jenis == KTP {
+	switch c.Jenis {
+	case KTP:
 		return "Scan KTP"
-	} else if c.Jenis == SK {
+	case SK:
 		return "Scan SK"
-	} else if c.Jenis == TTD {
+	case TTD:
 		return "Tanda Tangan"
-	} else if c.Jenis == SERTIFIKAT {
+	case SERTIFIKAT:
 		return "Sertifikat Pengadaan"
-	} else if c.Jenis == CHECKLIST {
+	case CHECKLIST:
 		return "Checklist"
 	}
 	return ""

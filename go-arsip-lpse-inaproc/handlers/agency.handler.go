@@ -85,7 +85,7 @@ func DeleteAgency(c *fiber.Ctx) error {
 	if agency.ID == 0 {
 		return flashError(c, "Agency tidak ditemukan","/agency")
 	}
-	err := services.DeleteAgency(agency).Error
+	err := services.DeleteAgency(agency)
 	if err != nil {
 		log.Error(err)
 		return flashError(c, "Hapus Agency Gagal","/agency")

@@ -86,7 +86,7 @@ func GetFeedback(id uint) Feedback {
 
 func SaveFeedback(kualitas, fasilitas, kelengkapan []string) error {
 	var feedbacks []Feedback
-	for i,_ := range JENIS_LAYANAN {
+	for i := range JENIS_LAYANAN {
 		kualitasInt , _ := strconv.Atoi(kualitas[i])
 		fasilitasInt , _ := strconv.Atoi(fasilitas[i])
 		kelengkapanInt , _ := strconv.Atoi(kelengkapan[i])

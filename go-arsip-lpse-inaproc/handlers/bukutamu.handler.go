@@ -74,9 +74,10 @@ func BukuTamuUpdate(c *fiber.Ctx) error {
 	}
 	buku.Status = status
 	buku.PegId = mp["id"].(uint)
-	if buku.Status == 1 {
+	switch buku.Status {
+	case 1:
 		buku.TglProses = time.Now()
-	} else if buku.Status == 2 {
+	case 2:
 		buku.TglSelesai = time.Now()
 	}
 	_, err := services.SaveBukuTamu(&buku)

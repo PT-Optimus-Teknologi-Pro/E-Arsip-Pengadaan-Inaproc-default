@@ -20,7 +20,7 @@ func GetJsonProgressRup(c *fiber.Ctx) error {
 		progressRup = services.GetRupProgress(tahun)
 		cache.Set(key, progressRup)
 	}
-	responseData := fiber.Map{"data" : ""}
+	responseData := fiber.Map{"data" : []interface{}{}}
 	if len(progressRup.([]models.RupProgress)) > 0 {
 		responseData = fiber.Map{"data" : progressRup}
 	}
@@ -35,7 +35,7 @@ func GetJsonPaketPrioritas(c *fiber.Ctx) error {
 		paketPrioritas = services.GetPaketPrioritas(tahun)
 		cache.Set(key, paketPrioritas)
 	}
-	responseData := fiber.Map{"data" : ""}
+	responseData := fiber.Map{"data" : []interface{}{}}
 	if len(paketPrioritas.([]models.PaketPrioritas)) > 0 {
 		responseData = fiber.Map{"data" : paketPrioritas}
 	}
@@ -50,7 +50,7 @@ func GetJsonRekapSatker(c *fiber.Ctx) error {
 		rekapSatker = services.CalculateRekapSatker(tahun)
 		cache.Set(key, rekapSatker)
 	}
-	responseData := fiber.Map{"data" : ""}
+	responseData := fiber.Map{"data" : []interface{}{}}
 	if len(rekapSatker.([]models.RekapSatkerDashboard)) > 0 {
 		responseData = fiber.Map{"data" : rekapSatker}
 	}

@@ -71,13 +71,14 @@ func (u Pegawai) GetMasaBerlaku() string {
 }
 
 func (u Pegawai) GetStatusVerifikasi() string {
-	if u.PegStatus == VERIFIKASI {
+	switch u.PegStatus {
+	case VERIFIKASI:
 		return "Verifikasi"
-	} else if u.PegStatus == APPROVED {
+	case APPROVED:
 		return "Disetujui dan Akun SPSE Sudah dibuat"
-	} else if u.PegStatus == APPROVED_UKPBJ {
+	case APPROVED_UKPBJ:
 		return "Disetujui"
-	} else if u.PegStatus == REJECT {
+	case REJECT:
 		return "Ditolak"
 	}
 	return ""
@@ -104,19 +105,20 @@ func (u Pegawai) GetTglBuat() string {
 }
 
 func (u Pegawai) RoleLabel() string {
-	if u.Usrgroup == ADMIN {
+	switch u.Usrgroup {
+	case ADMIN:
 		return "Admin"
-	} else if  u.Usrgroup == ADM_AGENCY {
+	case ADM_AGENCY:
 		return "Admin Agency"
-	} else if  u.Usrgroup == UKPBJ {
+	case UKPBJ:
 		return "Admin UKPBJ"
-	} else if  u.Usrgroup == PPK {
+	case PPK:
 		return "PPK"
-	} else if  u.Usrgroup == POKJA {
+	case POKJA:
 		return "Pokja"
-	}  else if  u.Usrgroup == PP {
+	case PP:
 		return "Pejabat Pengadaan"
-	} else if  u.Usrgroup == PEGAWAI {
+	case PEGAWAI:
 		return "Pejabat Pengadaan / Pokja"
 	}
 	return ""
@@ -230,11 +232,12 @@ func (c PerubahanData) Dokumen() Document {
 // }
 
 func (c PerubahanData) StatusLabel() string {
-	if c.Status == 0 {
+	switch c.Status {
+	case 0:
 		return "Pengajuan"
-	}  else if c.Status == 1 {
+	case 1:
 		return "Proses"
-	} else if c.Status == 2 {
+	case 2:
 		return "Selesai"
 	}
 	return ""
