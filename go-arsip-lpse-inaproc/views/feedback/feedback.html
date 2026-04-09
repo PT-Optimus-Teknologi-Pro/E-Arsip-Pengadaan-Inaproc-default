@@ -1,4 +1,4 @@
-{% extends "border.html" %}
+﻿{% extends "border.html" %}
 
 {% block pagetitle %}Formulir Evaluasi Layanan{% endblock %}
 
@@ -197,7 +197,7 @@
 
 {% block content %}
 <div class="fb-wrapper">
-  <!-- Header -->
+  
   <div class="fb-header">
     <div class="fb-title-group">
       <h2>Formulir Evaluasi Layanan</h2>
@@ -211,7 +211,7 @@
   <form action="/feedback" method="post" enctype="multipart/form-data" id="feedbackForm">
     {% include "alert.html" %}
 
-    <!-- Visitor Identity Card -->
+    
     <div class="fb-card">
         <div class="fb-card-header">
             <div class="fb-card-icon" style="background: #eef2ff;">
@@ -277,7 +277,7 @@
       </div>
       
       <div class="fb-rating-body">
-        <!-- Criterion 1 -->
+        
         <div class="fb-rating-row">
           <div class="fb-rating-label">Kualitas Layanan</div>
           <div class="star-group" data-name="kualitas[]">
@@ -290,7 +290,7 @@
           </div>
         </div>
 
-        <!-- Criterion 2 -->
+        
         <div class="fb-rating-row">
           <div class="fb-rating-label">Fasilitas Layanan</div>
           <div class="star-group" data-name="fasilitas[]">
@@ -303,7 +303,7 @@
           </div>
         </div>
 
-        <!-- Criterion 3 -->
+        
         <div class="fb-rating-row">
           <div class="fb-rating-label">Kelengkapan Informasi</div>
           <div class="star-group" data-name="kelengkapan[]">
@@ -319,7 +319,7 @@
     </div>
     {% endfor %}
 
-    <!-- Comment Card -->
+    
     <div class="fb-card">
         <div class="fb-card-header">
             <div class="fb-card-icon" style="background: #fdf2f8;">
@@ -335,7 +335,7 @@
         </div>
     </div>
 
-    <!-- Submit Button -->
+    
     <button type="submit" class="btn-fb-submit">
       Submit Evaluasi Layanan
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>

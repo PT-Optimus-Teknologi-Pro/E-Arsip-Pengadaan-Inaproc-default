@@ -1,22 +1,22 @@
-<header class="app-navbar d-print-none">
+﻿<header class="app-navbar d-print-none">
   <div class="app-navbar-inner">
-    <!-- Brand / Logo -->
+    
     <a href="/" aria-label="{{ app_title }}" class="app-navbar-brand">
         <img src="{{ logo_path }}" alt="{{ app_title }}" class="app-navbar-logo" style="height:44px;width:auto;max-width:160px;object-fit:contain;display:block;"/>
     </a>
 
-    <!-- Hamburger for mobile -->
+    
     <button class="app-navbar-toggler" id="navbarToggler" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="appNavbarMenu">
       <span class="app-navbar-toggler-bar"></span>
       <span class="app-navbar-toggler-bar"></span>
       <span class="app-navbar-toggler-bar"></span>
     </button>
 
-    <!-- Nav Menu -->
+    
     <div class="app-navbar-menu" id="appNavbarMenu">
       <ul class="app-nav-list">
         {% if group %}
-        <!-- ★ Authenticated user nav items -->
+        
         <li class="app-nav-item {% if path == '/' or path == '/home' %} active {% endif %}">
           <a class="app-nav-link" href="/home">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l-2 0l9 -9l9 9l-2 0"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/></svg>
@@ -103,7 +103,7 @@
         {% endif %}
 
         {% else %}
-        <!-- ★ Guest / public nav items -->
+        
         <li class="app-nav-item {% if path == '/' %} active {% endif %}">
           <a class="app-nav-link" href="/">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l-2 0l9 -9l9 9l-2 0"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/></svg>
@@ -122,10 +122,10 @@
         {% endif %}
       </ul>
 
-      <!-- Right side: user info or auth buttons -->
+      
       <div class="app-navbar-right">
         {% if group %}
-        <!-- Logged in user -->
+        
         <div class="app-user-menu" id="appUserMenu">
           <button class="app-user-btn" id="appUserToggle" type="button" aria-expanded="false">
             <span class="app-user-avatar">
@@ -148,7 +148,7 @@
           </ul>
         </div>
         {% else %}
-        <!-- Guest auth buttons -->
+        
         <div class="app-auth-btns">
           <a href="/login" class="app-btn app-btn-outline">Sign In</a>
           <a href="/register" class="app-btn app-btn-solid">Sign Up</a>
@@ -158,7 +158,7 @@
     </div>
   </div>
 
-  <!-- Mobile overlay backdrop -->
+  
   <div class="app-navbar-backdrop" id="appNavbarBackdrop"></div>
 </header>
 

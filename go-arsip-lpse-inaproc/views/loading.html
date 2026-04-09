@@ -1,7 +1,4 @@
-<!-- ============================================================== -->
-<!-- Loading Screen -->
-<!-- ============================================================== -->
-<div id="loading-screen" style="
+﻿<div id="loading-screen" style="
   position: fixed;
   inset: 0;
   z-index: 99999;
@@ -15,7 +12,6 @@
   overflow: hidden;
   transition: opacity 0.6s ease, transform 0.6s ease;
 ">
-  <!-- Grid Overlay -->
   <div style="
     position: absolute;
     inset: 0;
@@ -26,18 +22,14 @@
     background-size: 40px 40px;
   "></div>
 
-  <!-- Particle Canvas -->
   <canvas id="ls-particles" style="position:absolute;inset:0;pointer-events:none;"></canvas>
 
-  <!-- Corner Decorations -->
   <div style="position:absolute;top:24px;left:24px;width:40px;height:40px;border:2px solid rgba(0,123,255,0.2);border-right:none;border-bottom:none;"></div>
   <div style="position:absolute;top:24px;right:24px;width:40px;height:40px;border:2px solid rgba(0,123,255,0.2);border-left:none;border-bottom:none;"></div>
   <div style="position:absolute;bottom:24px;left:24px;width:40px;height:40px;border:2px solid rgba(0,123,255,0.2);border-right:none;border-top:none;"></div>
   <div style="position:absolute;bottom:24px;right:24px;width:40px;height:40px;border:2px solid rgba(0,123,255,0.2);border-left:none;border-top:none;"></div>
 
-  <!-- Orbit Ring System -->
   <div style="position:relative;width:160px;height:160px;flex-shrink:0;">
-    <!-- Outer Ring -->
     <div class="ls-ring ls-ring-outer" style="
       position:absolute;inset:0;
       border-radius:50%;
@@ -51,7 +43,6 @@
         box-shadow:0 0 12px 4px #3b9eff;
       "></div>
     </div>
-    <!-- Mid Ring -->
     <div style="
       position:absolute;inset:22px;
       border-radius:50%;
@@ -65,7 +56,6 @@
         box-shadow:0 0 10px 3px #60b4ff;
       "></div>
     </div>
-    <!-- Inner Ring -->
     <div style="
       position:absolute;inset:44px;
       border-radius:50%;
@@ -79,7 +69,6 @@
         box-shadow:0 0 8px 2px #a8d4ff;
       "></div>
     </div>
-    <!-- Scan Sweep -->
     <div style="
       position:absolute;inset:0;border-radius:50%;overflow:hidden;
       animation:ls-scan 2.5s linear infinite;
@@ -90,7 +79,6 @@
         transform-origin:bottom center;
       "></div>
     </div>
-    <!-- Center Logo -->
     <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
       <div style="
         width:90px;
@@ -105,7 +93,6 @@
     </div>
   </div>
 
-  <!-- Brand Text -->
   <div style="text-align:center;position:relative;z-index:2;">
     <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.55rem;color:#fff;letter-spacing:0.04em;line-height:1.1;">
       {{ appTitle|default:app_title|default:"e-Arsip Pengadaan" }}
@@ -115,7 +102,6 @@
     </div>
   </div>
 
-  <!-- Progress Bar -->
   <div style="width:220px;position:relative;z-index:2;">
     <div style="width:100%;height:2px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;">
       <div id="ls-bar" style="
@@ -139,7 +125,6 @@
   </div>
 </div>
 
-<!-- Loading Screen Styles & Script -->
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=DM+Sans:wght@300;400&display=swap');
   @keyframes ls-spin        { to { transform: rotate(360deg); } }
@@ -169,7 +154,6 @@
       el.style.transform = 'scale(1)';
     }
 
-    // Reset canvas and progress
     var canvas = document.getElementById('ls-particles');
     if(!canvas) return;
     var ctx = canvas.getContext('2d');
@@ -215,7 +199,6 @@
     }
     lsDraw();
 
-    /* ── Progress ticker ── */
     var steps = autoHide ? [
       { pct:20,  msg:'Memuat sistem...' },
       { pct:45,  msg:'Data pengadaan...' },
@@ -237,7 +220,7 @@
     function lsTick() {
       var target = steps[cur].pct;
       if (displayed < target) {
-        displayed += 0.4; // Even slower for a more "heavy", premium feel
+        displayed += 0.4;
         if (displayed > target) displayed = target;
         if (pctEl) pctEl.textContent = Math.floor(displayed) + '%';
         if (bar) bar.style.width   = displayed + '%';
@@ -265,10 +248,8 @@
     requestAnimationFrame(lsTick);
   };
 
-  // Run automatically on page load as a splash screen
   window.showLoadingScreen(true);
 
-  // Show on link clicks
   document.addEventListener('click', function(e) {
     var link = e.target.closest('a');
     if (link && 
@@ -284,7 +265,6 @@
     }
   });
 
-  // Show on form submissions
   document.addEventListener('submit', function(e) {
     var form = e.target;
     if (!form.hasAttribute('data-no-loader')) {
@@ -292,6 +272,3 @@
     }
   });
 </script>
-<!-- ============================================================== -->
-<!-- End Loading Screen -->
-<!-- ============================================================== -->

@@ -1,4 +1,4 @@
-{% extends "border.html" %}
+﻿{% extends "border.html" %}
 
 {% block pagetitle %}Laporan Evaluasi Layanan{% endblock %}
 
@@ -201,7 +201,7 @@
 
 {% block content %}
 <div class="fl-wrapper">
-  <!-- Header -->
+  
   <div class="fl-header-row">
     <div>
       <div class="d-flex align-items-center gap-3">
@@ -218,7 +218,7 @@
     <div id="overall-gauge" data-avg="{{ globalAvg }}" style="width: 250px; height: 160px; margin-bottom: -20px;"></div>
   </div>
 
-  <!-- Stats Grid -->
+  
   <div class="dashboard-grid">
     <div class="stat-card-new blue">
       <h4>Total Respons</h4>
@@ -238,7 +238,7 @@
     </div>
   </div>
 
-  <!-- Charts Section -->
+  
   <div class="section-header" style="margin-bottom: 2rem;">
     <h3 style="font-weight: 900; font-size: 1.6rem; color: var(--text-main);">Performance Layanan</h3>
     <div class="section-line"></div>
@@ -281,14 +281,14 @@
     {% endfor %}
   </div>
 
-  <!-- Testimonials -->
+  
   <div class="testimonials-container">
     <div class="section-header" style="margin-bottom: 1.5rem;">
       <h3 style="font-weight: 900; font-size: 1.6rem; color: var(--text-main);">Pesan & Saran Terbaru</h3>
       <div class="section-line"></div>
     </div>
 
-    <!-- Filters -->
+    
     <div class="d-flex gap-2 mb-4">
         <a href="/feedback/list?filter=semua" class="btn {% if filter == 'semua' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm rounded-pill px-3">Semua</a>
         <a href="/feedback/list?filter=baru" class="btn {% if filter == 'baru' %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm rounded-pill px-3">7 Hari Terakhir</a>

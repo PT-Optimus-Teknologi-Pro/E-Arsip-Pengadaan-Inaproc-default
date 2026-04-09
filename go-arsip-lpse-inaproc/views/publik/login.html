@@ -1,4 +1,4 @@
-{% extends "border.html" %}
+﻿{% extends "border.html" %}
 
 {% block css %}
 <style>
@@ -150,7 +150,7 @@ Login
 <div class="login-page-wrapper">
   <div class="login-card">
 
-    <!-- Icon -->
+    
     <div class="login-icon-wrap">
       <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"
         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -159,20 +159,20 @@ Login
       </svg>
     </div>
 
-    <!-- Judul -->
+    
     <div class="login-title">Sign in your account</div>
     <div class="login-subtitle">Welcome back, please enter your details.</div>
 
     {% include "alert.html" %}
 
     <form action="/login" method="post" enctype="multipart/form-data">
-      <!-- User ID -->
+      
       <div class="mb-3">
         <label class="form-label">User ID</label>
         <input type="text" class="form-control" placeholder="Masukan Username..." name="userid" required autocomplete="username">
       </div>
 
-      <!-- Password -->
+      
       <div class="mb-3">
         <label class="form-label">Password</label>
         <div class="password-wrapper">
@@ -188,7 +188,7 @@ Login
         </div>
       </div>
 
-      <!-- Security Check / Captcha -->
+      
       <div class="mb-3">
         <div class="security-header">
           <label class="form-label">Security Check</label>
@@ -209,7 +209,7 @@ Login
         <input type="text" class="form-control" placeholder="Masukan Captcha..." name="captchaText" required autocomplete="off">
       </div>
 
-      <!-- Submit -->
+      
       <button type="submit" class="btn-signin">Sign In</button>
     </form>
 
