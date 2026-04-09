@@ -29,7 +29,7 @@ func init() {
 		log.Fatal(err)
 		log.Fatal("Failed to Connect to database...")
 	}
-	db.AutoMigrate(&Inbox{}, &HakAkses{}, &Checklist{}, &ChecklistDok{}, &DokTemplate{}, &Provinsi{}, &Kabupaten{}, &BukuTamu{}, &Feedback{}, &Templates{}, &Document{})
+	db.AutoMigrate(&Inbox{}, &HakAkses{}, &Checklist{}, &ChecklistDok{}, &DokTemplate{}, &Provinsi{}, &Kabupaten{}, &BukuTamu{}, &Feedback{}, &FeedbackKategori{}, &Templates{}, &Document{})
 	db.AutoMigrate(&Agency{}, &Ukpbj{}, &Pegawai{}, &SatkerSirup{}, &StrukturAnggaran{}, &PaketSirup{}, &RupSwakelola{}, &SwakelolaSirup{}, &Panitia{}, &AnggotaPanitia{},
 		&PejabatPengadaan{}, &PejabatPengadaanSatker{}, &PejabatPengadaanPegawai{},
 		&Tender{}, &Nontender{}, &Pencatatan{}, &Swakelola{})

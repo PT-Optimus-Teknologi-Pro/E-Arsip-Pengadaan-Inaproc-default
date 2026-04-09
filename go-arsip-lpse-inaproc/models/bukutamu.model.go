@@ -47,6 +47,15 @@ func (obj BukuTamu) Pegawai() Pegawai {
 	return res
 }
 
+type FeedbackKategori struct {
+	gorm.Model
+	Nama string `json:"nama" form:"nama"`
+}
+
+func (FeedbackKategori) TableName() string {
+	return "feedback_kategori"
+}
+
 var JENIS_LAYANAN = []string{"Helpdesk", "Pendaftaran", "Pembuktian Kualifikasi"}
 var SKOR_LAYANAN = []string{"Kualitas Layanan", "Fasilitas Layanan", "Kelengkapan Informasi"}
 
@@ -54,7 +63,9 @@ type Feedback struct {
 	gorm.Model
 	Jenis 			int         `json:"jenis" form:"jenis"`      // jenis layanan
 	Nama			string 		`json:"nama" form:"nama"`
+	Email			string 		`json:"email" form:"email"`
 	NamaPerusahaan	string 		`json:"nama_perusahaan"  form:"nama_perusahaan"`
+	Kategori		string		`json:"kategori" form:"kategori"`
 	Kualitas		int 		`json:"kualitas" form:"kualitas"`   // skor kualitas
 	Fasilitas		int			`json:"fasilitas" form:"fasilitas"` // skor fasilitas
 	Kelengkapan		int 		`json:"kelengkapan" form:"kelengkapan"` // skor kelengkapan
@@ -85,7 +96,7 @@ func GetFeedback(id uint) Feedback {
 	return feedback
 }
 
-func SaveFeedback(kualitas, fasilitas, kelengkapan []string, komentar string) error {
+func SaveFeedback(nama, email, instansi, kategori string, kualitas, fasilitas, kelengkapan []string, komentar string) error {
 	var feedbacks []Feedback
 	for i := range JENIS_LAYANAN {
 		// Safety check for slice indices
@@ -101,12 +112,15 @@ func SaveFeedback(kualitas, fasilitas, kelengkapan []string, komentar string) er
 		kelengkapanInt, _ := strconv.Atoi(keVal)
 
 		feedbacks = append(feedbacks, Feedback{
-			Jenis:       i + 1,
-			Nama:        "Guest",
-			Kualitas:    kualitasInt,
-			Fasilitas:   fasilitasInt,
-			Kelengkapan: kelengkapanInt,
-			Komentar:    komentar,
+			Jenis:          i + 1,
+			Nama:           nama,
+			Email:          email,
+			NamaPerusahaan: instansi,
+			Kategori:       kategori,
+			Kualitas:       kualitasInt,
+			Fasilitas:      fasilitasInt,
+			Kelengkapan:    kelengkapanInt,
+			Komentar:       komentar,
 		})
 	}
 	// Use Create for bulk insert which is more standard and reliable in GORM

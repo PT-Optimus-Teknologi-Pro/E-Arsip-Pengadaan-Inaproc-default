@@ -176,6 +176,22 @@
     .fb-header { flex-direction: column; gap: 15px; }
     .fb-title-group h2 { font-size: 1.5rem; }
   }
+
+  /* Form Elements Upgrade */
+  .fb-select {
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.95rem;
+    color: #334155;
+    background-color: #fcfcfc;
+    transition: all 0.2s;
+  }
+  .fb-select:focus {
+    border-color: #0026B4;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 38, 180, 0.05);
+  }
 </style>
 {% endblock %}
 
@@ -194,12 +210,64 @@
 
   <form action="/feedback" method="post" enctype="multipart/form-data" id="feedbackForm">
     {% include "alert.html" %}
+
+    <!-- Visitor Identity Card -->
+    <div class="fb-card">
+        <div class="fb-card-header">
+            <div class="fb-card-icon" style="background: #eef2ff;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0026B4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <div class="fb-card-title-group">
+                <div class="fb-card-title">Identitas Pengunjung</div>
+                <div class="fb-card-subtitle">Lengkapi identitas Anda sebagai pengirim evaluasi</div>
+            </div>
+        </div>
+        <div class="fb-rating-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Nama Lengkap</label>
+                    <input type="text" name="nama" class="form-control" placeholder="Masukkan nama Anda..." required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="nama@email.com..." required>
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label fw-bold small text-muted text-uppercase">Instansi / Perusahaan</label>
+                    <input type="text" name="nama_perusahaan" class="form-control" placeholder="Asal instansi atau perusahaan...">
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label fw-bold small text-muted text-uppercase mb-2">Kategori Pengunjung</label>
+                    {% if kategoriList|length > 4 %}
+                    <select name="kategori" class="form-select fb-select w-100" required>
+                        <option value="" disabled selected>Pilih Kategori...</option>
+                        {% for k in kategoriList %}
+                        <option value="{{ k.Nama }}">{{ k.Nama }}</option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <div class="d-flex flex-wrap gap-3">
+                        {% for k in kategoriList %}
+                        <label class="form-check form-check-inline" style="cursor: pointer;">
+                            <input class="form-check-input" type="radio" name="kategori" value="{{ k.Nama }}" required>
+                            <span class="form-check-label">{{ k.Nama }}</span>
+                        </label>
+                        {% empty %}
+                        <div class="alert alert-warning py-2 small w-100 mb-0">Belum ada kategori tersedia.</div>
+                        <input type="hidden" name="kategori" value="Umum">
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
     
     {% for obj in jenisLayanan %}
     <div class="fb-card">
       <div class="fb-card-header">
         <div class="fb-card-icon">
-          <img src="/assets/icon-feedback/Layanan {{ obj }}.png" 
+          <img src="/assets/icon-feedback/{% if obj == 'Pembuktian Kualifikasi' %}{{ obj }}{% else %}Layanan {{ obj }}{% endif %}.png" 
                onerror="this.src='/assets/icon-feedback/{{ obj }}.png'; this.onerror=function(){this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" alt="Icon">
         </div>
         <div class="fb-card-title-group">

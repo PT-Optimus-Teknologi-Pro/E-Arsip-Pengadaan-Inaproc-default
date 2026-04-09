@@ -1166,10 +1166,24 @@ new DataTable("#rekap-rencana-skpd", {
           text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg> PDF',
           orientation: 'landscape',
           pageSize: 'LEGAL',
+          exportOptions: {
+            format: {
+              body: function ( data, row, column, node ) {
+                if (column >= 1) { // Month columns: Full labels but stacked vertically
+                  var $node = $(node);
+                  var ren = $node.find('.rr-pill-rencana').text().replace(/[^\d,.]/g, '').trim();
+                  var real = $node.find('.rr-pill-realisasi').text().replace(/[^\d,.]/g, '').trim();
+                  return "Rencana: " + (ren || '0') + "\n" + "Realisasi: " + (real || '0');
+                }
+                return data;
+              }
+            }
+          },
           customize: function(doc) {
-            doc.defaultStyle.fontSize = 7;
-            doc.styles.tableHeader.fontSize = 7;
-            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+            doc.defaultStyle.fontSize = 6;
+            doc.styles.tableHeader.fontSize = 6;
+            // Define precise widths: SKPD 16%, Months 7% each (16 + 12*7 = 100)
+            doc.content[1].table.widths = ['16%', '7%', '7%', '7%', '7%', '7%', '7%', '7%', '7%', '7%', '7%', '7%', '7%'];
           }
         }
       ]

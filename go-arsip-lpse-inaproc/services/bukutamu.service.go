@@ -2,6 +2,7 @@ package services
 
 import (
 	"arsip/models"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -25,8 +26,22 @@ func GetFeedback(id uint) models.Feedback {
 	return models.GetFeedback(id)
 }
 
-func SaveFeedback(kualitas, fasilitas, kelengkapan []string, komentar string) error {
-	return  models.SaveFeedback(kualitas, fasilitas, kelengkapan, komentar)
+func SaveFeedback(nama, email, instansi, kategori string, kualitas, fasilitas, kelengkapan []string, komentar string) error {
+	return models.SaveFeedback(nama, email, instansi, kategori, kualitas, fasilitas, kelengkapan, komentar)
+}
+
+func GetAllFeedbackKategori() []models.FeedbackKategori {
+	var list []models.FeedbackKategori
+	models.GetDB().Order("nama asc").Find(&list)
+	return list
+}
+
+func SaveFeedbackKategori(nama string) error {
+	return models.GetDB().Create(&models.FeedbackKategori{Nama: nama}).Error
+}
+
+func DeleteFeedbackKategori(id uint) error {
+	return models.GetDB().Delete(&models.FeedbackKategori{}, id).Error
 }
 
 func GetSummaryFeedback() []models.SummaryFeedBack {
@@ -84,11 +99,27 @@ func summaryFeedbackByKelengkapan(jenis int) [5]int64 {
 	return summary
 }
 
-func GetAllFeedbacks() []models.Feedback {
+func GetAllFeedbacks(filter string) []models.Feedback {
 	var feedbacks []models.Feedback
-	// Only fetch feedbacks that have non-empty comments
-	models.GetDB().Where("komentar IS NOT NULL AND komentar <> ''").Order("created_at desc").Limit(20).Find(&feedbacks)
+	// Base query: Only fetch feedbacks that have non-empty comments
+	db := models.GetDB().Where("komentar IS NOT NULL AND komentar <> '' AND jenis = 1")
+
+	// Apply time-based filters
+	switch filter {
+	case "baru":
+		// New: records from the last 7 days
+		db = db.Where("created_at >= ?", time.Now().AddDate(0, 0, -7))
+	case "lama":
+		// Old: records older than 7 days
+		db = db.Where("created_at < ?", time.Now().AddDate(0, 0, -7))
+	}
+
+	db.Order("created_at desc").Find(&feedbacks)
 	return feedbacks
+}
+
+func DeleteFeedback(id uint) error {
+	return models.GetDB().Delete(&models.Feedback{}, id).Error
 }
 
 func GetTotalFeedbackResponses() int64 {
