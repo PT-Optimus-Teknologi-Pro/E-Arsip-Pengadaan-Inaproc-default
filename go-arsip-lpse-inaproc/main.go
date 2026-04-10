@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	services.SyncSirup()
+	go services.SyncSirup()
 	services.AutoCreateAdminIfNoExist();
 	c := cron.New()
 	cronjob := config.CronJob()
@@ -34,7 +34,7 @@ func main() {
 
 	if config.IsModeDev(){
 		log.Info("application mode development")
-		engine.Reload(true)
+		engine.Reload(true)	
 	} else {
 		log.Info("application mode production")
 	}

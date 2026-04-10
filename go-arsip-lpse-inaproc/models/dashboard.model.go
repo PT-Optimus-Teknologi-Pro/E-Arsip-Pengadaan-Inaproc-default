@@ -85,12 +85,12 @@ func (obj BebanPersonil) Pagu() float64 {
 }
 
 type RekapPaketSatker struct {
-	KdSatker		uint
-	NamaSatker		string
-	Tender			int
-	Nontender		int
-	Pencatatan		int
-	Katalog			int
+	KdSatker		uint   `gorm:"column:kd_satker" json:"kd_satker"`
+	NamaSatker		string `gorm:"column:nama_satker" json:"nama_satker"`
+	Tender			int    `gorm:"column:tender" json:"tender"`
+	Nontender		int    `gorm:"column:nontender" json:"nontender"`
+	Pencatatan		int    `gorm:"column:pencatatan" json:"pencatatan"`
+	Katalog			int    `gorm:"column:katalog" json:"katalog"`
 }
 
 func (c RekapPaketSatker) MarshalJSON() ([]byte, error) {
@@ -236,11 +236,20 @@ WHERE usrgroup in ('POKJA', 'PP')`, tahun, tahun).Scan(&res)
 
 func GetRekapPaketSatker(tahun int) []RekapPaketSatker {
 	var res []RekapPaketSatker
-db.Raw(`SELECT i.id, nama, t.jumlah tender, n.jumlah nontener, p.jumlah pencatan, k.jumlah katalog FROM satker i
-LEFT JOIN (SELECT kd_satker::numeric id, count(*) jumlah FROM tender WHERE tahun_anggaran= ? GROUP BY kd_satker) t ON  t.id=i.id
-LEFT JOIN (SELECT kd_satker::numeric id, count(*) jumlah FROM nontender WHERE tahun_anggaran= ? GROUP BY kd_satker) n ON n.id = i.id
-LEFT JOIN (SELECT kd_satker::numeric id, count(*) jumlah FROM pencatatan WHERE tahun_anggaran= ? GROUP BY kd_satker) p ON p.id = i.id
-LEFT JOIN (SELECT satker_id, count(*) jumlah FROM katalog_archive WHERE tahun_anggaran= ? GROUP BY satker_id) k ON k.satker_id = i.id`, tahun, tahun, tahun, tahun).Scan(&res)
+	db.Raw(`SELECT 
+		i.id AS kd_satker, 
+		i.nama AS nama_satker, 
+		COALESCE(t.jumlah, 0) AS tender, 
+		COALESCE(n.jumlah, 0) AS nontender, 
+		COALESCE(p.jumlah, 0) AS pencatatan, 
+		COALESCE(k.jumlah, 0) AS katalog 
+	FROM satker i
+	LEFT JOIN (SELECT kd_satker::numeric AS id, count(*) AS jumlah FROM tender WHERE tahun_anggaran=? GROUP BY kd_satker) t ON t.id=i.id
+	LEFT JOIN (SELECT kd_satker::numeric AS id, count(*) AS jumlah FROM nontender WHERE tahun_anggaran=? GROUP BY kd_satker) n ON n.id=i.id
+	LEFT JOIN (SELECT kd_satker::numeric AS id, count(*) AS jumlah FROM pencatatan WHERE tahun_anggaran=? GROUP BY kd_satker) p ON p.id=i.id
+	LEFT JOIN (SELECT satker_id::numeric AS id, count(*) AS jumlah FROM katalog_archive WHERE tahun_anggaran=? GROUP BY satker_id) k ON k.id=i.id
+	WHERE (COALESCE(t.jumlah, 0) + COALESCE(n.jumlah, 0) + COALESCE(p.jumlah, 0) + COALESCE(k.jumlah, 0)) > 0
+	ORDER BY i.nama`, tahun, tahun, tahun, tahun).Scan(&res)
 	return res
 }
 

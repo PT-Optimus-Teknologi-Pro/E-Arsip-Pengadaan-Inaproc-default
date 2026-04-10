@@ -1,4 +1,4 @@
-﻿<header class="app-navbar d-print-none">
+<header class="app-navbar d-print-none">
   <div class="app-navbar-inner">
     
     <a href="/" aria-label="{{ app_title }}" class="app-navbar-brand">
@@ -212,6 +212,7 @@
   font-family: var(--nav-font);
   border-bottom: 2px solid #11215D !important;
   color: #11215D !important;
+  margin-top: 0 !important;
 }
 
 .app-navbar-inner {
@@ -558,7 +559,8 @@
 .app-navbar-backdrop.visible { display: block; }
 
 /* ── Content padding below fixed navbar ───────────── */
-body { padding-top: 0; }
+html, body { margin: 0 !important; padding: 0 !important; top: 0 !important; }
+.page { padding-top: 0 !important; margin-top: 0 !important; }
 
 /* ── RESPONSIVE ───────────────────────────────────── */
 @media (max-width: 991.98px) {

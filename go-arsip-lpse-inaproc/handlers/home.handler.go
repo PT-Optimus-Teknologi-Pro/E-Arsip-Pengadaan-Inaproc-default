@@ -77,9 +77,14 @@ func GetJsonRekapPaketPerSatker(c *fiber.Ctx) error {
 	rekapPerSatker, found := cache.Get(key)
 	if !found {
 		rekapPerSatker = services.GetRekapPaketSatker(tahun)
-		cache.Set(key, rekapPerSatker)
+		if len(rekapPerSatker.([]models.RekapPaketSatker)) > 0 {
+			cache.Set(key, rekapPerSatker)
+		}
 	}
-	responseData := fiber.Map{"data" : rekapPerSatker}
+	responseData := fiber.Map{"data" : []interface{}{}}
+	if len(rekapPerSatker.([]models.RekapPaketSatker)) > 0 {
+		responseData = fiber.Map{"data" : rekapPerSatker}
+	}
 	return c.JSON(responseData)
 }
 
