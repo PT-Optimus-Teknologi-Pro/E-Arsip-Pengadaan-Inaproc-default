@@ -1,0 +1,324 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}Pengaturan Logo{% endblock %}
+
+{% block css %}
+<style>
+  .logo-settings-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 1.5rem 0 4rem;
+  }
+  .logo-settings-title {
+    margin-bottom: 1.5rem;
+  }
+  .logo-settings-title h2 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.2rem;
+  }
+  .logo-settings-title p {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+  .logo-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .logo-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f0f2f5;
+  }
+  .logo-card-header .s-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: #0026B4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-card-header .s-icon svg { color: #fff; }
+  .logo-card-header span {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #0026B4;
+  }
+  .logo-card-body {
+    padding: 1.4rem 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .preview-box {
+    flex-shrink: 0;
+    width: 200px;
+    height: 110px;
+    border: 2px dashed #d1d5db;
+    border-radius: 10px;
+    background: #f9fafb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .preview-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  .preview-box .preview-label {
+    position: absolute;
+    bottom: 6px;
+    left: 0; right: 0;
+    text-align: center;
+    font-size: 0.72rem;
+    color: #9ca3af;
+  }
+  .preview-favicon {
+    width: 80px;
+    height: 80px;
+  }
+  .preview-favicon img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+  }
+  .upload-area {
+    flex: 1;
+    min-width: 220px;
+  }
+  .upload-area label {
+    display: block;
+    font-size: 0.855rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+  .upload-area .hint {
+    font-size: 0.78rem;
+    color: #9ca3af;
+    margin-top: 0.4rem;
+  }
+  .file-row {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .file-row .btn-pick {
+    background: #0026B4;
+    color: #fff;
+    border: none;
+    padding: 0.55rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+  }
+  .file-row .btn-pick:hover { background: #11215D; }
+  .file-row .fname {
+    padding: 0.55rem 0.85rem;
+    font-size: 0.82rem;
+    color: #9ca3af;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .file-real { position:absolute; width:1px; height:1px; opacity:0; overflow:hidden; }
+  .current-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1d4ed8;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+  }
+  .action-bar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #f0f2f5;
+  }
+  .btn-save {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #0026B4;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .btn-save:hover { background: #11215D; box-shadow: 0 4px 14px rgba(0,38,180,0.25); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="logo-settings-wrap">
+
+  <div class="logo-settings-title">
+    <h2>Pengaturan Logo Aplikasi</h2>
+    <p>Ubah logo navbar dan favicon browser yang ditampilkan ke seluruh pengguna.</p>
+  </div>
+
+  {% include "alert.html" %}
+
+  <form action="/settings/logo" method="post" enctype="multipart/form-data">
+
+    <!-- ===== LOGO NAVBAR ===== -->
+    <div class="logo-card">
+      <div class="logo-card-header">
+        <div class="s-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <span>Logo Navbar</span>
+      </div>
+      <div class="logo-card-body">
+        <div class="preview-box" id="logoPreviewBox">
+          <img id="logoPreviewImg" src="{% if settings.LogoPath %}{{ settings.LogoPath }}{% else %}/modern/images/logo.png{% endif %}" alt="Preview Logo"/>
+          <span class="preview-label">Preview</span>
+        </div>
+        <div class="upload-area">
+          {% if settings.LogoPath %}
+          <div class="current-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Logo sudah diset
+          </div>
+          {% endif %}
+          <label>Upload Logo Navbar</label>
+          <div class="file-row" onclick="document.getElementById('fileLogo').click()" style="cursor:pointer;">
+            <button type="button" class="btn-pick">Pilih File</button>
+            <span class="fname" id="logoName">Tidak ada file dipilih</span>
+            <input type="file" id="fileLogo" name="logo" class="file-real" accept=".png,.jpg,.jpeg,.svg,.webp"
+              onchange="previewImage(this,'logoPreviewImg','logoName')"/>
+          </div>
+          <p class="hint">Format: PNG, JPG, SVG, WebP. Ukuran disarankan: 140×60px.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FAVICON BROWSER ===== -->
+    <div class="logo-card">
+      <div class="logo-card-header">
+        <div class="s-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+          </svg>
+        </div>
+        <span>Favicon Browser Tab</span>
+      </div>
+      <div class="logo-card-body">
+        <div class="preview-box preview-favicon" id="faviconPreviewBox">
+          <img id="faviconPreviewImg" src="{% if settings.FaviconPath %}{{ settings.FaviconPath }}{% else %}/modern/images/favicon.ico{% endif %}" alt="Preview Favicon"/>
+          <span class="preview-label">Preview</span>
+        </div>
+        <div class="upload-area">
+          {% if settings.FaviconPath %}
+          <div class="current-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Favicon sudah diset
+          </div>
+          {% endif %}
+          <label>Upload Favicon Browser</label>
+          <div class="file-row" onclick="document.getElementById('fileFavicon').click()" style="cursor:pointer;">
+            <button type="button" class="btn-pick">Pilih File</button>
+            <span class="fname" id="faviconName">Tidak ada file dipilih</span>
+            <input type="file" id="fileFavicon" name="favicon" class="file-real" accept=".ico,.png,.svg"
+              onchange="previewImage(this,'faviconPreviewImg','faviconName')"/>
+          </div>
+          <p class="hint">Format: ICO, PNG, SVG. Ukuran disarankan: 32×32px atau 64×64px.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== JUDUL APLIKASI ===== -->
+    <div class="logo-card">
+      <div class="logo-card-header">
+        <div class="s-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>
+          </svg>
+        </div>
+        <span>Judul & Subtitle</span>
+      </div>
+      <div class="logo-card-body" style="padding-bottom: 2rem; flex-direction: column; gap: 1.5rem;">
+        <div class="upload-area" style="width: 100%;">
+          <label>Teks Judul Browser</label>
+          <input type="text" name="app_title" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                 value="{% if settings.AppTitle %}{{ settings.AppTitle }}{% else %}e-Arsip Pengadaan{% endif %}" placeholder="Contoh: e-Arsip LPSE"/>
+          <p class="hint">Teks ini akan muncul di samping tab favicon pada browser.</p>
+        </div>
+        <div class="upload-area" style="width: 100%;">
+          <label>Teks Loading Subtitle</label>
+          <input type="text" name="loading_subtitle" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                 value="{% if settings.LoadingSubtitle %}{{ settings.LoadingSubtitle }}{% else %}Portal Pengarsipan{% endif %}" placeholder="Contoh: Portal Monitoring Pengadaan"/>
+          <p class="hint">Teks ini akan muncul di bawah logo pada layar loading.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ACTION BAR ===== -->
+    <div class="action-bar" style="background:#fff; border:1px solid #e5e7eb; border-radius:12px; margin-bottom: 2rem;">
+      <button type="submit" class="btn-save">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+        </svg>
+        Simpan Perubahan
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  function previewImage(input, imgId, nameId) {
+    var file = input.files[0];
+    if (!file) return;
+    document.getElementById(nameId).textContent = file.name;
+    if (file.name.toLowerCase().endsWith('.ico')) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById(imgId).src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+</script>
+{% endblock %}

@@ -35,7 +35,8 @@ func init() {
 		&Tender{}, &Nontender{}, &Pencatatan{}, &Swakelola{})
 	db.AutoMigrate(&Anggaran{}, &Paket{}, &PaketAnggaran{}, &PaketSatker{}, &PaketLokasi{}, &ChecklistPaket{}, &ChecklistPaketHistory{}, &DokPaket{},
 		&BeritaAcara{}, &Reviu{}, &ReviuPaket{}, &KajiUlang{}, &DokPersiapan{}, &PerubahanData{}, &PersetujuanDokPersiapan{}, &PaketPPk{})
-	db.AutoMigrate(&Itkp{}, &HeroSlider{}, &SocialLink{}, &QuickLink{}, &ServiceLink{}, &SiteSetting{})
+	db.AutoMigrate(&Itkp{}, &AppSettings{}, &HeroSlider{}, &FooterSocialLink{}, &FooterQuickLink{}, &FooterService{})
+
 	fmt.Println("Connected to database...")
 }
 

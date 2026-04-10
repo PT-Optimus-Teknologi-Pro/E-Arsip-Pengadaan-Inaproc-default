@@ -189,7 +189,7 @@ func Home(c *fiber.Ctx) error {
 	mp["tahunlist"] = tahunList
 
 	var sliders []models.HeroSlider
-	models.GetDB().Where("is_active = ?", true).Order("id desC").Find(&sliders)
+	models.GetDB().Order("id desc").Find(&sliders)
 	for i := range sliders {
 		sliders[i].Image = utils.ToWebPath(sliders[i].Image)
 	}
@@ -221,9 +221,10 @@ func Home(c *fiber.Ctx) error {
 	mp["heroPaketSelesai"] = totalSelesai
 	mp["heroSkpdAktif"] = skpdAktif
 
-	mp["heroBadge"] = models.GetSetting("hero_badge", "Portal Transparansi Pengadaan Daerah")
-	mp["heroTitle"] = models.GetSetting("hero_title", "Sistem Informasi Arsip dan Monitoring Pengadaan")
-	mp["heroSubtitle"] = models.GetSetting("hero_subtitle", "Aplikasi terintegrasi untuk pencatatan, pengarsipan, dan pelaporan progres pengadaan barang dan jasa pemerintah daerah berbasis data RUP.")
+	appSettings := mp["app_settings"].(models.AppSettings)
+	mp["heroBadge"] = appSettings.HeroBadge
+	mp["heroTitle"] = appSettings.HeroTitle
+	mp["heroSubtitle"] = appSettings.HeroSubtitle
 
 	return c.Render("beranda/home", mp)
 }
@@ -274,28 +275,27 @@ func currentMap(c *fiber.Ctx) fiber.Map {
 	}
 	mp["path"] = string(c.Request().URI().Path())
 
-	appTitle := models.GetSetting("app_title", "e-Arsip Pengadaan")
-	logoPath := utils.ToWebPath(models.GetSetting("logo_path", "/modern/images/logo.png"))
-	faviconPath := utils.ToWebPath(models.GetSetting("favicon_path", "/favicon.ico"))
+	appSettings := services.GetSettings()
+
+	logoPath := appSettings.LogoPath
+	if logoPath == "" { logoPath = "/modern/images/logo.png" }
+	logoPath = utils.ToWebPath(logoPath)
+
+	faviconPath := appSettings.FaviconPath
+	if faviconPath == "" { faviconPath = "/favicon.ico" }
+	faviconPath = utils.ToWebPath(faviconPath)
+
+	appTitle := appSettings.AppTitle
+	if appTitle == "" { appTitle = "e-Arsip Pengadaan" }
 
 	mp["app_title"] = appTitle
 	mp["appTitle"] = appTitle
-	mp["site_slogan"] = models.GetSetting("site_slogan", "Sistem Informasi Arsip Digital")
+	mp["appSubtitle"] = appSettings.LoadingSubtitle
 	mp["logo_path"] = logoPath
 	mp["logoPath"] = logoPath
 	mp["favicon_path"] = faviconPath
 	mp["faviconPath"] = faviconPath
-
-	mp["app_settings"] = map[string]interface{}{
-		"FooterDescription": models.GetSetting("footer_description", "Portal Informasi Monitoring Pengadaan Daerah. Menyediakan transparansi data rencana dan realisasi pengadaan barang/jasa secara real-time."),
-		"FooterAddress":     models.GetSetting("footer_address", "Gedung Sekretariat Daerah, Lantai 2. Bagian Pengadaan Barang dan Jasa."),
-		"FooterEmail":       models.GetSetting("footer_email", "admin@lpse.example.go.id"),
-		"FooterPhone":       models.GetSetting("footer_phone", "(021) 12345678"),
-		"FooterWorkHours":   models.GetSetting("footer_work_hours", "Senin - Jumat: 08:00 - 16:00"),
-		"FooterFacebook":    models.GetSetting("footer_facebook", "#"),
-		"FooterInstagram":   models.GetSetting("footer_instagram", "#"),
-		"FooterTwitter":     models.GetSetting("footer_twitter", "#"),
-	}
+	mp["app_settings"] = appSettings
 
 	return mp
 }
@@ -338,21 +338,21 @@ func Forbiden(c *fiber.Ctx) error {
 func GetFooterSocials() []map[string]interface{} {
 	var res []map[string]interface{}
 
-	fb := models.GetSetting("footer_facebook", "#")
-	if fb != "#" && fb != "" {
-		res = append(res, map[string]interface{}{"label": "Facebook", "url": fb, "icon": "facebook"})
+	// Static entries from AppSettings
+	appSettings := services.GetSettings()
+	if appSettings.FooterFacebook != "" && appSettings.FooterFacebook != "#" {
+		res = append(res, map[string]interface{}{"label": "Facebook", "url": appSettings.FooterFacebook, "icon": "facebook"})
 	}
-	ig := models.GetSetting("footer_instagram", "#")
-	if ig != "#" && ig != "" {
-		res = append(res, map[string]interface{}{"label": "Instagram", "url": ig, "icon": "instagram"})
+	if appSettings.FooterInstagram != "" && appSettings.FooterInstagram != "#" {
+		res = append(res, map[string]interface{}{"label": "Instagram", "url": appSettings.FooterInstagram, "icon": "instagram"})
 	}
-	tw := models.GetSetting("footer_twitter", "#")
-	if tw != "#" && tw != "" {
-		res = append(res, map[string]interface{}{"label": "Twitter", "url": tw, "icon": "twitter"})
+	if appSettings.FooterTwitter != "" && appSettings.FooterTwitter != "#" {
+		res = append(res, map[string]interface{}{"label": "Twitter", "url": appSettings.FooterTwitter, "icon": "twitter"})
 	}
 
-	var socialLinks []models.SocialLink
-	models.GetDB().Order("sort asc").Find(&socialLinks)
+	// Dynamic entries from footer_social_links table
+	var socialLinks []models.FooterSocialLink
+	models.GetDB().Order("sort asc, id asc").Find(&socialLinks)
 	for _, s := range socialLinks {
 		res = append(res, map[string]interface{}{
 			"label": s.Label,
@@ -364,8 +364,8 @@ func GetFooterSocials() []map[string]interface{} {
 }
 
 func GetFooterQuicks() []map[string]interface{} {
-	var quickLinks []models.QuickLink
-	models.GetDB().Order("sort asc").Find(&quickLinks)
+	var quickLinks []models.FooterQuickLink
+	models.GetDB().Order("sort asc, id asc").Find(&quickLinks)
 	var res []map[string]interface{}
 	for _, q := range quickLinks {
 		res = append(res, map[string]interface{}{
@@ -377,8 +377,8 @@ func GetFooterQuicks() []map[string]interface{} {
 }
 
 func GetFooterServices() []map[string]interface{} {
-	var serviceLinks []models.ServiceLink
-	models.GetDB().Order("sort asc").Find(&serviceLinks)
+	var serviceLinks []models.FooterService
+	models.GetDB().Order("sort asc, id asc").Find(&serviceLinks)
 	var res []map[string]interface{}
 	for _, s := range serviceLinks {
 		res = append(res, map[string]interface{}{

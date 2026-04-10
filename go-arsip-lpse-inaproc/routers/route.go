@@ -51,7 +51,29 @@ func SetupRoutes(app *fiber.App) {
 	feedback.Post("/", handlers.SubmitFeedback)
 
 
-	app.Post("/login", handlers.SubmitLogin)
+	settings := app.Group("/settings", handlers.LoggedMiddleware)
+	settings.Get("/logo", handlers.GetLogoSettings)
+	settings.Post("/logo", handlers.UpdateLogoSettings)
+	settings.Get("/hero", handlers.GetHeroSettings)
+	settings.Post("/hero", handlers.UpdateHeroSettings)
+	settings.Get("/footer", handlers.GetFooterSettings)
+	settings.Post("/footer", handlers.UpdateFooterSettings)
+	settings.Post("/slider", handlers.UploadHeroSlider)
+	settings.Get("/slider/hapus/:id", handlers.DeleteHeroSlider)
+
+	// Footer Dynamic Sub-Routes
+	settings.Post("/social-link", handlers.CreateFooterSocialLink)
+	settings.Post("/social-link/:id", handlers.UpdateFooterSocialLink)
+	settings.Get("/social-link/hapus/:id", handlers.DeleteFooterSocialLink)
+
+	settings.Post("/quick-link", handlers.CreateFooterQuickLink)
+	settings.Post("/quick-link/:id", handlers.UpdateFooterQuickLink)
+	settings.Get("/quick-link/hapus/:id", handlers.DeleteFooterQuickLink)
+
+	settings.Post("/footer-service", handlers.CreateFooterService)
+	settings.Post("/footer-service/:id", handlers.UpdateFooterService)
+	settings.Get("/footer-service/hapus/:id", handlers.DeleteFooterService)
+
 	app.Get("/download/:id", handlers.Download)
 	app.Get("/download-all/:id", handlers.DownloadAll)
 	app.Get("/logout", handlers.LoggedMiddleware, handlers.Logout)
