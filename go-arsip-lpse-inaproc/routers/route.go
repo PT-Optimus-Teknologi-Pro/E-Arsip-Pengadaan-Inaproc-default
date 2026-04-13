@@ -140,6 +140,13 @@ func SetupRoutes(app *fiber.App) {
 	// document.Put("/:id", handlers.UpdateDocument)
 	document.Delete("/:id", handlers.DeleteDocument)
 
+	adminDoc := app.Group("/admin-document", handlers.LoggedMiddleware)
+	adminDoc.Get("/", handlers.GetAllAdminDocument)
+	adminDoc.Get("/data", handlers.GetJsonAdminDocument)
+	adminDoc.Get("/zip-all", handlers.DownloadAllAdminDocument)
+	adminDoc.Post("/upload", handlers.UploadAdminDocument)
+	adminDoc.Get("/hapus/:id", handlers.DeleteAdminDocument)
+
 	verifikasi := app.Group("/verifikasi", handlers.LoggedMiddleware)
 	verifikasi.Get("/data", handlers.GetJsonVerifikasi)
 	verifikasi.Get("/view", handlers.GetVerifikasiView)

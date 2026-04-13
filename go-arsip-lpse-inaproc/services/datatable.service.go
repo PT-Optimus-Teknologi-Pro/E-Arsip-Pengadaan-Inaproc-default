@@ -74,6 +74,10 @@ func GetDataTableDocument(c *fiber.Ctx) error {
 	return models.GetDataTableDocument(c)
 }
 
+func GetDataTableAdminDocument(c *fiber.Ctx) error {
+	return models.GetDataTableAdminDocument(c)
+}
+
 func GetDataTableChecklist(c *fiber.Ctx) error {
 	return models.GetDataTableChecklist(c)
 }

@@ -22,6 +22,10 @@ func GetDocumentPegawai(pegId uint) []models.Document {
 	return models.GetDocumentPegawai(pegId)
 }
 
+func GetAdminDocuments() []models.Document {
+	return models.GetAllDocumentByJenis(models.ADMIN_DOK)
+}
+
 func DeleteDocument(document models.Document) error {
 	err := os.Remove(document.Filepath)
 	if err != nil {

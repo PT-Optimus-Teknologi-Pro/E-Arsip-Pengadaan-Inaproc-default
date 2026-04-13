@@ -29,6 +29,7 @@ const (
 	HASIL_PENGADAAN string = "HASIL_PENGADAAN"
 	HASIL_PEKERJAAN string = "HASIL_PEKERJAAN"
 	KONTRAK			string = "KONTRAK"
+	ADMIN_DOK		string = "ADMIN_DOK"
 )
 
 type Document struct {
@@ -60,6 +61,8 @@ func (c Document) Label() string {
 		return "Sertifikat Pengadaan"
 	case CHECKLIST:
 		return "Checklist"
+	case ADMIN_DOK:
+		return "Dokumen Tambahan Lainnya"
 	}
 	return ""
 }
@@ -79,6 +82,12 @@ func GetDocumentByJenis(id uint, jenis string) Document {
 func GetDocumentPegawai(pegId uint) []Document {
 	var rest []Document
 	db.Find(&rest, "peg_id = ?", pegId)
+	return rest
+}
+
+func GetAllDocumentByJenis(jenis string) []Document {
+	var rest []Document
+	db.Find(&rest, "jenis = ?", jenis)
 	return rest
 }
 

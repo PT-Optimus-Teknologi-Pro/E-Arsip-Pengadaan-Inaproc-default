@@ -388,3 +388,76 @@ func GetFooterServices() []map[string]interface{} {
 	}
 	return res
 }
+
+func UploadAdminDocument(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	if !mp["isAdmin"].(bool) {
+		return Forbiden(c)
+	}
+	userid := mp["id"].(uint)
+	_, err := models.SaveDocument(c, userid, models.ADMIN_DOK, "file")
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Gagal mengupload dokumen: "+err.Error(), "/admin-document")
+	}
+	return flashSuccess(c, "Dokumen berhasil diupload", "/admin-document")
+}
+
+func GetAllAdminDocument(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	if !mp["isAdmin"].(bool) {
+		return Forbiden(c)
+	}
+	return c.Render("document/admin-index", mp)
+}
+
+func GetJsonAdminDocument(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	if !mp["isAdmin"].(bool) {
+		return Forbiden(c)
+	}
+	return services.GetDataTableAdminDocument(c)
+}
+
+func DeleteAdminDocument(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	if !mp["isAdmin"].(bool) {
+		return Forbiden(c)
+	}
+	docId, _ := c.ParamsInt("id")
+	doc := services.GetDocument(uint(docId))
+	if doc.ID == 0 || doc.Jenis != models.ADMIN_DOK {
+		return flashError(c, "Dokumen tidak ditemukan", "/admin-document")
+	}
+	err := services.DeleteDocument(doc)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Gagal menghapus dokumen: "+err.Error(), "/admin-document")
+	}
+	return flashSuccess(c, "Dokumen berhasil dihapus", "/admin-document")
+}
+
+func DownloadAllAdminDocument(c *fiber.Ctx) error {
+	log.Info("DownloadAllAdminDocument hit")
+	mp := currentMap(c)
+	if !mp["isAdmin"].(bool) {
+		return Forbiden(c)
+	}
+	log.Info("create zip file for admin documents")
+	var files []string
+	docs := services.GetAdminDocuments()
+	for _, v := range docs {
+		files = append(files, v.Filepath)
+	}
+
+	if len(files) == 0 {
+		return flashError(c, "Tidak ada dokumen untuk didownload", "/admin-document")
+	}
+
+	zipFile, err := utils.CreateZip(files, "dokumen-admin.zip")
+	if err != nil {
+		log.Error("Error creating ", zipFile, " : ", err)
+		return flashError(c, "Gagal membuat file zip: "+err.Error(), "/admin-document")
+	}
+	return c.SendFile(zipFile)
+}

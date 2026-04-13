@@ -227,6 +227,12 @@ func GetDataTableDocument(c *fiber.Ctx) error {
 	return populate(orm, c, datas, "id", "filename", "filesize", "filedate")
 }
 
+func GetDataTableAdminDocument(c *fiber.Ctx) error {
+	var datas []Document
+	orm := db.Model(&Document{}).Where("jenis = ?", ADMIN_DOK)
+	return populate(orm, c, datas, "id", "filename", "filesize", "filedate")
+}
+
 func GetDataTableChecklist(c *fiber.Ctx) error {
 	orm := db.Model(&Checklist{})
 	var datas []Checklist
