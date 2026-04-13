@@ -16,13 +16,26 @@ func CreateVerifikasi(c *fiber.Ctx) error {
 	usrgroup := sess.Get("group").(string)
 	action := c.FormValue("action")
 	group := c.FormValue("usrgroup")
-	user.Usrgroup = group
+	if action == "approve" {
+		user.Usrgroup = group
+	}
 	err := services.VerifikasiAkun(user, action, usrgroup)
 	if err != nil {
 		log.Error(err)
-		return flashError(c, "Verifikasi Akun " + user.PegNama + " Gagal", "/verifikasi")
+		return flashError(c, "Tindakan pada Akun " + user.PegNama + " Gagal", "/verifikasi")
 	}
-	return flashSuccess(c, "Verifikasi Akun " + user.PegNama + " Sukses! Data sekarang dapat dilihat di menu Pegawai.","/verifikasi")
+	message := "Tindakan berhasil dialakukan."
+	switch action {
+	case "approve":
+		message = "Verifikasi Akun " + user.PegNama + " Sukses! Data sekarang dapat dilihat di menu Pegawai."
+	case "reject":
+		message = "Penolakan Akun " + user.PegNama + " berhasil. Data tetap terekam sebagai Ditolak."
+	case "block":
+		message = "Akun " + user.PegNama + " berhasil di-Banned/Block. Akses login dikunci permanen."
+	case "delete":
+		message = "Data pendaftar " + user.PegNama + " telah Dihapus Permanen dari sistem."
+	}
+	return flashSuccess(c, message, "/verifikasi")
 }
 
 func GetAllVerifikasi(c *fiber.Ctx) error {
@@ -59,4 +72,14 @@ func GetVerifikasiView(c *fiber.Ctx) error {
 	mp["pegawai"] = user
 	mp["documents"] = documents
 	return c.Render("verifikasi/verifikasi-view", mp)
+}
+
+func DeleteVerifikasi(c *fiber.Ctx) error {
+	id, _ := c.ParamsInt("id")
+	err := services.DeletePegawai(uint(id))
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Hapus Akun Pendaftar Gagal", "/verifikasi")
+	}
+	return flashSuccess(c, "Data pendaftar telah berhasil dibumihanguskan.", "/verifikasi")
 }

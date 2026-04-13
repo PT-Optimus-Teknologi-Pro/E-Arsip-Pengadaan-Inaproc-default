@@ -80,7 +80,7 @@ func GetDataTableAgency(c *fiber.Ctx) error {
 
 func GetDataTableUkpbj(c *fiber.Ctx) error {
 	var datas []Ukpbj
-	return populate(db.Model(&Ukpbj{}), c, datas, "id", "nama", "alamat", "tgl_daftar")
+	return populate(db.Model(&Ukpbj{}), c, &datas, "id", "nama", "alamat", "tgl_daftar")
 }
 
 func GetDataTablePerubahanData(c *fiber.Ctx, usrsession UserSession) error {
@@ -91,13 +91,17 @@ func GetDataTablePerubahanData(c *fiber.Ctx, usrsession UserSession) error {
 	} else {
 		orm.Where("dok_id > 0")
 	}
-	return populate(orm, c, datas,  "id", "nomor", "perihal", "created_at", "status", "pegawai.peg_nama")
+	return populate(orm, c, &datas,  "id", "nomor", "perihal", "created_at", "status", "pegawai.peg_nama")
 }
 
 func GetDataTableVerifikasi(c *fiber.Ctx) error {
 	var datas []Pegawai
-	orm := db.Model(&Pegawai{}).Where("usrgroup IN ?", []string{PPK, PP, POKJA, PEGAWAI})
-	return populate(orm, c, datas,  "id", "peg_nama", "peg_nip", "peg_namauser")
+	orm := db.Model(&Pegawai{}).Where("usrgroup IN ('PPK', 'PP', 'POKJA', 'PEGAWAI', '') and deleted_at IS NULL")
+	statusFilter := c.Query("status")
+	if statusFilter != "" && statusFilter != "all" {
+		orm = orm.Where("peg_status = ?", statusFilter)
+	}
+	return populate(orm, c, &datas, "id", "peg_nama", "peg_nip", "peg_email", "peg_namauser", "peg_status")
 }
 
 func GetDataTablePaketSirup(c *fiber.Ctx, tahun int, satker string, metode string, jenis string) error {
@@ -130,13 +134,13 @@ func GetDataTablePaketSirup(c *fiber.Ctx, tahun int, satker string, metode strin
 		}
 		orm = orm.Where("jenis_paket = ?", jenisId)
 	}
-	return populate(orm, c, datas,  "id", "nama", "pagu", "tahun", "kode_kldi")
+	return populate(orm, c, &datas,  "id", "nama", "pagu", "tahun", "kode_kldi")
 }
 
 func GetDataTableSwakelolaSirup(c *fiber.Ctx) error {
 	orm := db.Model(&SwakelolaSirup{})
 	var datas []SwakelolaSirup
-	return populate(orm, c, datas,  "id", "nama", "pagu", "tahun", "kode_kldi")
+	return populate(orm, c, &datas,  "id", "nama", "pagu", "tahun", "kode_kldi")
 }
 
 func GetDataTablePegawai(c *fiber.Ctx, usrgroup string) error {
@@ -147,61 +151,65 @@ func GetDataTablePegawai(c *fiber.Ctx, usrgroup string) error {
 		orm.Where("peg_status IN (1, 2) AND usrgroup IN ('PPK', 'POKJA', 'PP')")
 	}
 	var datas []Pegawai
-	return populate(orm, c, datas,  "id", "peg_nama", "peg_nip", "peg_namauser")
+	return populate(orm, c, &datas,  "id", "peg_nama", "peg_nip", "peg_namauser")
 }
 
 func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp bool) error {
 	orm := db.Model(&Paket{})
 	pegawai := GetPegawai(id)
 	if isPPK && pegawai.IsApprove(){
-		orm.Where("ppk_id = ?", id)
+		orm = orm.Where("ppk_id = ?", id)
 	} else if isUkpbj {
-		orm.Where("ukpbj_id <> 0 OR status >= 1")
+		orm = orm.Where("ukpbj_id <> 0 OR status >= 1")
 	} else if isPokja && pegawai.IsApprove() {
-		orm.Where("pnt_id IN (SELECT pnt_id FROM anggota_panitia WHERE peg_id=? and deleted_at IS NULL)", id)
+		orm = orm.Where("pnt_id IN (SELECT pnt_id FROM anggota_panitia WHERE peg_id=? and deleted_at IS NULL)", id)
 	} else if isPp && pegawai.IsApprove() {
-		orm.Where("pp_id = ?", id)
+		orm = orm.Where("pp_id = ?", id)
 	} else {
 		return populateEmpty(c)
 	}
+	metode := c.Query("metode")
+	if metode != "" && metode != "all" {
+		orm = orm.Where("metode = ?", metode)
+	}
 	var datas []Paket
-	return populate(orm, c, datas,  "id", "nama", "pagu", "hps", "Created_at", "created_by", "status")
+	return populate(orm, c, &datas,  "id", "nama", "pagu", "hps", "Created_at", "created_by", "status")
 }
 
 func GetDataTableTemplates(c *fiber.Ctx) error {
 	orm :=db.Model(&Templates{})
 	var datas []Templates
-	return populate(orm, c, datas,  "id", "nama", "content")
+	return populate(orm, c, &datas,  "id", "nama", "content")
 }
 
 func GetDataTableReviu(c *fiber.Ctx) error {
 	orm := db.Model(&Reviu{})
 	var datas []Reviu
-	return populate(orm, c, datas,  "id", "bidang", "content", "opsi1", "opsi2")
+	return populate(orm, c, &datas,  "id", "bidang", "content", "opsi1", "opsi2")
 }
 
 func GetDataTablePanitia(c *fiber.Ctx) error {
 	orm := db.Model(&Panitia{})
 	var datas []Panitia
-	return populate(orm, c, datas,  "id", "nama", "tahun")
+	return populate(orm, c, &datas,  "id", "nama", "tahun")
 }
 
 func GetDataTablePp(c *fiber.Ctx) error {
 	orm := db.Model(&PejabatPengadaan{})
 	var datas []PejabatPengadaan
-	return populate(orm, c, datas,  "id", "groups", "tahun", "no_sk")
+	return populate(orm, c, &datas,  "id", "groups", "tahun", "no_sk")
 }
 
 func GetDataTableInbox(c *fiber.Ctx, id uint) error {
 	orm := db.Model(&Inbox{}).Where("peg_id=?", id)
 	var datas []Inbox
-	return populate(orm, c, datas,  "id", "subject", "enqueue_date", "status")
+	return populate(orm, c, &datas,  "id", "subject", "enqueue_date", "status")
 }
 
 func GetDataTableDocTemplate(c *fiber.Ctx) error {
 	orm := db.Model(&DokTemplate{})
 	var datas []DokTemplate
-	return populate(orm, c, datas,  "id", "jenis", "periode_awal", "periode_akhir")
+	return populate(orm, c, &datas,  "id", "jenis", "periode_awal", "periode_akhir")
 }
 
 func GetDataTableBukuTamu(c *fiber.Ctx, isUkpbj bool) error {
@@ -212,31 +220,31 @@ func GetDataTableBukuTamu(c *fiber.Ctx, isUkpbj bool) error {
 	// 	orm.Where("kategori = 'pengadaan'")
 	// }
 	var datas []BukuTamu
-	return populate(orm, c, datas, "id", "nama", "nama_perusahaan", "email", "keperluan")
+	return populate(orm, c, &datas, "id", "nama", "nama_perusahaan", "email", "keperluan")
 }
 
 func GetDataTableFeedback(c *fiber.Ctx) error {
 	orm := db.Model(&Feedback{})
 	var datas []Feedback
-	return populate(orm, c, datas, "id", "nama", "nama_perusahaan", "feedback", "kepuasan")
+	return populate(orm, c, &datas, "id", "nama", "nama_perusahaan", "feedback", "kepuasan")
 }
 
 func GetDataTableDocument(c *fiber.Ctx) error {
 	orm := db.Model(&Document{})
 	var datas []Document
-	return populate(orm, c, datas, "id", "filename", "filesize", "filedate")
+	return populate(orm, c, &datas, "id", "filename", "filesize", "filedate")
 }
 
 func GetDataTableAdminDocument(c *fiber.Ctx) error {
 	var datas []Document
 	orm := db.Model(&Document{}).Where("jenis = ?", ADMIN_DOK)
-	return populate(orm, c, datas, "id", "filename", "filesize", "filedate")
+	return populate(orm, c, &datas, "id", "filename", "filesize", "filedate")
 }
 
 func GetDataTableChecklist(c *fiber.Ctx) error {
 	orm := db.Model(&Checklist{})
 	var datas []Checklist
-	return populate(orm, c, datas, "id", "jenis", "metode", "periode_awal", "periode_akhir")
+	return populate(orm, c, &datas, "id", "jenis", "metode", "periode_awal", "periode_akhir")
 }
 
 func populate(db *gorm.DB, c *fiber.Ctx, result interface{}, columns ...string) error {
@@ -285,7 +293,7 @@ func populate(db *gorm.DB, c *fiber.Ctx, result interface{}, columns ...string) 
 			db = db.Order(columns[columnIdx] + " " + order_status)
 		}
 	}
-	db.Debug().Limit(length).Offset(start).Find(&result)
+	db.Debug().Limit(length).Offset(start).Find(result)
 	draw := c.QueryInt("draw")
 	responseData := fiber.Map{
 		"draw" : draw,

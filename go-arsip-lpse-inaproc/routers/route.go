@@ -152,6 +152,7 @@ func SetupRoutes(app *fiber.App) {
 	verifikasi.Get("/data", handlers.GetJsonVerifikasi)
 	verifikasi.Get("/view", handlers.GetVerifikasiView)
 	verifikasi.Get("/", handlers.GetAllVerifikasi)
+	verifikasi.Get("/hapus/:id", handlers.DeleteVerifikasi)
 	verifikasi.Get("/:id", handlers.GetVerifikasi)
 	verifikasi.Post("/:id", handlers.CreateVerifikasi)
 
@@ -229,6 +230,7 @@ func SetupRoutes(app *fiber.App) {
 	paket.Get("/surat-penunjukan/:id", handlers.SuratPenunjukan)
 	paket.Post("/:id", handlers.UpdatePaket)
 	paket.Get("/", handlers.GetAllPaket)
+	paket.Get("/metode-filter", handlers.GetMetodeFilter)
 	paket.Get("/:id", handlers.GetPaket)
 
 	dokfinal := app.Group("/dok-final", handlers.LoggedMiddleware)

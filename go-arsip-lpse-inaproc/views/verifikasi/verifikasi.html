@@ -20,6 +20,17 @@ Daftar Pengajuan
         <div class="card">
             <div class="card-body">
                 {% include "alert.html" %}
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Filter Status</label>
+                        <select class="form-select" id="filter_status">
+                            <option value="all">Semua</option>
+                            <option value="0">Menunggu Verifikasi</option>
+                            <option value="1">Disetujui</option>
+                            <option value="3">Ditolak / Di-Block</option>
+                        </select>
+                    </div>
+                </div>
                     <table class="table table-bordered table-striped" id="table-data">
                         <thead>
                         <tr>
@@ -28,6 +39,7 @@ Daftar Pengajuan
                             <th width="15%">Email</th>
                             <th width="15%">User ID</th>
                             <th width="10%">status</th>
+                            <th width="10%">Aksi</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -41,7 +53,7 @@ Daftar Pengajuan
     {% block script %}
     <script>
         var table = new DataTable("#table-data", {
-            ajax: '/verifikasi/data',
+            ajax: '/verifikasi/data?status=all',
             processing: true,
             serverSide: true,
             columns: [
@@ -54,17 +66,23 @@ Daftar Pengajuan
                 {data : "peg_namauser"},
                 {data : "peg_status", render : function (data, type, row){
                         if(data == 0)
-                            return '<span class="badge bg-yellow-lt">Verifikasi</span>'
-                        else if (data == 1)
-                            return '<span class="badge bg-green-lt">Disetujui Admin</span>'
-                        else if (data == 2)
-                            return '<span class="badge bg-blue-lt">Disetujui UKPBJ</span>'
+                            return '<span class="badge bg-yellow-lt">Menunggu Verifikasi</span>'
+                        else if (data == 1 || data == 2)
+                            return '<span class="badge bg-green-lt">Disetujui</span>'
                         else if (data == 3)
                             return '<span class="badge bg-red-lt">Ditolak</span>'
+                    }
+                },
+                {data : "id", orderable: false, searchable: false, render : function(data, type, row){
+                        return '<a href="/verifikasi/hapus/'+data+'" class="btn btn-danger btn-sm" onclick="return confirm(\'Hapus permanen pendaftar ini dari database?\');">Hapus</a>'
                     }
                 }
             ],
             aaSorting: [[0, 'desc']]
+        });
+
+        $('#filter_status').on('change', function(){
+            table.ajax.url('/verifikasi/data?status=' + $(this).val()).load();
         });
     </script>
 {% endblock %}

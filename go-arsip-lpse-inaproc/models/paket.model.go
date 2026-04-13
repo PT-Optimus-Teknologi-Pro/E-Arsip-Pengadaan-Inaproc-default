@@ -410,3 +410,24 @@ func (PaketPPk) TableName() string {
 func SavePaketPPk(paketPpk *PaketPPk) error {
 	return db.Save(paketPpk).Error
 }
+
+type ActiveMetode struct {
+	ID    int    `json:"id"`
+	Label string `json:"label"`
+}
+
+func GetActiveMetodePaket() []ActiveMetode {
+	var methods []int
+	db.Model(&Paket{}).Distinct("metode").Pluck("metode", &methods)
+
+	result := []ActiveMetode{}
+	for _, id := range methods {
+		if id >= 0 && id < len(metodePengadaan) {
+			result = append(result, ActiveMetode{
+				ID:    id,
+				Label: metodePengadaan[id],
+			})
+		}
+	}
+	return result
+}

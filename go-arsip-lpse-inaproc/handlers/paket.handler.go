@@ -48,7 +48,7 @@ func CreatePaket(c *fiber.Ctx) error {
 	paketId, err := services.CreatePaket(rupid, id)
 	if err != nil {
 		log.Error(err)
-		return flashError(c, "Tambah Paket Gagal", "/paket/edit")
+		return flashError(c, "Tambah Paket Gagal: "+err.Error(), "/paket/edit")
 	}
 	return flashSuccess(c, "Tambah Paket Sukses", "/paket/"+strconv.Itoa(int(paketId)))
 }
@@ -505,4 +505,8 @@ func DownloadDokTambahan(c *fiber.Ctx) error {
 		log.Error("Error creating ", zipFile, " : ", err)
 	}
 	return c.SendFile(zipFile)
+}
+
+func GetMetodeFilter(c *fiber.Ctx) error {
+	return c.JSON(models.GetActiveMetodePaket())
 }

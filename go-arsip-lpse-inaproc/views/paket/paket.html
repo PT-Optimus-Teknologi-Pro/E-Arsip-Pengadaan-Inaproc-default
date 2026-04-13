@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Daftar Paket
@@ -20,6 +20,14 @@ Daftar Paket
         <div class="card">
             <div class="card-body">
                 {% include "alert.html" %}
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Filter Metode</label>
+                        <select class="form-select" id="filter_metode">
+                            <option value="all">Semua Metode</option>
+                        </select>
+                    </div>
+                </div>
                 <table class="table table-bordered table-striped" id="table-data">
                     <thead>
                     <tr>
@@ -48,8 +56,8 @@ Daftar Paket
 
 {% block script %}
 <script>
-    new DataTable("#table-data", {
-        ajax: '/paket/data',
+    var table = new DataTable("#table-data", {
+        ajax: '/paket/data?metode=all',
         processing: true,
         serverSide: true,
         columns: [
@@ -98,6 +106,19 @@ Daftar Paket
         drawCallback: function( settings ) {
             feather.replace();
         }
+    });
+
+    // Populate Metode Filter
+    $.get('/paket/metode-filter', function(data) {
+        data.forEach(function(item) {
+            $('#filter_metode').append(`<option value="${item.id}">${item.label}</option>`);
+        });
+    });
+
+    // Handle Filter Change
+    $('#filter_metode').on('change', function() {
+        var val = $(this).val();
+        table.ajax.url('/paket/data?metode=' + val).load();
     });
 </script>
 {% endblock %}

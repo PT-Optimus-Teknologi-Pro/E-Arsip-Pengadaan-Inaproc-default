@@ -58,12 +58,13 @@ Detil Verifikasi
                             <label class="col-sm-3 text-end control-label col-form-label">Pengangkatan Menjadi</label>
                             <div class="col-sm-4">
                                 {%if isAdmin %}
-                                {%if pegawai.IsPPK %}
+                                {%if pegawai.IsPPK || pegawai.PegStatus != 0 %}
                                 <p class="form-control-plaintext role-highlight">{{ pegawai.RoleLabel }}</p>
-                                <input type="hidden" name="usrgroup" value="PPK"/>
+                                <input type="hidden" name="usrgroup" value="{{ pegawai.Usrgroup }}"/>
                                 {% else %}
-                                <select class="form-control role-highlight" name="usrgroup">
-                                   <option value="PP">Pejabat Pengadaan</option>
+                                <select class="form-control role-highlight" name="usrgroup" required oninvalid="this.setCustomValidity('PEMBERITAHUAN: Anda harus memilih (Pengangkatan Menjadi) terlebih dahulu sebelum melakukan Approve!')" oninput="this.setCustomValidity('')">
+                                   <option value="" selected disabled>-- Pilih Pengangkatan --</option>
+                                   <option value="PP">Pejabat Pengadaan/PPK</option>
                                    <option value="POKJA">Pokja</option>
                                 </select>
                                 {% endif %}
@@ -188,8 +189,14 @@ Detil Verifikasi
                         <button type="submit" class="btn btn-primary" name="action" value="approve">
                             <span style="width: 16px;" data-feather="save"></span> Approve
                         </button>
-                        <button type="submit" class="btn btn-danger" name="action" value="reject">
-                            <span style="width: 16px;" data-feather="save"></span> Rejected
+                        <button type="submit" class="btn btn-warning" name="action" value="reject" formnovalidate>
+                            <span style="width: 16px;" data-feather="x-circle"></span> Rejected
+                        </button>
+                        <button type="submit" class="btn btn-danger" name="action" value="block" formnovalidate>
+                            <span style="width: 16px;" data-feather="slash"></span> Block / Banned
+                        </button>
+                        <button type="submit" class="btn btn-dark" name="action" value="delete" formnovalidate onclick="return confirm('Anda yakin ingin menghapus tuntas pendaftar mencurigakan ini? Data yang terhapus tidak bisa dikembalikan.');">
+                            <span style="width: 16px;" data-feather="trash-2"></span> Hapus Permanen
                         </button>
                         {% elif isAdminAgency %}
                         <button type="submit" class="btn btn-primary" name="action" value="approve">

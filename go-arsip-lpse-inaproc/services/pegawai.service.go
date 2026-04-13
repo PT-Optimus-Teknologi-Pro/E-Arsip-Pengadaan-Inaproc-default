@@ -71,6 +71,9 @@ func UpdatePegawai(pegawai models.Pegawai) error {
 }
 
 func VerifikasiAkun(pegawai models.Pegawai, action string, usrgroup string) error {
+	if action == "delete" {
+		return models.DeletePegawai(&pegawai)
+	}
 	switch action {
 	case "approve":
 		switch usrgroup {
@@ -85,6 +88,10 @@ func VerifikasiAkun(pegawai models.Pegawai, action string, usrgroup string) erro
 		pegawai.PegStatus = models.REJECT
 		pegawai.TglReject = time.Now()
 		pegawai.PegIsactive = 0
+	case "block":
+		pegawai.PegStatus = models.REJECT
+		pegawai.PegIsactive = 0
+		pegawai.PegCatatan = "Akun telah di-Banned/Blokir"
 	}
 	return models.SavePegawai(&pegawai)
 }
