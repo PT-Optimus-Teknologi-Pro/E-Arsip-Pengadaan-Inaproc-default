@@ -308,8 +308,9 @@ func CreatePaket(sirup PaketSirup, userId uint) (uint, error) {
 	}
 	err = paket.GeneratePersyaratan()
 	if err != nil {
+		db.Delete(&paket) // Rollback if checklist is missing
 		log.Error(err)
-		return uint(0), errors.New("Pembuatan paket Gagal.")
+		return uint(0), err
 	}
 	return paket.ID, nil
 }
