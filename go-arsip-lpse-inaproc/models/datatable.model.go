@@ -156,7 +156,7 @@ func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp bool
 	if isPPK && pegawai.IsApprove(){
 		orm.Where("ppk_id = ?", id)
 	} else if isUkpbj {
-		orm.Where("ukpbj_id <> 0")
+		orm.Where("ukpbj_id <> 0 OR status >= 1")
 	} else if isPokja && pegawai.IsApprove() {
 		orm.Where("pnt_id IN (SELECT pnt_id FROM anggota_panitia WHERE peg_id=? and deleted_at IS NULL)", id)
 	} else if isPp && pegawai.IsApprove() {

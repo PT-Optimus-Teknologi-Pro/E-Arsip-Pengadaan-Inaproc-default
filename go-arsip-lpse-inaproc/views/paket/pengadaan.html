@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Detil Paket
@@ -17,6 +17,63 @@ Detil Paket
         </ol>
     </div>
 </div>
+
+{% if isPokja %}
+<div class="card card-border mt-3">
+  <div class="card-header">
+    <h6 class="card-title">Petunjuk Pokja</h6>
+  </div>
+  <div class="card-body">
+    <ul>
+        <li>Silahkan input Kode Tender/Nontender pada tombol yang tersedia.</li>
+        <li>Lakukan proses pengadaan di sistem aplikasi SPSE.</li>
+        <li>Setelah selesai pemilihan, upload dokumen hasil pengadaan pada tab <strong>Hasil Pengadaan</strong>.</li>
+        <li>Simpan dokumen tambahan lainnya yang diperlukan pada bagian di bawah ini.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card card-border mt-3 mb-3">
+  <div class="card-header">
+    <h6 class="card-title">Daftar Proses Kerja Pokja</h6>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-sm table-vcenter">
+            <thead>
+                <tr>
+                    <th>Proses</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Persiapan Dokumen</td>
+                    <td><span class="badge bg-green text-green-fg">Selesai</span></td>
+                </tr>
+                <tr>
+                    <td>Input Kode Tender/Nontender</td>
+                    <td>{% if paket.KodeTender > 0 %}<span class="badge bg-green text-green-fg">Selesai</span>{% else %}<span class="badge bg-orange text-orange-fg">Proses</span>{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>Proses Pemilihan di SPSE</td>
+                    <td>{% if paket.Status >= 5 %}<span class="badge bg-green text-green-fg">Selesai</span>{% else %}<span class="badge bg-orange text-orange-fg">Proses</span>{% endif %}</td>
+                </tr>
+                 <tr>
+                    <td>Upload Hasil Pengadaan</td>
+                    <td>{% if paket.Status >= 6 %}<span class="badge bg-green text-green-fg">Selesai</span>{% else %}<span class="badge bg-orange text-orange-fg">Belum</span>{% endif %}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="mt-3">
+    {% include "paket/dok-tambahan.html" %}
+</div>
+
 <div class="col-lg-12">
     {% include "tabmenu.html" %}
     <div class="card tab-content">
