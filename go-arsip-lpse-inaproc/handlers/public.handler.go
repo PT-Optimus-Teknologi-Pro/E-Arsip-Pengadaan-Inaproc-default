@@ -195,31 +195,13 @@ func Home(c *fiber.Ctx) error {
 	}
 	mp["heroSliders"] = sliders
 
-	progress := models.GetRupProgress(tahun)
-	var totalPagu, totalBelanja float64
-	var skpdAktif int
-	for _, p := range progress {
-		totalPagu += p.Pagu
-		totalBelanja += p.Belanja
-		if p.Pagu > 0 {
-			skpdAktif++
-		}
-	}
+	// Use the new Dashboard Service for statistics
+	stats := services.GetDashboardHeroStats(tahun)
 
-	var totalSelesai int64
-	models.GetDB().Model(&models.Tender{}).Where("tahun_anggaran = ?", tahun).Count(&totalSelesai)
-	var countOther int64
-	models.GetDB().Model(&models.Nontender{}).Where("tahun_anggaran = ?", tahun).Count(&countOther)
-	totalSelesai += countOther
-	models.GetDB().Model(&models.Pencatatan{}).Where("tahun_anggaran = ?", tahun).Count(&countOther)
-	totalSelesai += countOther
-	models.GetDB().Model(&models.Swakelola{}).Where("tahun_anggaran = ?", tahun).Count(&countOther)
-	totalSelesai += countOther
-
-	mp["heroTotalPagu"] = utils.FormatRupiah(totalPagu)
-	mp["heroRealisasi"] = utils.Prosentase(totalBelanja, totalPagu)
-	mp["heroPaketSelesai"] = totalSelesai
-	mp["heroSkpdAktif"] = skpdAktif
+	mp["heroTotalPagu"] = stats.TotalPagu
+	mp["heroRealisasi"] = stats.Realisasi
+	mp["heroPaketSelesai"] = stats.PaketSelesai
+	mp["heroSkpdAktif"] = stats.SkpdAktif
 
 	appSettings := mp["app_settings"].(models.AppSettings)
 	mp["heroBadge"] = appSettings.HeroBadge

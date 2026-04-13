@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Daftar Pegawai
@@ -20,7 +20,9 @@ Daftar Pegawai
         <div class="card">
             <div class="card-body">
                 {% include "alert.html" %}
-                <table class="table table-bordered table-striped" id="table-data">
+                <table class="table table-bordered table-striped" id="table-data"
+                    data-is-admin="{% if isAdmin %}1{% else %}0{% endif %}"
+                    data-is-ukpbj="{% if isUkpbj %}1{% else %}0{% endif %}">
                 </table>
                 {%if isAdmin %}
                 <a href="/pegawai/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
@@ -32,31 +34,39 @@ Daftar Pegawai
 
 {% block script %}
     <script>
+        var tbl = document.getElementById('table-data');
+        var isAdmin = tbl.getAttribute('data-is-admin') === '1';
+        var isUkpbj = tbl.getAttribute('data-is-ukpbj') === '1';
+
+        var columns = [
+            {data : "peg_nama", title: 'Nama', width : '15%', render : function(data, type, row){
+                return '<a href="/pegawai/'+row["ID"]+'">'+data+'</a>';
+            }},
+            {data : "peg_nip", title: 'NIP', width : '15%'},
+            {data : "peg_email", title: 'Email', width : '15%'},
+            {data : "peg_namauser", title: 'User ID', width : '15%'},
+            {data : "usrgroup", title: 'Role', width : '15%'}
+        ];
+
+        if (isAdmin || isUkpbj) {
+            columns.push({
+                data : "ID", title: "Action", width : '5%',
+                render: function(data, type, row){
+                    if (isAdmin) {
+                        return '<a href="/pegawai/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>&nbsp;' +
+                            '<a href="/pegawai/hapus/'+data+'"><span style="width: 16px;" data-feather="trash"></span></a>';
+                    } else {
+                        return '<a href="/pegawai/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>';
+                    }
+                }
+            });
+        }
+
         new DataTable("#table-data", {
             ajax: '/pegawai/data',
             processing: true,
             serverSide: true,
-            columns: [
-                {data : "peg_nama", title: 'Nama', width : '15%', render : function(data, type, row){
-                        return '<a href="/pegawai/'+row["ID"]+'">'+data+'</a>'
-                    }
-                },
-                {data : "peg_nip", title: 'NIP', width : '15%'},
-                {data : "peg_email", title: 'Email', width : '15%'},
-                {data : "peg_namauser", title: 'User ID', width : '15%'},
-                {data : "usrgroup", title: 'Role', width : '15%'},
-                {%if isAdmin or isUkpbj %}
-                {data : "ID", title: "action", width : '5%',  render: function(data, type, row){
-                        {%if isAdmin %}
-                        return '<a href="/pegawai/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>&nbsp;' +
-                            '<a href="/pegawai/hapus/'+data+'"><span style="width: 16px;" data-feather="trash"></span></a>';
-                        {%elif isUkpbj %}
-                        return '<a href="/pegawai/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>';
-                        {% endif %}
-                    }
-                },
-                {% endif %}
-            ],
+            columns: columns,
             aaSorting: [[0, 'desc']],
             drawCallback: function( settings ) {
                 feather.replace();

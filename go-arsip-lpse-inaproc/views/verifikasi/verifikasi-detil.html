@@ -1,7 +1,38 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Detil Verifikasi
+{% endblock %}
+
+{% block css %}
+<style>
+    .form-group label {
+        font-weight: 700;
+        color: #11215D;
+    }
+    /* Khusus field Pengangkatan Menjadi */
+    .role-highlight {
+        background-color: #11215D !important;
+        color: #ffffff !important;
+        border: 2px solid #0c1940 !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.03em;
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        display: block;
+    }
+    .form-control.role-highlight {
+        background-color: #11215D !important;
+        color: #ffffff !important;
+        border: 2px solid #0c1940 !important;
+        font-weight: 600;
+    }
+    .form-control.role-highlight option {
+        background-color: #fff;
+        color: #11215D;
+        font-weight: 600;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -28,16 +59,16 @@ Detil Verifikasi
                             <div class="col-sm-4">
                                 {%if isAdmin %}
                                 {%if pegawai.IsPPK %}
-                                <p class="form-control-plaintext">{{ pegawai.RoleLabel }}</p>
+                                <p class="form-control-plaintext role-highlight">{{ pegawai.RoleLabel }}</p>
                                 <input type="hidden" name="usrgroup" value="PPK"/>
                                 {% else %}
-                                <select class="form-control" name="usrgroup">
+                                <select class="form-control role-highlight" name="usrgroup">
                                    <option value="PP">Pejabat Pengadaan</option>
                                    <option value="POKJA">Pokja</option>
                                 </select>
                                 {% endif %}
                                 {% else %}
-                                <p class="form-control-plaintext">{{ pegawai.RoleLabel }}</p>
+                                <p class="form-control-plaintext role-highlight">{{ pegawai.RoleLabel }}</p>
                                 {% endif %}
                             </div>
                         </div>

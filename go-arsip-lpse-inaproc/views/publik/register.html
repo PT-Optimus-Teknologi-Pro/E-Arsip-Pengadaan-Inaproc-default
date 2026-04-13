@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}Registrasi Akun{% endblock %}
 
@@ -220,33 +220,66 @@
 
   /* Signature */
   .sig-area {
-    border: 1.5px dashed #d1d5db;
-    border-radius: 10px;
-    background: #fafafa;
-    padding: 1rem;
+    border: 2px dashed #0026B4;
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 1.25rem;
     position: relative;
     cursor: crosshair;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
   }
+  .sig-area:hover { border-color: #11215D; background: #fafbff; }
   .sig-area canvas {
     display: block;
     width: 100%;
-    height: 150px;
+    height: 160px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     background: #fff;
     cursor: crosshair !important;
     touch-action: none;
+    z-index: 2;
+    position: relative;
   }
-  .sig-hint {
+  .sig-line {
+    position: absolute;
+    bottom: 50px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: #e5e7eb;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .sig-hint-wrap {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #9ca3af;
-    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 3;
     pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .sig-arrow {
+    color: #0026B4;
+    animation: pulsateArrow 1.5s infinite;
+  }
+  @keyframes pulsateArrow {
+    0% { transform: translateY(0) scale(1); opacity: 0.8; }
+    50% { transform: translateY(-10px) scale(1.1); opacity: 1; }
+    100% { transform: translateY(0) scale(1); opacity: 0.8; }
+  }
+  .sig-hint {
+    color: #4b5563;
+    font-size: 0.9rem;
+    font-weight: 600;
     margin: 0;
-    white-space: nowrap;
+    text-shadow: 0 0 10px #fff;
   }
   #clear {
     margin-top: 0.6rem;
@@ -517,10 +550,16 @@
         <span>Tanda Tangan Digital</span>
       </div>
       <div class="reg-field">
-        <label>Area Tanda Tangan</label>
+        <label>Area Tanda Tangan <span class="badge bg-red-lt ms-1">Wajib</span></label>
         <div class="sig-area">
+          <div class="sig-line"></div>
           <canvas id="signature-pad" width="760" height="150"></canvas>
-          <p class="sig-hint" id="sigHint">Silahkan tanda tangan disini</p>
+          <div class="sig-hint-wrap" id="sigHint">
+            <div class="sig-arrow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 13l5 5 5-5M12 18V6"/></svg>
+            </div>
+            <p class="sig-hint">Silahkan tanda tangan di kolom ini</p>
+          </div>
         </div>
         <button type="button" id="clear" style="margin-top:0.5rem;">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"

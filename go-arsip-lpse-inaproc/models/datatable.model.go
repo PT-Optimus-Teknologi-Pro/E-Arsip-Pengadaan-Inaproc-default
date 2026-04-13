@@ -96,7 +96,7 @@ func GetDataTablePerubahanData(c *fiber.Ctx, usrsession UserSession) error {
 
 func GetDataTableVerifikasi(c *fiber.Ctx) error {
 	var datas []Pegawai
-	orm := db.Model(&Pegawai{}).Where("peg_status <> ? AND usrgroup IN ('PPK', 'PP', 'POKJA', 'PEGAWAI') and deleted_at IS NULL", 1)
+	orm := db.Model(&Pegawai{}).Where("usrgroup IN ?", []string{PPK, PP, POKJA, PEGAWAI})
 	return populate(orm, c, datas,  "id", "peg_nama", "peg_nip", "peg_namauser")
 }
 
@@ -240,12 +240,10 @@ func GetDataTableChecklist(c *fiber.Ctx) error {
 }
 
 func populate(db *gorm.DB, c *fiber.Ctx, result interface{}, columns ...string) error {
-	start := c.QueryInt("start", 1)
+	start := c.QueryInt("start", 0)
 	length := c.QueryInt("length", 10)
 	var total int64
-	// queryCount := db
-	db.Count(&total)
-	// queryDB := db
+	db.Session(&gorm.Session{}).Count(&total)
 	search := c.Query("search[value]")
 	if search != "" {
 		search = "%" + search + "%"
@@ -270,7 +268,7 @@ func populate(db *gorm.DB, c *fiber.Ctx, result interface{}, columns ...string) 
 		}
 	}
 	var filterCount int64
-	db.Count(&filterCount)
+	db.Session(&gorm.Session{}).Count(&filterCount)
 	// ORDERING
 	var requestColumn string
 	columnIdx := 0

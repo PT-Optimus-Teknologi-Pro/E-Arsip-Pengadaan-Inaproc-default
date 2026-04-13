@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block content %}
 <div class="row align-items-center">
@@ -135,8 +135,17 @@
                             <label class="col-sm-2  text-end control-label col-form-label">Tanda Tangan</label>
                             <div class="col-sm-9">
                                 <div class="signature-container">
-                                    <canvas id="signature-pad" width="400" height="200"></canvas>
-                                    <button type="button" id="clear">Clear</button>
+                                    <div class="sig-pad-wrap">
+                                        <div class="sig-line"></div>
+                                        <canvas id="signature-pad" width="400" height="200"></canvas>
+                                        <div class="sig-hint-wrap" id="sigHint">
+                                            <div class="sig-arrow">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 13l5 5 5-5M12 18V6"/></svg>
+                                            </div>
+                                            <p class="sig-hint">Sign Here</p>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="clear">Clear</button>
                                 </div>
                             </div>
                             <input type="hidden" id="ttd" name="ttd" value="">
@@ -159,13 +168,67 @@
 {% block css %}
 <style>
     .signature-container {
+        display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
+        gap: 10px;
+        position: relative;
+    }
+
+    .sig-pad-wrap {
+        position: relative;
+        border: 2px dashed #0026B4;
+        border-radius: 8px;
+        background: #fff;
+        padding: 10px;
+        display: inline-block;
     }
 
     canvas {
-        border: 1px solid #000;
-        background-color: #eee;
+        display: block;
+        border: 1px solid #e5e7eb;
+        background-color: #fff;
+        cursor: crosshair;
+        position: relative;
+        z-index: 2;
+    }
+    .sig-line {
+        position: absolute;
+        bottom: 50px;
+        left: 20px;
+        right: 20px;
+        height: 2px;
+        background: #eee;
+        z-index: 1;
+        pointer-events: none;
+    }
+    .sig-hint-wrap {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        z-index: 3;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    .sig-arrow {
+        color: #0026B4;
+        animation: pulsateArrow 1.5s infinite;
+    }
+    @keyframes pulsateArrow {
+        0% { transform: translateY(0); opacity: 0.7; }
+        50% { transform: translateY(-5px); opacity: 1; }
+        100% { transform: translateY(0); opacity: 0.7; }
+    }
+    .sig-hint {
+        color: #666;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 0;
     }
 </style>
 {% endblock %}
@@ -181,10 +244,18 @@
         backgroundColor: 'rgba(128,128,128, 0)',
         penColor: 'rgb(0, 0, 0)'
     });
-    var cancelButton = document.getElementById('clear');
+    function updateSigHint() {
+        var hint = document.getElementById('sigHint');
+        if (hint) {
+            hint.style.display = signaturePad.isEmpty() ? 'flex' : 'none';
+        }
+    }
+
+    signaturePad.addEventListener('afterUpdateStroke', updateSigHint);
 
     cancelButton.addEventListener('click', function (event) {
         signaturePad.clear();
+        updateSigHint();
     });
 
     $("form").submit(function(){

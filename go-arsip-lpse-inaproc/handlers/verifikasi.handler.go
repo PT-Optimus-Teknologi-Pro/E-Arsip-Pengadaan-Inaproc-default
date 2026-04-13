@@ -22,7 +22,7 @@ func CreateVerifikasi(c *fiber.Ctx) error {
 		log.Error(err)
 		return flashError(c, "Verifikasi Akun " + user.PegNama + " Gagal", "/verifikasi")
 	}
-	return flashSuccess(c, "Verifikasi Akun " + user.PegNama + " Sukses","/verifikasi")
+	return flashSuccess(c, "Verifikasi Akun " + user.PegNama + " Sukses! Data sekarang dapat dilihat di menu Pegawai.","/verifikasi")
 }
 
 func GetAllVerifikasi(c *fiber.Ctx) error {

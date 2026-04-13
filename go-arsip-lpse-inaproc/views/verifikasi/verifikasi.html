@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Daftar Pengajuan
@@ -40,7 +40,7 @@ Daftar Pengajuan
 
     {% block script %}
     <script>
-        new DataTable("#table-data", {
+        var table = new DataTable("#table-data", {
             ajax: '/verifikasi/data',
             processing: true,
             serverSide: true,
@@ -54,13 +54,13 @@ Daftar Pengajuan
                 {data : "peg_namauser"},
                 {data : "peg_status", render : function (data, type, row){
                         if(data == 0)
-                            return 'Verifikasi'
+                            return '<span class="badge bg-yellow-lt">Verifikasi</span>'
                         else if (data == 1)
-                            return 'Akun SPSE sudah dibuat'
+                            return '<span class="badge bg-green-lt">Disetujui Admin</span>'
                         else if (data == 2)
-                            return 'Sudah Disetujui'
+                            return '<span class="badge bg-blue-lt">Disetujui UKPBJ</span>'
                         else if (data == 3)
-                            return 'Ditolak'
+                            return '<span class="badge bg-red-lt">Ditolak</span>'
                     }
                 }
             ],
