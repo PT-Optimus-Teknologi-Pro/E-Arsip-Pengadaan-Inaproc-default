@@ -159,6 +159,20 @@ func SimpanKajiUlang(c *fiber.Ctx, userid uint, obj *models.KajiUlang) error {
 	return models.SaveKajiUlang(obj)
 }
 
+func SimpanFotoRapatKajiUlang(c *fiber.Ctx, pktId uint, userid uint) error {
+	dokId, err := models.SaveDocument(c, userid, models.FOTO_RAPAT, "foto_rapat")
+	if err != nil {
+		return err
+	}
+	dokPaket := models.DokPaket{
+		PktId: pktId,
+		PegId: userid,
+		DokId: dokId,
+		Jenis: models.FOTO_RAPAT,
+	}
+	return models.SaveDokPaket(&dokPaket)
+}
+
 func GetDokPersiapan(id uint) models.DokPersiapan {
 	return models.GetDokPersiapan(id)
 }

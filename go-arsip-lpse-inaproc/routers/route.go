@@ -263,6 +263,8 @@ func SetupRoutes(app *fiber.App) {
 	kajiulang.Get("/data/:id", handlers.GetJsonKajiUlang)
 	kajiulang.Get("/list/:id", handlers.GetKajiUlangList)
 	kajiulang.Get("/berita-acara/:id", handlers.PreviewBA)
+	kajiulang.Post("/foto-rapat/:id", handlers.UploadFotoRapat)
+	kajiulang.Post("/foto-rapat", handlers.UploadFotoRapat)
 	kajiulang.Get("/:id", handlers.GetKajiUlang)
 
 	beritacara := app.Group("/berita-acara", handlers.LoggedMiddleware)

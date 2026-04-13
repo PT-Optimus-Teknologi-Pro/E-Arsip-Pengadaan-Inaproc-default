@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Berita Acara Kaji Ulang
@@ -25,11 +25,29 @@ Berita Acara Kaji Ulang
             <div id="pdf">
             <h4>Berita Acara Kaji Ulang</h4>
             <p>[template Berita Acara Kaji Ulang]</p>
+            
+            {% if fotoRapat.ID != 0 %}
+            <div class="mt-4">
+                <h5>Dokumentasi Rapat:</h5>
+                <img src="/download/{{ fotoRapat.DokId }}" alt="Foto Rapat" style="max-width: 100%; max-height: 400px;" class="img-thumbnail" />
             </div>
-            <p>
-                <button type="submit" class="btn btn-success" id="btnPrint"><span style="width: 16px;" data-feather="edit"></span> Cetak ke PDF</button>
+            {% endif %}
+            
+            </div>
+            
+            {% include "alert.html" %}
+            
+            <div class="d-flex align-items-center mt-4">
+                <button type="button" class="btn btn-success me-2" id="btnPrint"><span style="width: 16px;" data-feather="printer"></span> Cetak ke PDF</button>
+                
+                <form action="/kajiulang/foto-rapat/{{ paket.ID }}" method="POST" enctype="multipart/form-data" class="d-flex align-items-center me-2">
+                    <input type="hidden" name="pkt_id" value="{{ paket.ID }}">
+                    <input type="file" name="foto_rapat" class="form-control form-control-sm me-2" accept="image/*" required style="width: 250px;">
+                    <button type="submit" class="btn btn-primary btn-sm"><span style="width: 16px;" data-feather="upload"></span> Upload Foto Rapat</button>
+                </form>
+                
                 <a href="/paket/{{ paket.ID }}" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
-            </p>
+            </div>
 
         </div>
     </div>

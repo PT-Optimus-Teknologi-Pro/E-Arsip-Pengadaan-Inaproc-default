@@ -31,6 +31,7 @@ const (
 	KONTRAK			string = "KONTRAK"
 	ADMIN_DOK		string = "ADMIN_DOK"
 	TAMBAHAN		string = "TAMBAHAN"
+	FOTO_RAPAT      string = "FOTO_RAPAT"
 )
 
 type Document struct {
@@ -70,6 +71,8 @@ func (c Document) Label() string {
 		return "Dokumen Tambahan Lainnya"
 	case TAMBAHAN:
 		return "Dokumen Tambahan Paket"
+	case FOTO_RAPAT:
+		return "Foto Rapat"
 	}
 	return ""
 }

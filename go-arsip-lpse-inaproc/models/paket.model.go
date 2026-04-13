@@ -382,6 +382,12 @@ func GetDokPaket(id uint) DokPaket {
 	return res
 }
 
+func GetDokPaketJenis(pktId uint, jenis string) DokPaket {
+	var res DokPaket
+	db.Where("pkt_id = ? AND jenis = ?", pktId, jenis).Order("id DESC").First(&res)
+	return res
+}
+
 func SaveDokPaket(paket *DokPaket) error {
 	return db.Save(paket).Error
 }

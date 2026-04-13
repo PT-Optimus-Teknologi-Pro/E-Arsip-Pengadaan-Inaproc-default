@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Detil Paket
@@ -34,6 +34,7 @@ Detil Paket
                     <p class="form-control-plaintext">{{ paket.Nama }}</p>
                     {% if isPPK or isPP or isPokja %}
                     <div class="text-end">
+                    <a href="/kajiulang/berita-acara/{{ paket.ID }}" class="btn btn-primary me-2"><span style="width: 16px;" data-feather="file-text"></span> Foto Rapat Kaji Ulang</a>
                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#pertanyaan">Kirim Pertanyaan</button>
                     </div>
                     {% endif %}
@@ -111,13 +112,11 @@ function update() {
 }
 setInterval(update, 5000);
 
-{% if allowJawab %}
 function formJawab(id) {
     $.get('/kajiulang/penjelasan/'+id, function(data) {
         $('.modal-title').html("Jawab");
         $('.modal-body').html(data);
     });
 }
-{% endif %}
 </script>
 {% endblock %}

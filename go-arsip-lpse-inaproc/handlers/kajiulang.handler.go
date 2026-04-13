@@ -108,10 +108,35 @@ func JawabKajiUlang(c *fiber.Ctx) error {
 	return flashSuccess(c, "Kirim Penjelasan Sukses","/kajiulang/"+utils.UintToString(paket.ID))
 }
 
-func PreviewBA(c *fiber.Ctx)  error {
+func PreviewBA(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	id := utils.StringToUint(c.Params("id"))
 	data := services.GetKajiUlangPaket(id)
+	
+	// Fetch foto rapat dari dok_paket
+	fotoRapat := models.GetDokPaketJenis(id, models.FOTO_RAPAT)
+	
 	mp["datas"] = data
+	mp["paket"] = services.GetPaket(id)
+	mp["fotoRapat"] = fotoRapat
 	return c.Render("ba/ba-kajiulang", mp)
+}
+
+func UploadFotoRapat(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	userid := mp["id"].(uint)
+	id := utils.StringToUint(c.Params("id"))
+	if id == 0 {
+		id = utils.StringToUint(c.FormValue("pkt_id"))
+	}
+	if id == 0 {
+		return flashError(c, "ID paket tidak ditemukan", "/paket")
+	}
+
+	if err := services.SimpanFotoRapatKajiUlang(c, id, userid); err != nil {
+		log.Error(err)
+		return flashError(c, "Upload foto gagal", "/kajiulang/berita-acara/"+utils.UintToString(id))
+	}
+
+	return flashSuccess(c, "Upload foto berhasil", "/kajiulang/berita-acara/"+utils.UintToString(id))
 }
