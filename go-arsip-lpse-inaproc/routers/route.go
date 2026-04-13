@@ -12,6 +12,7 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/flush", handlers.FlushCache)
 	app.Get("/design", handlers.Design)
 	app.Get("/login", handlers.Login)
+	app.Post("/login", handlers.SubmitLogin)
 	app.Get("/print", handlers.PrintToPdf)
 	rekap := app.Group("/rekap")
 	rekap.Get("/rencana-satker",  handlers.RekapRencanaSatker)

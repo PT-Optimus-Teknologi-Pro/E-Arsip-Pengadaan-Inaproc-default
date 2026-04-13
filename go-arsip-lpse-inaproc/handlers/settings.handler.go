@@ -18,7 +18,7 @@ const settingsUploadDir = "./public/uploads/settings"
 
 func GetLogoSettings(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	if !mp["isAdmin"].(bool) {
+	if !mp["isAdmin"].(bool) && !mp["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 	settings := services.GetSettings()
@@ -87,7 +87,7 @@ func UpdateLogoSettings(c *fiber.Ctx) error {
 
 func GetHeroSettings(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	if !mp["isAdmin"].(bool) {
+	if !mp["isAdmin"].(bool) && !mp["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 	settings := services.GetSettings()
@@ -98,7 +98,7 @@ func GetHeroSettings(c *fiber.Ctx) error {
 
 func UpdateHeroSettings(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	if !mp["isAdmin"].(bool) {
+	if !mp["isAdmin"].(bool) && !mp["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 
@@ -125,7 +125,7 @@ func UpdateHeroSettings(c *fiber.Ctx) error {
 
 func UploadHeroSlider(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	if !mp["isAdmin"].(bool) {
+	if !mp["isAdmin"].(bool) && !mp["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 
@@ -204,7 +204,7 @@ func UpdateFooterSettings(c *fiber.Ctx) error {
 // ─── Footer Social Links Handlers ───────────────────────────────────────────
 
 func CreateFooterSocialLink(c *fiber.Ctx) error {
-	if !currentMap(c)["isAdmin"].(bool) {
+	if !currentMap(c)["isAdmin"].(bool) && !currentMap(c)["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 
@@ -243,7 +243,7 @@ func CreateFooterSocialLink(c *fiber.Ctx) error {
 }
 
 func UpdateFooterSocialLink(c *fiber.Ctx) error {
-	if !currentMap(c)["isAdmin"].(bool) {
+	if !currentMap(c)["isAdmin"].(bool) && !currentMap(c)["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 	id, _ := c.ParamsInt("id")
@@ -280,7 +280,7 @@ func UpdateFooterSocialLink(c *fiber.Ctx) error {
 }
 
 func DeleteFooterSocialLink(c *fiber.Ctx) error {
-	if !currentMap(c)["isAdmin"].(bool) {
+	if !currentMap(c)["isAdmin"].(bool) && !currentMap(c)["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 	id, _ := c.ParamsInt("id")
@@ -292,7 +292,7 @@ func DeleteFooterSocialLink(c *fiber.Ctx) error {
 // ─── Footer Quick Links Handlers ────────────────────────────────────────────
 
 func CreateFooterQuickLink(c *fiber.Ctx) error {
-	if !currentMap(c)["isAdmin"].(bool) {
+	if !currentMap(c)["isAdmin"].(bool) && !currentMap(c)["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 	sort, _ := c.ParamsInt("sort", 0)
@@ -313,7 +313,7 @@ func CreateFooterQuickLink(c *fiber.Ctx) error {
 }
 
 func UpdateFooterQuickLink(c *fiber.Ctx) error {
-	if !currentMap(c)["isAdmin"].(bool) {
+	if !currentMap(c)["isAdmin"].(bool) && !currentMap(c)["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 	id, _ := c.ParamsInt("id")
@@ -332,7 +332,7 @@ func UpdateFooterQuickLink(c *fiber.Ctx) error {
 }
 
 func DeleteFooterQuickLink(c *fiber.Ctx) error {
-	if !currentMap(c)["isAdmin"].(bool) {
+	if !currentMap(c)["isAdmin"].(bool) && !currentMap(c)["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 	id, _ := c.ParamsInt("id")
@@ -344,7 +344,7 @@ func DeleteFooterQuickLink(c *fiber.Ctx) error {
 // ─── Footer Services Handlers ───────────────────────────────────────────────
 
 func CreateFooterService(c *fiber.Ctx) error {
-	if !currentMap(c)["isAdmin"].(bool) {
+	if !currentMap(c)["isAdmin"].(bool) && !currentMap(c)["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 	sort, _ := c.ParamsInt("sort", 0)
@@ -365,7 +365,7 @@ func CreateFooterService(c *fiber.Ctx) error {
 }
 
 func UpdateFooterService(c *fiber.Ctx) error {
-	if !currentMap(c)["isAdmin"].(bool) {
+	if !currentMap(c)["isAdmin"].(bool) && !currentMap(c)["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 	id, _ := c.ParamsInt("id")
@@ -384,7 +384,7 @@ func UpdateFooterService(c *fiber.Ctx) error {
 }
 
 func DeleteFooterService(c *fiber.Ctx) error {
-	if !currentMap(c)["isAdmin"].(bool) {
+	if !currentMap(c)["isAdmin"].(bool) && !currentMap(c)["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 	id, _ := c.ParamsInt("id")
