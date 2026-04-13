@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 {% endblock %}
@@ -164,6 +164,14 @@
                         <label class="col-sm-2  text-end control-label col-form-label">Dokumen Pendukung</label>
                         <div class="col-sm-9">
                             {% include "paket/dok-pendukung.html" %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if !paket.IsDraft and (isPPK or isPokja or isPP) %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Dokumen Tambahan Paket</label>
+                        <div class="col-sm-9">
+                            {% include "paket/dok-tambahan.html" %}
                         </div>
                     </div>
                     {% endif %}

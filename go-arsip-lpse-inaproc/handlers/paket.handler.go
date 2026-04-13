@@ -471,3 +471,38 @@ func DownloadHasilPengadaan(c *fiber.Ctx) error {
 	}
 	return c.SendFile(zipFile)
 }
+
+func SimpanDokTambahan(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+	userid := mp["id"].(uint)
+	err := services.SimpanDokTambahan(c, id, userid)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, err.Error(), c.Get("Referer"))
+	}
+	return flashSuccess(c, "Simpan Dokumen Tambahan Berhasil", c.Get("Referer"))
+}
+
+func DownloadDokTambahan(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id, _ := c.ParamsInt("id") // id paket
+	paket := services.GetPaket(uint(id))
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+	log.Info("create zip file")
+	var files []string
+	for _, v := range paket.DokTambahanList() {
+		files = append(files, v.Document().Filepath)
+	}
+	zipFile, err := utils.CreateZip(files, "dok-tambahan.zip")
+	if err != nil {
+		log.Error("Error creating ", zipFile, " : ", err)
+	}
+	return c.SendFile(zipFile)
+}

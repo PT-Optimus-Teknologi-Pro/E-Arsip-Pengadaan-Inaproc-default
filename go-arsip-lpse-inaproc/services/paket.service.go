@@ -319,3 +319,16 @@ func GetTahunRupList() []int {
 	}
 	return result
 }
+func SimpanDokTambahan(c *fiber.Ctx, id uint, userid uint) error {
+	dokId, err := models.SaveDocument(c, userid,  models.TAMBAHAN, "file")
+	if err != nil {
+		return err
+	}
+	dokPaket := models.DokPaket {
+		PktId: id,
+		PegId: userid,
+		DokId: dokId,
+		Jenis: models.TAMBAHAN,
+	}
+	return models.SaveDokPaket(&dokPaket)
+}

@@ -169,6 +169,12 @@ func (obj Paket) DokPekerjaanList() []DokPaket {
 	return res
 }
 
+func (obj Paket) DokTambahanList() []DokPaket {
+	var res []DokPaket
+	db.Find(&res, "pkt_id=? AND jenis=?",obj.ID, TAMBAHAN)
+	return res
+}
+
 func (obj Paket) GeneratePersyaratan() error {
 	// generate checklist CreatePaket
 	checklist := GetChecklistsBYJenisMetode(obj.KgrId, obj.Metode)

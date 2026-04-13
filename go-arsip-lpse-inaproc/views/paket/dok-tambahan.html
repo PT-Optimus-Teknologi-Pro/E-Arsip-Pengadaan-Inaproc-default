@@ -1,0 +1,119 @@
+<div class="card card-border">
+  <div class="card-header">
+    <h6 class="card-title">Dokumen Tambahan Paket</h6>
+    <div class="card-actions">
+        <a href="/paket/dok-tambahan/{{ paket.ID }}/download" class="btn btn-sm btn-primary">
+            <span style="width: 16px;" data-feather="download"></span> Download Semua (.zip)
+        </a>
+    </div>
+  </div>
+  <div class="card-body">
+    {% if isPPK or isPokja or isPP %}
+    <form action="/paket/dok-tambahan/{{ paket.ID }}" method="POST" enctype="multipart/form-data" class="mb-4">
+        <div class="form-label text-muted small mb-2">Unggah Dokumen Pendukung Baru</div>
+        <div class="input-group mb-2">
+            <input type="file" name="file" class="form-control" 
+                accept=".pdf,.xlsx,.xls,.docx,.doc,.png,.jpg,.jpeg,.zip" required
+                id="dokTambahanInput"
+                onchange="validateFiles(this)">
+            <button class="btn btn-success" type="submit">
+                <span style="width: 16px;" data-feather="upload"></span> Simpan
+            </button>
+        </div>
+        <div id="file-error" class="alert alert-danger py-2 px-3 small d-none mt-2"></div>
+        <div class="bg-light-blue-lt p-3 rounded-2 border">
+            <div class="d-flex align-items-center mb-2">
+                <span style="width: 16px;" data-feather="info" class="text-blue me-2"></span>
+                <strong class="text-dark small">Informasi Upload:</strong>
+            </div>
+            <div class="d-flex flex-wrap gap-1 mb-2">
+                <span class="badge bg-blue-lt">PDF</span>
+                <span class="badge bg-green-lt">Excel (.xlsx, .xls)</span>
+                <span class="badge bg-blue-lt">Word (.docx, .doc)</span>
+                <span class="badge bg-purple-lt">Gambar (.png, .jpg, .jpeg)</span>
+                <span class="badge bg-orange-lt">Archive (.zip)</span>
+            </div>
+            <div class="text-muted small">Maksimal ukuran file 10MB. Dokumen ini akan diarsipkan sebagai bagian dari data paket.</div>
+        </div>
+    </form>
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-vcenter table-mobile-md card-table">
+            <thead>
+                <tr>
+                    <th>Nama File</th>
+                    <th>Ukuran</th>
+                    <th>Diunggah Pada</th>
+                    <th class="w-1">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in paket.DokTambahanList() %}
+                <tr>
+                    <td data-label="Nama File">
+                        <div class="d-flex align-items-center">
+                            <span style="width: 24px; height: 24px;" data-feather="file" class="text-muted me-2"></span>
+                            <div class="text-reset">{{ d.Document().Filename }}</div>
+                        </div>
+                    </td>
+                    <td data-label="Ukuran" class="text-muted">
+                        {{ number(d.Document().FilesizeKB()) }} KB
+                    </td>
+                    <td data-label="Tanggal" class="text-muted">
+                        {{ d.Document().Filedate.Format("02-01-2006 15:04") }}
+                    </td>
+                    <td>
+                        <div class="btn-list flex-nowrap">
+                            <a href="/download/{{ d.DokId }}" class="btn btn-sm btn-white" title="Download">
+                                <span style="width: 14px;" data-feather="download"></span>
+                            </a>
+                            {% if isPPK or isPokja or isPP %}
+                            <a href="/paket/dok-paket/{{ d.ID }}/hapus" class="btn btn-sm btn-ghost-danger" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus file ini?')">
+                                <span style="width: 14px;" data-feather="trash-2"></span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% if paket.DokTambahanList()|length == 0 %}
+                <tr>
+                    <td colspan="4" class="text-center py-4 text-muted">
+                        <div class="empty">
+                            <div class="empty-icon">
+                                <span style="width: 32px; height: 32px;" data-feather="folder"></span>
+                            </div>
+                            <p class="empty-title">Tidak ada dokumen tambahan</p>
+                            <p class="empty-subtitle text-muted">Belum ada dokumen pendukung lainnya yang diunggah untuk paket ini.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+
+<script>
+function validateFiles(input) {
+    const allowed = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.png', '.jpg', '.jpeg', '.zip'];
+    const errorDiv = document.getElementById('file-error');
+    const invalidFiles = [];
+    for (const file of input.files) {
+        const ext = '.' + file.name.split('.').pop().toLowerCase();
+        if (!allowed.includes(ext)) {
+            invalidFiles.push(file.name);
+        }
+    }
+    if (invalidFiles.length > 0) {
+        errorDiv.textContent = '❌ File tidak diizinkan: ' + invalidFiles.join(', ') + '. Gunakan format yang valid (PDF, Excel, Word, Gambar, ZIP).';
+        errorDiv.classList.remove('d-none');
+        input.value = '';
+    } else {
+        errorDiv.classList.add('d-none');
+    }
+}
+</script>

@@ -30,6 +30,7 @@ const (
 	HASIL_PEKERJAAN string = "HASIL_PEKERJAAN"
 	KONTRAK			string = "KONTRAK"
 	ADMIN_DOK		string = "ADMIN_DOK"
+	TAMBAHAN		string = "TAMBAHAN"
 )
 
 type Document struct {
@@ -49,6 +50,10 @@ func (Document) TableName() string {
 	return "document"
 }
 
+func (c Document) FilesizeKB() int64 {
+	return c.Filesize / 1024
+}
+
 func (c Document) Label() string {
 	switch c.Jenis {
 	case KTP:
@@ -63,6 +68,8 @@ func (c Document) Label() string {
 		return "Checklist"
 	case ADMIN_DOK:
 		return "Dokumen Tambahan Lainnya"
+	case TAMBAHAN:
+		return "Dokumen Tambahan Paket"
 	}
 	return ""
 }

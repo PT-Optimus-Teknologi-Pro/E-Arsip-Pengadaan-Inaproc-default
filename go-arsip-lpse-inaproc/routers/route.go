@@ -219,6 +219,8 @@ func SetupRoutes(app *fiber.App) {
 	paket.Post("/hps/:id", handlers.UpdateHpsPaket)
 	paket.Post("/checklist/:id", handlers.SimpanPersyaratanPaket)
 	paket.Post("/save/:id", handlers.SavePPk)
+	paket.Get("/dok-tambahan/:id/download", handlers.DownloadDokTambahan)
+	paket.Post("/dok-tambahan/:id", handlers.SimpanDokTambahan)
 	paket.Get("/hapus/:id", handlers.DeletePaket)
 	paket.Get("/dok-paket/:id/hapus", handlers.HapusDokPaket)
 	paket.Get("/pilih-pokja/:id", handlers.PilihPokjaPaket)
