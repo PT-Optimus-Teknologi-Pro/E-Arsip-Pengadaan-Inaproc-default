@@ -170,6 +170,10 @@ func Home(c *fiber.Ctx) error {
 		if mp["isPP"].(bool) {
 			return c.Render("beranda/home-pp", mp)
 		}
+		if mp["isArsiparis"].(bool) {
+			mp["stats"] = services.GetArsiparisDashboardStats()
+			return c.Render("beranda/home-arsiparis", mp)
+		}
 		if mp["isPokja"].(bool) || mp["isPegawai"].(bool) {
 			return c.Render("beranda/home-pokja", mp)
 		}

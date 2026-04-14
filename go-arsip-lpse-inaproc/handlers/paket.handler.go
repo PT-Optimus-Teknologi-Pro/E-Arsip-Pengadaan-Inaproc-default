@@ -13,6 +13,83 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 )
 
+func CreateManualPaketForm(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	usersession := getUserSession(c)
+	if !usersession.IsArsiparis() {
+		return Forbiden(c)
+	}
+	mp["satkers"] = services.GetAllSatker()
+	mp["tahuns"] = services.GetTahunRupList()
+	return c.Render("paket/form-manual", mp)
+}
+
+func SaveManualPaket(c *fiber.Ctx) error {
+	usersession := getUserSession(c)
+	if !usersession.IsArsiparis() {
+		return Forbiden(c)
+	}
+	
+	nama := c.FormValue("nama")
+	tahun, _ := strconv.Atoi(c.FormValue("tahun"))
+	pagu, _ := strconv.ParseFloat(strings.ReplaceAll(c.FormValue("pagu"), ".", ""), 64)
+	hps, _ := strconv.ParseFloat(strings.ReplaceAll(c.FormValue("hps"), ".", ""), 64)
+	metodeStr := c.FormValue("metode")
+	jenis := c.FormValue("jenis")
+	satkerId, _ := strconv.Atoi(c.FormValue("satker_id"))
+	keterangan := c.FormValue("keterangan")
+
+	paketId, err := services.CreateManualPaket(c, usersession.Id, nama, tahun, pagu, hps, 0, metodeStr, jenis, uint(satkerId), keterangan)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Gagal simpan paket manual: "+err.Error(), "/paket/create-manual")
+	}
+
+	return flashSuccess(c, "Paket manual berhasil dibuat", "/paket/"+utils.UintToString(paketId))
+}
+
+func EditManualPaketForm(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	usersession := getUserSession(c)
+	if !usersession.IsArsiparis() {
+		return Forbiden(c)
+	}
+	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if paket.ID == 0 {
+		return c.SendStatus(404)
+	}
+
+	mp["paket"] = paket
+	mp["satkers"] = services.GetAllSatker()
+	return c.Render("paket/form-manual-edit", mp)
+}
+
+func UpdateManualPaket(c *fiber.Ctx) error {
+	usersession := getUserSession(c)
+	if !usersession.IsArsiparis() {
+		return Forbiden(c)
+	}
+
+	id := utils.StringToUint(c.Params("id"))
+	nama := c.FormValue("nama")
+	tahun, _ := strconv.Atoi(c.FormValue("tahun"))
+	pagu, _ := strconv.ParseFloat(strings.ReplaceAll(c.FormValue("pagu"), ".", ""), 64)
+	hps, _ := strconv.ParseFloat(strings.ReplaceAll(c.FormValue("hps"), ".", ""), 64)
+	metodeStr := c.FormValue("metode")
+	jenis := c.FormValue("jenis")
+	satkerId, _ := strconv.Atoi(c.FormValue("satker_id"))
+	keterangan := c.FormValue("keterangan")
+
+	err := services.UpdateManualPaket(c, id, usersession.Id, nama, tahun, pagu, hps, 0, metodeStr, jenis, uint(satkerId), keterangan)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Gagal update paket manual: "+err.Error(), "/paket/edit-manual/"+utils.UintToString(id))
+	}
+
+	return flashSuccess(c, "Paket manual berhasil diperbarui", "/paket/"+utils.UintToString(id))
+}
+
 func EditPaket(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	mp["url"] = "/paket"
@@ -58,7 +135,7 @@ func GetAllPaket(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	usersession := getUserSession(c)
 	user := usersession.Pegawai()
-	mp["allowBuatPaket"] = user.IsApprove() && usersession.IsPpk() && user.IsAktif()
+	mp["allowBuatPaket"] = user.IsApprove() && (usersession.IsPpk() || usersession.IsArsiparis()) && user.IsAktif()
 	return c.Render("paket/paket", mp)
 }
 
@@ -80,6 +157,7 @@ func GetPaket(c *fiber.Ctx) error {
 	mp["pps"] = services.GetPPs(paket.SatkerId)
 	mp["ppks"] = services.GetPPKs()
 	mp["prosesOnlyPpk"] = paket.IsOnlyPpk()
+	mp["bukti"] = models.GetDokPaketJenis(paket.ID, "Bukti Manual")
 	return c.Render("paket/paket-detil", mp)
 }
 
@@ -118,7 +196,8 @@ func GetJsonPaket(c *fiber.Ctx) error {
 	isUkpbj := mp["isUkpbj"].(bool)
 	isPp  := mp["isPP"].(bool)
 	isPokja := mp["isPokja"].(bool)
-	return services.GetDataTablePaket(c, id, isPPk, isUkpbj, isPokja, isPp)
+	isArsiparis := mp["isArsiparis"].(bool)
+	return services.GetDataTablePaket(c, id, isPPk, isUkpbj, isPokja, isPp, isArsiparis)
 }
 
 func UpdateHpsPaket(c *fiber.Ctx) error {

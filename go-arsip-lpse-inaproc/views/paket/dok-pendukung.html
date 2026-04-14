@@ -1,4 +1,4 @@
-﻿ {% if isPPK %}
+ {% if isPPK or isArsiparis %}
  <form method="post" action="/paket/dok-pendukung/{{ paket.ID }}" enctype="multipart/form-data">
      <div class="input-group mt-2">
          <input type="file" name="file" class="form-control">
@@ -23,7 +23,7 @@
      <tr>
          <td><a href="/download/{{ obj.Document.ID }}">{{ obj.Document.Filename }}</a></td>
          <td width="5%">
-             {% if isPokja or isPP %}
+             {% if isPokja or isPP or isArsiparis %}
              <a href="/paket/dok-paket/{{obj.ID}}/hapus" title="Hapus file" onclick="return confirm('apakah anda ingin menghapus file?')">
              <span style="width: 16px;" data-feather="trash-2" style="width: 16px;"></span>
          </a> {% endif %}

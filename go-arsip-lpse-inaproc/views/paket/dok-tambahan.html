@@ -8,7 +8,7 @@
     </div>
   </div>
   <div class="card-body">
-    {% if isPPK or isPokja or isPP %}
+    {% if isPPK or isPokja or isPP or isArsiparis %}
     <form action="/paket/dok-tambahan/{{ paket.ID }}" method="POST" enctype="multipart/form-data" class="mb-4">
         <div class="form-label text-muted small mb-2">Unggah Dokumen Pendukung Baru</div>
         <div class="input-group mb-2">
@@ -68,7 +68,7 @@
                             <a href="/download/{{ d.DokId }}" class="btn btn-sm btn-white" title="Download">
                                 <span style="width: 14px;" data-feather="download"></span>
                             </a>
-                            {% if isPPK or isPokja or isPP %}
+                            {% if isPPK or isPokja or isPP or isArsiparis %}
                             <a href="/paket/dok-paket/{{ d.ID }}/hapus" class="btn btn-sm btn-ghost-danger" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus file ini?')">
                                 <span style="width: 14px;" data-feather="trash-2"></span>
                             </a>

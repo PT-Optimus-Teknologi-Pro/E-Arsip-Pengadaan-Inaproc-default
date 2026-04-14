@@ -39,6 +39,10 @@ type Paket struct {
 	AlasanDitolak  string		 `json:"alasan_ditolak" form:"alasan_ditolak"`
 	Prioritas 	   bool 		 `json:"prioritas" form:"prioritas"`
 	TglGantiPpk   Datetime		 `json:"tgl_ganti_ppk" form:"tgl_ganti_ppk"`
+	Tahun          int           `json:"tahun" form:"tahun"`
+	Keterangan     string        `json:"keterangan" form:"keterangan"`
+	JenisArsip     string        `json:"jenis_arsip" form:"jenis_arsip"`
+	MetodeArsip    string        `json:"metode_arsip" form:"metode_arsip"`
 }
 
 func (Paket) TableName() string {
@@ -81,6 +85,9 @@ func (obj Paket) StatusLabel() string {
 }
 
 func (obj Paket) Jenis() string {
+	if obj.RupId == 0 && obj.JenisArsip != "" {
+		return obj.JenisArsip
+	}
 	if obj.KgrId >= 0 && obj.KgrId < len(jenisPengadaan) {
 		return jenisPengadaan[obj.KgrId]
 	}
@@ -88,6 +95,9 @@ func (obj Paket) Jenis() string {
 }
 
 func (obj Paket) MetodePengadaan() string {
+	if obj.RupId == 0 && obj.MetodeArsip != "" {
+		return obj.MetodeArsip
+	}
 	if obj.Metode >= 0 && obj.Metode < len(metodePengadaan) {
 		return metodePengadaan[obj.Metode]
 	}
@@ -336,6 +346,10 @@ func CreatePaket(sirup PaketSirup, userId uint) (uint, error) {
 
 func SavePaket(paket *Paket) error {
 	return db.Save(paket).Error
+}
+
+func UpdatePaket(paket *Paket) error {
+	return db.Updates(paket).Error
 }
 
 func DeletePaket(paket *Paket) error {

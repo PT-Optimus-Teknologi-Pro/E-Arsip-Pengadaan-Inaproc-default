@@ -204,8 +204,12 @@ func SetupRoutes(app *fiber.App) {
 	reviu.Get("/", handlers.GetAllReviu)
 	reviu.Get("/:id", handlers.GetReviu)
 	reviu.Post("/", handlers.CreateReviu)
-
+	
 	paket := app.Group("/paket", handlers.LoggedMiddleware)
+	paket.Get("/create-manual", handlers.CreateManualPaketForm)
+	paket.Post("/create-manual", handlers.SaveManualPaket)
+	paket.Get("/edit-manual/:id", handlers.EditManualPaketForm)
+	paket.Post("/update-manual/:id", handlers.UpdateManualPaket)
 	paket.Post("/create", handlers.CreatePaket)
 	paket.Get("/data", handlers.GetJsonPaket)
 	paket.Get("/edit", handlers.EditPaket)

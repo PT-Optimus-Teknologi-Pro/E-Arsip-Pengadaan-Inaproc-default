@@ -15,6 +15,79 @@ func GetPaket(id uint) models.Paket {
 	return models.GetPaket(id)
 }
 
+func CreateManualPaket(c *fiber.Ctx, userId uint, nama string, tahun int, pagu float64, hps float64, metode int, metodeStr string, jenis string, satkerId uint, keterangan string) (uint, error) {
+	paket := models.Paket{
+		Nama:        nama,
+		Tahun:       tahun,
+		Pagu:        pagu,
+		Hps:         hps,
+		Metode:      metode,
+		MetodeArsip: metodeStr,
+		JenisArsip:  jenis,
+		SatkerId:    satkerId,
+		Status:      0, // Draft
+		Keterangan:  keterangan,
+		CreatedBy:   userId,
+	}
+
+	err := models.SavePaket(&paket)
+	if err != nil {
+		return 0, err
+	}
+
+	// Generate checklist
+	paket.GeneratePersyaratan()
+
+	// Handle Evidence File Upload if exists
+	HandleManualEvidence(c, &paket, userId)
+
+	return paket.ID, nil
+}
+
+func UpdateManualPaket(c *fiber.Ctx, id uint, userId uint, nama string, tahun int, pagu float64, hps float64, metode int, metodeStr string, jenis string, satkerId uint, keterangan string) error {
+	paket := GetPaket(id)
+	if paket.ID == 0 {
+		return fmt.Errorf("Paket tidak ditemukan")
+	}
+
+	paket.Nama = nama
+	paket.Tahun = tahun
+	paket.Pagu = pagu
+	paket.Hps = hps
+	paket.Metode = metode
+	paket.MetodeArsip = metodeStr
+	paket.JenisArsip = jenis
+	paket.SatkerId = satkerId
+	paket.Keterangan = keterangan
+	paket.UpdatedBy = userId
+
+	err := models.UpdatePaket(&paket)
+	if err != nil {
+		return err
+	}
+
+	// Handle New Evidence File Upload if exists
+	HandleManualEvidence(c, &paket, userId)
+
+	return nil
+}
+
+func HandleManualEvidence(c *fiber.Ctx, paket *models.Paket, userId uint) {
+	file, _ := c.FormFile("bukti")
+	if file != nil {
+		dokId, err := models.SaveDocument(c, userId, models.TAMBAHAN, "bukti")
+		if err == nil {
+			dokPaket := models.DokPaket{
+				PktId: paket.ID,
+				PegId: userId,
+				DokId: dokId,
+				Jenis: "Bukti Manual",
+			}
+			models.SaveDokPaket(&dokPaket)
+		}
+	}
+}
+
 func CreatePaket(rupId uint, userId uint) (uint, error) {
 	paketSirup := GetPaketSirup(rupId)
 	if paketSirup.ID == 0 {

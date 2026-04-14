@@ -1,7 +1,5 @@
 package models
 
-import "fmt"
-
 // AppSettings menyimpan pengaturan aplikasi global (singleton — hanya 1 row)
 type AppSettings struct {
 	ID                uint   `gorm:"primaryKey;autoIncrement"`
@@ -81,10 +79,7 @@ func (FooterService) TableName() string { return "footer_services" }
 
 func GetSettings() AppSettings {
 	var s AppSettings
-	var count int64
-	db.Model(&AppSettings{}).Count(&count)
 	db.First(&s)
-	fmt.Printf("GetSettings: Count=%d, ID=%d, Title=%s\n", count, s.ID, s.AppTitle)
 	if s.ID == 0 {
 		s = AppSettings{ID: 1}
 		db.Create(&s)

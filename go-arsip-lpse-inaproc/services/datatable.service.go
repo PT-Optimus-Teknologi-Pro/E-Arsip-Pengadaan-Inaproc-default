@@ -34,8 +34,8 @@ func GetDataTablePegawai(c *fiber.Ctx, usrgroup string) error {
 	return models.GetDataTablePegawai(c, usrgroup)
 }
 
-func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp bool) error {
-	return models.GetDataTablePaket(c, id, isPPK, isUkpbj, isPokja, isPp)
+func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp, isArsiparis bool) error {
+	return models.GetDataTablePaket(c, id, isPPK, isUkpbj, isPokja, isPp, isArsiparis)
 }
 
 func GetDataTableTemplates(c *fiber.Ctx) error {

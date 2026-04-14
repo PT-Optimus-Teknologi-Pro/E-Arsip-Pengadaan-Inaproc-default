@@ -1,4 +1,4 @@
-﻿<form method="post" action="/paket/checklist/{{ paket.ID }}" enctype="multipart/form-data">
+<form method="post" action="/paket/checklist/{{ paket.ID }}" enctype="multipart/form-data">
 <table class="table">
     <tr>
         <th>Jenis</th>
@@ -14,14 +14,14 @@
              <li class="list-group-item"><a href="/download/{{ obj.DokId }}"><span style="width: 16px;" data-feather="download"></span> {{ obj.Dokumen.Filename }}</a></li>
             {% endif %}
             </ul>
-            {% if isPPK and paket.Status < 2 %}
+            {% if (isPPK or isArsiparis) and paket.Status < 2 %}
             <input type="file" name="checklist_{{ obj.ID }}" class="form-control mt-3">
             {% endif %}
         </td>
     </tr>
     {% endfor %}
 </table>
- {% if isPPK and paket.Status < 2  %}
+ {% if (isPPK or isArsiparis) and paket.Status < 2  %}
 <p><smal>Gunakan template untuk membuat dokumen persyaratan</smal></p>
 <p>
     <button type="submit" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span> Simpan Persyaratan</button>

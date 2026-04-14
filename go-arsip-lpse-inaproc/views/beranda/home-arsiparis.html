@@ -1,0 +1,781 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Dashboard Arsiparis Digital
+{% endblock %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --dash-blue:        #2563EB;
+    --dash-blue-lt:     #EFF6FF;
+    --dash-blue-mid:    #DBEAFE;
+    --dash-green:       #16A34A;
+    --dash-green-lt:    #F0FDF4;
+    --dash-orange:      #D97706;
+    --dash-orange-lt:   #FFFBEB;
+    --dash-purple:      #7C3AED;
+    --dash-purple-lt:   #F5F3FF;
+    --dash-border:      #E5E7EB;
+    --dash-muted:       #6B7280;
+    --dash-text:        #111827;
+    --dash-surface:     #FFFFFF;
+    --dash-bg:          #F8FAFC;
+    --dash-radius:      16px;
+    --dash-radius-sm:   10px;
+    --dash-shadow:      0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --dash-shadow-md:   0 4px 16px rgba(0,0,0,0.07), 0 2px 6px rgba(0,0,0,0.04);
+    --dash-shadow-lg:   0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  /* Scope all styles to .dash-root to avoid polluting Tabler */
+  .dash-root * { box-sizing: border-box; }
+
+  .dash-root {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--dash-text);
+  }
+
+  /* ─── Page Header ─── */
+  .dash-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .dash-header-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--dash-blue);
+    background: var(--dash-blue-lt);
+    border: 1px solid var(--dash-blue-mid);
+    padding: 4px 10px;
+    border-radius: 99px;
+    margin-bottom: 10px;
+  }
+
+  .dash-header-eyebrow .dot {
+    width: 6px; height: 6px;
+    background: var(--dash-blue);
+    border-radius: 50%;
+    animation: dash-pulse 2s infinite;
+  }
+
+  .dash-page-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--dash-text);
+    letter-spacing: -0.5px;
+    margin: 0 0 6px;
+    line-height: 1.2;
+  }
+
+  .dash-page-subtitle {
+    font-size: 13.5px;
+    color: var(--dash-muted);
+    line-height: 1.5;
+  }
+
+  .dash-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--dash-blue);
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: var(--dash-radius-sm);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+    transition: background .15s, box-shadow .15s, transform .15s;
+    white-space: nowrap;
+  }
+
+  .dash-btn-primary:hover {
+    background: #1D4ED8;
+    box-shadow: 0 4px 16px rgba(37,99,235,0.35);
+    transform: translateY(-1px);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .dash-btn-primary svg { width: 15px; height: 15px; }
+
+  /* ─── Stats Grid ─── */
+  .dash-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 960px) { .dash-stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .dash-stats-grid { grid-template-columns: 1fr; } }
+  .dash-stat-card {
+    background: var(--dash-surface);
+    border-radius: var(--dash-radius);
+    border: 1px solid var(--dash-border);
+    padding: 20px 22px 18px;
+    box-shadow: var(--dash-shadow);
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow .2s ease;
+  }
+
+  .dash-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: var(--dash-radius) var(--dash-radius) 0 0;
+  }
+
+  .dash-stat-card.c-blue::before   { background: linear-gradient(90deg, #2563EB, #60A5FA); }
+  .dash-stat-card.c-green::before  { background: linear-gradient(90deg, #16A34A, #4ADE80); }
+  .dash-stat-card.c-orange::before { background: linear-gradient(90deg, #D97706, #FCD34D); }
+  .dash-stat-card.c-purple::before { background: linear-gradient(90deg, #7C3AED, #C4B5FD); }
+
+  .dash-stat-card:hover {
+    box-shadow: var(--dash-shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .dash-stat-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .dash-stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--dash-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .dash-stat-icon {
+    width: 38px; height: 38px;
+    border-radius: var(--dash-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dash-stat-icon.c-blue   { background: var(--dash-blue-lt);   color: var(--dash-blue); }
+  .dash-stat-icon.c-green  { background: var(--dash-green-lt);  color: var(--dash-green); }
+  .dash-stat-icon.c-orange { background: var(--dash-orange-lt); color: var(--dash-orange); }
+  .dash-stat-icon.c-purple { background: var(--dash-purple-lt); color: var(--dash-purple); }
+  .dash-stat-icon svg { width: 18px; height: 18px; }
+
+  .dash-stat-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .dash-stat-value.c-blue   { color: var(--dash-blue); }
+  .dash-stat-value.c-green  { color: var(--dash-green); }
+  .dash-stat-value.c-orange { color: var(--dash-orange); }
+  .dash-stat-value.c-purple { color: var(--dash-purple); }
+
+  .dash-stat-desc {
+    font-size: 12px;
+    color: var(--dash-muted);
+    margin-bottom: 14px;
+  }
+
+  .dash-stat-bar {
+    height: 5px;
+    background: var(--dash-border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .dash-stat-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    width: 0;
+  }
+
+  .dash-stat-bar-fill.c-blue   { background: linear-gradient(90deg, #2563EB, #60A5FA); }
+  .dash-stat-bar-fill.c-green  { background: linear-gradient(90deg, #16A34A, #4ADE80); }
+  .dash-stat-bar-fill.c-orange { background: linear-gradient(90deg, #D97706, #FCD34D); }
+  .dash-stat-bar-fill.c-purple { background: linear-gradient(90deg, #7C3AED, #C4B5FD); }
+
+  /* ─── Content Grid ─── */
+  .dash-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) { .dash-content-grid { grid-template-columns: 1fr; } }
+
+  /* ─── Activity Card ─── */
+  .dash-card {
+    background: var(--dash-surface);
+    border-radius: var(--dash-radius);
+    border: 1px solid var(--dash-border);
+    box-shadow: var(--dash-shadow);
+    overflow: hidden;
+  }
+
+  .dash-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--dash-border);
+  }
+
+  .dash-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--dash-text);
+  }
+
+  .dash-card-title svg { width: 15px; height: 15px; color: var(--dash-blue); }
+
+  .dash-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--dash-green);
+    background: var(--dash-green-lt);
+    border: 1px solid #BBF7D0;
+    padding: 3px 9px;
+    border-radius: 99px;
+  }
+
+  .dash-live-dot {
+    width: 6px; height: 6px;
+    background: var(--dash-green);
+    border-radius: 50%;
+    animation: dash-pulse 2s infinite;
+  }
+
+  @keyframes dash-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+  }
+
+  /* Shimmer rows */
+  .dash-shimmer-wrap { padding: 16px 22px 8px; }
+
+  .dash-shimmer-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--dash-border);
+  }
+
+  .dash-shimmer-row:last-child { border-bottom: none; }
+
+  .dash-shimmer-avatar {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    flex-shrink: 0;
+  }
+
+  .dash-shimmer-block {
+    background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    height: 9px;
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Empty state */
+  .dash-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 48px 32px;
+  }
+
+  .dash-empty-icon {
+    width: 68px; height: 68px;
+    background: var(--dash-blue-lt);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: var(--dash-blue);
+    border: 1px solid var(--dash-blue-mid);
+  }
+
+  .dash-empty-icon svg { width: 28px; height: 28px; }
+
+  .dash-empty-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dash-text);
+    margin: 0 0 6px;
+  }
+
+  .dash-empty-subtitle {
+    font-size: 13px;
+    color: var(--dash-muted);
+    line-height: 1.65;
+    max-width: 340px;
+    margin: 0 auto 22px;
+  }
+
+  .dash-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--dash-surface);
+    color: var(--dash-blue);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: var(--dash-radius-sm);
+    border: 1.5px solid var(--dash-blue);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s, box-shadow .15s, transform .15s;
+  }
+
+  .dash-btn-outline:hover {
+    background: var(--dash-blue-lt);
+    box-shadow: 0 2px 8px rgba(37,99,235,0.12);
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: var(--dash-blue);
+  }
+
+  .dash-btn-outline svg { width: 15px; height: 15px; }
+
+  /* ─── Sidebar ─── */
+  .dash-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+  /* Mission Card */
+  .dash-mission-card {
+    background: linear-gradient(145deg, #1E3A8A 0%, #2563EB 55%, #3B82F6 100%);
+    border-radius: var(--dash-radius);
+    padding: 24px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 28px rgba(37,99,235,0.32);
+  }
+
+  .dash-mission-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .dash-mission-card::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: -20px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .dash-mission-icon {
+    width: 42px; height: 42px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .dash-mission-icon svg { width: 19px; height: 19px; }
+
+  .dash-mission-title {
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: -0.2px;
+  }
+
+  .dash-mission-desc {
+    font-size: 12.5px;
+    opacity: 0.78;
+    line-height: 1.7;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .dash-mission-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .dash-mission-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: 12.5px;
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+
+  .dash-check-circle {
+    width: 18px; height: 18px;
+    min-width: 18px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0px;
+  }
+
+  .dash-check-circle svg { width: 9px; height: 9px; }
+
+  /* Divider inside mission */
+  .dash-mission-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.12);
+    margin: 18px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Help Card */
+  .dash-help-card {
+    background: var(--dash-surface);
+    border: 1px solid var(--dash-border);
+    border-radius: var(--dash-radius);
+    padding: 20px 22px;
+    box-shadow: var(--dash-shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dash-help-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(180deg, var(--dash-orange), #FCD34D);
+    border-radius: 4px 0 0 4px;
+  }
+
+  .dash-help-inner { padding-left: 4px; }
+
+  .dash-help-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--dash-text);
+  }
+
+  .dash-help-title svg { width: 14px; height: 14px; color: var(--dash-orange); }
+
+  .dash-help-desc {
+    font-size: 12.5px;
+    color: var(--dash-muted);
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+
+  .dash-btn-white {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    background: var(--dash-bg);
+    color: var(--dash-text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 14px;
+    border-radius: var(--dash-radius-sm);
+    border: 1px solid var(--dash-border);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s, box-shadow .15s;
+  }
+
+  .dash-btn-white:hover {
+    background: var(--dash-blue-lt);
+    border-color: var(--dash-blue-mid);
+    color: var(--dash-blue);
+    text-decoration: none;
+  }
+
+  .dash-btn-white svg { width: 14px; height: 14px; color: var(--dash-blue); }
+
+  .dash-fade-in {
+    opacity: 1;
+  }
+</style>
+
+<div class="dash-root">
+
+  <!-- ─── Page Header ─── -->
+  <div class="dash-header">
+    <div>
+      <div class="dash-header-eyebrow">
+        <span class="dot"></span>
+        Sistem Aktif
+      </div>
+      <h2 class="dash-page-title">Pusat Kendali Arsip Digital</h2>
+      <div class="dash-page-subtitle">
+        Selamat datang kembali, <strong style="color:var(--dash-blue)">{{ user.PegNama }}</strong>. Mari lestarikan data pengadaan.
+      </div>
+    </div>
+    <div class="d-none d-sm-block">
+      <a href="/paket/edit" class="dash-btn-primary">
+        <span data-feather="plus"></span>
+        Mulai Pengarsipan Baru
+      </a>
+    </div>
+  </div>
+
+  <!-- ─── Stats Grid ─── -->
+  <div class="dash-stats-grid">
+
+    <!-- Total Arsip -->
+    <div class="dash-stat-card c-blue dash-fade-in">
+      <div class="dash-stat-top">
+        <span class="dash-stat-label">Total Arsip</span>
+        <span class="dash-stat-icon c-blue"><span data-feather="database"></span></span>
+      </div>
+      <div class="dash-stat-value c-blue">{{ stats.TotalArsip }}</div>
+      <div class="dash-stat-desc">Paket Terdata</div>
+      <div class="dash-stat-bar">
+        <div class="dash-stat-bar-fill c-blue" data-width="100%"></div>
+      </div>
+    </div>
+
+    <!-- Lengkap -->
+    <div class="dash-stat-card c-green dash-fade-in">
+      <div class="dash-stat-top">
+        <span class="dash-stat-label">Lengkap</span>
+        <span class="dash-stat-icon c-green"><span data-feather="check-circle"></span></span>
+      </div>
+      <div class="dash-stat-value c-green">{{ stats.PersenLengkap }}%</div>
+      <div class="dash-stat-desc">Dokumen Terunggah</div>
+      <div class="dash-stat-bar">
+        <div class="dash-stat-bar-fill c-green" data-width="{{ stats.PersenLengkap }}%"></div>
+      </div>
+    </div>
+
+    <!-- Menunggu -->
+    <div class="dash-stat-card c-orange dash-fade-in">
+      <div class="dash-stat-top">
+        <span class="dash-stat-label">Menunggu</span>
+        <span class="dash-stat-icon c-orange"><span data-feather="clock"></span></span>
+      </div>
+      <div class="dash-stat-value c-orange">{{ stats.Menunggu }}</div>
+      <div class="dash-stat-desc">Paket Belum Selesai</div>
+      <div class="dash-stat-bar">
+        {% set persenMenunggu = 0 %}
+        {% if stats.TotalArsip > 0 %}
+          {% set persenMenunggu = (stats.Menunggu / stats.TotalArsip) * 100 %}
+        {% endif %}
+        <div class="dash-stat-bar-fill c-orange" data-width="{{ persenMenunggu }}%"></div>
+      </div>
+    </div>
+
+    <!-- Tahun Aktif -->
+    <div class="dash-stat-card c-purple dash-fade-in">
+      <div class="dash-stat-top">
+        <span class="dash-stat-label">Tahun Aktif</span>
+        <span class="dash-stat-icon c-purple"><span data-feather="calendar"></span></span>
+      </div>
+      <div class="dash-stat-value c-purple">{{ stats.TahunAktif }}</div>
+      <div class="dash-stat-desc">{{ stats.TahunList }}</div>
+      <div class="dash-stat-bar">
+        <div class="dash-stat-bar-fill c-purple" data-width="100%"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── Main Content ─── -->
+  <div class="dash-content-grid">
+
+    <!-- Aktivitas Terakhir -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">
+          <span data-feather="activity"></span>
+          Aktivitas Terakhir
+          <div class="dash-live-dot" style="margin-left:2px;"></div>
+        </div>
+        <span class="dash-live-badge">
+          <span class="dash-live-dot"></span>
+          Live
+        </span>
+      </div>
+
+      <!-- Activity List -->
+      <div class="dash-activity-list" style="padding: 0 22px;">
+        {% if stats.RecentActivities|length > 0 %}
+          {% for p in stats.RecentActivities %}
+          <div class="dash-activity-row py-3 border-bottom" style="display: flex; align-items: center; gap: 14px;">
+            <div class="dash-activity-icon" style="width: 36px; height: 36px; border-radius: 10px; background: var(--dash-blue-lt); color: var(--dash-blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              {% if p.RupId > 0 %}
+                <span data-feather="refresh-cw" style="width: 16px;"></span>
+              {% else %}
+                <span data-feather="edit-3" style="width: 16px;"></span>
+              {% endif %}
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;">
+                <a href="/paket/{{ p.ID }}" class="text-reset font-weight-bold" style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 80%;">
+                  {{ p.Nama }}
+                </a>
+                <span style="font-size: 11px; color: var(--dash-muted);">{{ p.CreatedAt|date:"15:04" }}</span>
+              </div>
+              <div style="font-size: 12px; color: var(--dash-muted); display: flex; align-items: center; gap: 8px;">
+                <span>{{ p.Tahun }}</span>
+                <span style="width: 3px; height: 3px; background: #CBD5E1; border-radius: 50%;"></span>
+                <span>{% if p.RupId > 0 %}Sumber: SIRUP{% else %}Input Manual{% endif %}</span>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+          <div class="py-3 text-center">
+            <a href="/paket" class="text-muted small">Lihat Semua Aktifitas</a>
+          </div>
+        {% else %}
+          <!-- Empty State (Only if no data at all) -->
+          <div class="dash-empty py-5">
+            <div class="dash-empty-icon mx-auto">
+              <span data-feather="folder-plus"></span>
+            </div>
+            <p class="dash-empty-title text-center">Siap untuk data baru</p>
+            <p class="dash-empty-subtitle text-center">
+              Saat ini belum ada aktivitas pengarsipan terbaru.
+            </p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="dash-sidebar">
+
+      <!-- Misi Card -->
+      <div class="dash-mission-card">
+        <div class="dash-mission-icon text-white">
+          <span data-feather="award"></span>
+        </div>
+        <div class="dash-mission-title">Misi Arsiparis Digital</div>
+        <div class="dash-mission-desc">
+          Digitalisasi dokumen pengadaan barang dan jasa (PBJ) yang sudah selesai untuk keperluan audit dan sejarah data.
+        </div>
+        <div class="dash-mission-divider"></div>
+        <ul class="dash-mission-list">
+          <li>
+            <div class="dash-check-circle text-white"><span data-feather="check"></span></div>
+            Pastikan semua file PDF terbaca jelas
+          </li>
+          <li>
+            <div class="dash-check-circle text-white"><span data-feather="check"></span></div>
+            Gunakan penamaan file yang standar
+          </li>
+          <li>
+            <div class="dash-check-circle text-white"><span data-feather="check"></span></div>
+            Cek kelengkapan dokumen sesuai checklist
+          </li>
+        </ul>
+      </div>
+
+      <!-- Bantuan Card -->
+      <div class="dash-help-card">
+        <div class="dash-help-inner">
+          <div class="dash-help-title">
+            <span data-feather="help-circle"></span>
+            Pusat Bantuan
+          </div>
+          <div class="dash-help-desc">
+            Butuh bantuan mengenai format dokumen atau akses sistem?
+          </div>
+          <a href="/images/USER GUIDE ALUR ARSIP.pdf" target="_blank" data-no-loader class="dash-btn-white">
+            <span data-feather="book-open"></span>
+            Panduan Pengarsipan
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    feather.replace();
+
+    // Animate stat bar fills
+    document.querySelectorAll('.dash-stat-bar-fill').forEach(function(el) {
+      var w = el.getAttribute('data-width');
+      setTimeout(function() { el.style.width = w; }, 300);
+    });
+  });
+</script>
+{% endblock %}

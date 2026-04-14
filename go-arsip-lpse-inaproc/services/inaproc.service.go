@@ -3,6 +3,8 @@ package services
 import (
 	"arsip/config"
 	"arsip/models"
+	"fmt"
+	"time"
 )
 
 
@@ -10,9 +12,83 @@ func GetSatker(id uint) models.SatkerSirup {
 	return models.GetSatkerSirup(id)
 }
 
+func GetAllSatker() []models.SatkerSirup {
+	// Fetch satkers for the current year as a baseline
+	tahunNow := config.TahunStart()
+	if tahunNow == 0 {
+		tahunNow = time.Now().Year()
+	}
+	return models.GetAllSatkerSirup(tahunNow)
+}
+
 
 func GetTahunList() []int {
 	return config.GetTahunList()
+}
+
+type ArsiparisStats struct {
+	TotalArsip       int64
+	Lengkap          int64
+	Menunggu         int64
+	PersenLengkap    int
+	TahunAktif       int
+	TahunList        string
+	RecentActivities []models.Paket
+}
+
+func GetArsiparisDashboardStats() ArsiparisStats {
+	var total, lengkap, menunggu int64
+	var paketList []models.Paket
+	
+	// Get all packages for counts
+	models.GetDB().Model(&models.Paket{}).Where("deleted_at IS NULL").Find(&paketList)
+	total = int64(len(paketList))
+	
+	// Get latest 5 for activities
+	var recent []models.Paket
+	models.GetDB().Order("created_at desc").Limit(5).Find(&recent)
+	
+	uniqueYears := make(map[int]bool)
+	for _, p := range paketList {
+		if p.IsPersyaratanLengkap() {
+			lengkap++
+		} else {
+			menunggu++
+		}
+		if p.Tahun > 0 {
+			uniqueYears[p.Tahun] = true
+		}
+	}
+	
+	persen := 0
+	if total > 0 {
+		persen = int((float64(lengkap) / float64(total)) * 100)
+	}
+	
+	// Get active years string
+	yearsStr := "Belum ada data"
+	if len(uniqueYears) > 0 {
+		yearsStr = "TA "
+		i := 0
+		for y := range uniqueYears {
+			if i > 0 {
+				yearsStr += " & "
+			}
+			yearsStr += fmt.Sprintf("%d", y)
+			i++
+			if i >= 2 { break } // Limit to 2 years for description
+		}
+	}
+	
+	return ArsiparisStats{
+		TotalArsip:       total,
+		Lengkap:          lengkap,
+		Menunggu:         menunggu,
+		PersenLengkap:    persen,
+		TahunAktif:       len(uniqueYears),
+		TahunList:        yearsStr,
+		RecentActivities: recent,
+	}
 }
 
 func GetRupProgress(tahun int) []models.RupProgress {

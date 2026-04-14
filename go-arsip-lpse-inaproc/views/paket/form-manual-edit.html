@@ -1,0 +1,164 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Edit Data Manual - Arsip Digital
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col">
+        <h2 class="page-title text-primary">Edit Pengarsipan Manual</h2>
+        <div class="text-muted">Perbarui informasi paket pengarsipan data manual #{{ paket.ID }}.</div>
+    </div>
+    <div class="col-auto">
+        <a href="/paket" class="btn btn-secondary">
+            <span style="width: 16px; height: 16px;" data-feather="arrow-left"></span>
+            Kembali ke Daftar
+        </a>
+    </div>
+</div>
+
+<div class="col-12">
+    <div class="card shadow-sm border-0">
+        {% include "alert.html" %}
+        <form action="/paket/update-manual/{{ paket.ID }}" method="POST" enctype="multipart/form-data">
+            <div class="card-body">
+                <div class="row">
+                    <!-- Informasi Utama -->
+                    <div class="col-md-7 border-end-md">
+                        <div class="form-group mb-3">
+                            <label class="form-label required">Nama Paket Pengadaan</label>
+                            <input type="text" name="nama" class="form-control" value="{{ paket.Nama }}" required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label required">Tahun Anggaran</label>
+                                <input type="number" name="tahun" class="form-control" value="{{ paket.Tahun }}" min="1900" max="2100" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label required">Satker / SKPD</label>
+                                <select name="satker_id" class="form-select" required>
+                                    {% for s in satkers %}
+                                    <option value="{{ s.ID }}" {% if s.ID == paket.SatkerId %}selected{% endif %}>{{ s.Nama }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label required">Pagu Anggaran</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" name="pagu" class="form-control rupiah" value="{{ paket.Pagu }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label required">HPS (Harga Perkiraan Sendiri)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" name="hps" class="form-control rupiah" value="{{ paket.Hps }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label required">Jenis Pengadaan</label>
+                                <select id="select-jenis" class="form-select mb-2" onchange="checkLainnya(this, 'manual-jenis')" required>
+                                    <option value="Barang" {% if paket.JenisArsip == 'Barang' %}selected{% endif %}>Barang</option>
+                                    <option value="Pekerjaan Konstruksi" {% if paket.JenisArsip == 'Pekerjaan Konstruksi' %}selected{% endif %}>Pekerjaan Konstruksi</option>
+                                    <option value="Jasa Konsultansi" {% if paket.JenisArsip == 'Jasa Konsultansi' %}selected{% endif %}>Jasa Konsultansi</option>
+                                    <option value="Jasa Lainnya" {% if paket.JenisArsip == 'Jasa Lainnya' %}selected{% endif %}>Jasa Lainnya</option>
+                                    <option value="custom" {% if paket.JenisArsip != 'Barang' and paket.JenisArsip != 'Pekerjaan Konstruksi' and paket.JenisArsip != 'Jasa Konsultansi' and paket.JenisArsip != 'Jasa Lainnya' and paket.JenisArsip != '' %}selected{% endif %}>-- Lainnya (Ketik Manual) --</option>
+                                </select>
+                                <input type="text" id="manual-jenis" name="jenis" class="form-control {% if paket.JenisArsip == 'Barang' or paket.JenisArsip == 'Pekerjaan Konstruksi' or paket.JenisArsip == 'Jasa Konsultansi' or paket.JenisArsip == 'Jasa Lainnya' or paket.JenisArsip == '' %}d-none{% endif %}" value="{{ paket.JenisArsip }}" placeholder="Ketik Jenis Pengadaan kustom...">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label required">Metode Pengadaan</label>
+                                <select id="select-metode" class="form-select mb-2" onchange="checkLainnya(this, 'manual-metode')" required>
+                                    <option value="E-Purchasing" {% if paket.MetodeArsip == 'E-Purchasing' %}selected{% endif %}>E-Purchasing</option>
+                                    <option value="Pengadaan Langsung" {% if paket.MetodeArsip == 'Pengadaan Langsung' %}selected{% endif %}>Pengadaan Langsung</option>
+                                    <option value="Penunjukan Langsung" {% if paket.MetodeArsip == 'Penunjukan Langsung' %}selected{% endif %}>Penunjukan Langsung</option>
+                                    <option value="Tender" {% if paket.MetodeArsip == 'Tender' %}selected{% endif %}>Tender</option>
+                                    <option value="Seleksi" {% if paket.MetodeArsip == 'Seleksi' %}selected{% endif %}>Seleksi</option>
+                                    <option value="Tender Cepat" {% if paket.MetodeArsip == 'Tender Cepat' %}selected{% endif %}>Tender Cepat</option>
+                                    <option value="custom" {% if paket.MetodeArsip != 'E-Purchasing' and paket.MetodeArsip != 'Pengadaan Langsung' and paket.MetodeArsip != 'Penunjukan Langsung' and paket.MetodeArsip != 'Tender' and paket.MetodeArsip != 'Seleksi' and paket.MetodeArsip != 'Tender Cepat' and paket.MetodeArsip != '' %}selected{% endif %}>-- Lainnya (Ketik Manual) --</option>
+                                </select>
+                                <input type="text" id="manual-metode" name="metode" class="form-control {% if paket.MetodeArsip == 'E-Purchasing' or paket.MetodeArsip == 'Pengadaan Langsung' or paket.MetodeArsip == 'Penunjukan Langsung' or paket.MetodeArsip == 'Tender' or paket.MetodeArsip == 'Seleksi' or paket.MetodeArsip == 'Tender Cepat' or paket.MetodeArsip == '' %}d-none{% endif %}" value="{{ paket.MetodeArsip }}" placeholder="Ketik Metode Pengadaan kustom...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bukti & Keterangan -->
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Keterangan / Deskripsi</label>
+                            <textarea name="keterangan" class="form-control" rows="4">{{ paket.Keterangan }}</textarea>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Ganti Dokumen Bukti (Opsional)</label>
+                            <input type="file" name="bukti" class="form-control" accept=".pdf,.xlsx,.csv,.zip,.docx">
+                            <div class="text-muted small mt-2">Biarkan kosong jika tidak ingin mengganti file bukti yang sudah ada.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light d-flex justify-content-end gap-2">
+                <a href="/paket" class="btn btn-link link-secondary">Batal</a>
+                <button type="submit" class="btn btn-primary shadow-sm">
+                    <span style="width: 16px; height: 16px;" data-feather="save"></span>
+                    Simpan Perubahan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    feather.replace();
+    $(document).ready(function(){
+        $('.rupiah').mask('000.000.000.000.000', {reverse: true});
+        
+        // Trigger initial check for 'custom' options
+        checkInitialLainnya('select-jenis', 'manual-jenis', 'jenis');
+        checkInitialLainnya('select-metode', 'manual-metode', 'metode');
+    });
+
+    function checkInitialLainnya(selectId, manualId, name) {
+        const select = document.getElementById(selectId);
+        const manualInput = document.getElementById(manualId);
+        if (select.value === 'custom') {
+            manualInput.name = name;
+            select.removeAttribute('name');
+            manualInput.setAttribute('required', 'required');
+        } else {
+            select.name = name;
+            manualInput.removeAttribute('name');
+        }
+    }
+
+    function checkLainnya(select, targetId) {
+        const manualInput = document.getElementById(targetId);
+        if (select.value === 'custom') {
+            manualInput.classList.remove('d-none');
+            manualInput.setAttribute('required', 'required');
+            manualInput.value = '';
+            manualInput.focus();
+            
+            manualInput.name = select.id.replace('select-', '');
+            select.removeAttribute('name');
+        } else {
+            manualInput.classList.add('d-none');
+            manualInput.removeAttribute('required');
+            
+            select.name = select.id.replace('select-', '');
+            manualInput.removeAttribute('name');
+        }
+    }
+</script>
+{% endblock %}

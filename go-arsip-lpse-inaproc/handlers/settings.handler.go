@@ -194,12 +194,19 @@ func UploadHeroSlider(c *fiber.Ctx) error {
 
 func DeleteHeroSlider(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	if !mp["isAdmin"].(bool) {
+	if !mp["isAdmin"].(bool) && !mp["isUkpbj"].(bool) {
 		return Forbiden(c)
 	}
 
-	id, _ := c.ParamsInt("id")
-	services.DeleteHeroSlider(uint(id))
+	id, err := c.ParamsInt("id")
+	if err != nil || id <= 0 {
+		return flashError(c, "ID slider tidak valid", "/settings/hero")
+	}
+
+	if err := models.GetDB().Delete(&models.HeroSlider{}, uint(id)).Error; err != nil {
+		return flashError(c, "Gagal menghapus slider: "+err.Error(), "/settings/hero")
+	}
+
 	cache.Delete("hero_sliders")
 	return flashSuccess(c, "Slider berhasil dihapus", "/settings/hero")
 }

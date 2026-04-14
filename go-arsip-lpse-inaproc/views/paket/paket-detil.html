@@ -73,11 +73,34 @@
                         <div class="col-sm-4">
                             <p class="form-control-plaintext"><span class="badge bg-blue text-blue-fg">{{ paket.StatusLabel }}</span></p>
                         </div>
-                        <label class="col-sm-2  text-end control-label col-form-label">Anggaran</label>
+                        <label class="col-sm-2  text-end control-label col-form-label">Tahun / Anggaran</label>
                         <div class="col-sm-4">
-                             <p class="form-control-plaintext">{{ anggaran }}</p>
+                             <p class="form-control-plaintext">{% if paket.RupId > 0 %}{{ anggaran }}{% else %}{{ paket.Tahun }}{% endif %}</p>
                         </div>
                     </div>
+                    {% if paket.Keterangan %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Keterangan Manual</label>
+                        <div class="col-sm-9">
+                            <div class="bg-light p-3 rounded text-muted small border-start border-3 border-info">
+                                {{ paket.Keterangan }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if bukti.ID > 0 %}
+                    <div class="form-group mb-3 row">
+                        <label class="col-sm-2  text-end control-label col-form-label">Dokumen Bukti</label>
+                        <div class="col-sm-9">
+                             <p class="form-control-plaintext">
+                                <a href="/download/{{ bukti.DokId }}" class="btn btn-sm btn-outline-info shadow-sm">
+                                    <span style="width: 14px; height: 14px;" data-feather="file-text"></span>
+                                    Download Bukti Pengarsipan ({{ bukti.Document().Filename }})
+                                </a>
+                             </p>
+                        </div>
+                    </div>
+                    {% endif %}
                     <div class="form-group mb-3 row">
                         <label class="col-sm-2  text-end control-label col-form-label">PPK</label>
                         <div class="col-sm-9">

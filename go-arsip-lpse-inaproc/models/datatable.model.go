@@ -154,10 +154,18 @@ func GetDataTablePegawai(c *fiber.Ctx, usrgroup string) error {
 	return populate(orm, c, &datas,  "id", "peg_nama", "peg_nip", "peg_namauser")
 }
 
-func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp bool) error {
+func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp, isArsiparis bool) error {
 	orm := db.Model(&Paket{})
+	
+	// Join with sirup to ensure we get the year even for old records
+	orm = orm.Select("paket.*, COALESCE(NULLIF(paket.tahun, 0), paket_sirup.tahun) as tahun").
+		Joins("LEFT JOIN paket_sirup ON paket.rup_id = paket_sirup.id")
+	
 	pegawai := GetPegawai(id)
-	if isPPK && pegawai.IsApprove(){
+	if isArsiparis {
+		// Arsiparis lihat semua paket (untuk keperluan pengarsipan data lama)
+		orm = orm 
+	} else if isPPK && pegawai.IsApprove(){
 		orm = orm.Where("ppk_id = ?", id)
 	} else if isUkpbj {
 		orm = orm.Where("ukpbj_id <> 0 OR status >= 1")
@@ -170,10 +178,19 @@ func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp bool
 	}
 	metode := c.Query("metode")
 	if metode != "" && metode != "all" {
-		orm = orm.Where("metode = ?", metode)
+		orm = orm.Where("paket.metode = ?", metode)
 	}
+
+	source := c.Query("source")
+	if source == "sirup" {
+		orm = orm.Where("paket.rup_id > 0")
+	} else if source == "manual" {
+		orm = orm.Where("paket.rup_id = 0")
+	}
+
 	var datas []Paket
-	return populate(orm, c, &datas,  "id", "nama", "pagu", "hps", "Created_at", "created_by", "status")
+	// Pass the selection columns to populate for ordering/searching
+	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode", "paket.metode_arsip", "paket.tahun", "paket.created_at", "paket.status")
 }
 
 func GetDataTableTemplates(c *fiber.Ctx) error {

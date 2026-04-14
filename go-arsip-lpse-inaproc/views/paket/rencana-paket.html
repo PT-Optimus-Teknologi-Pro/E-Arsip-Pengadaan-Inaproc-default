@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Daftar Rencana Paket
@@ -9,6 +9,16 @@ Daftar Rencana Paket
     <div class="col">
         <h2 class="page-title">Daftar Rencana Paket</h2>
     </div>
+    {% if isArsiparis %}
+    <div class="col-auto">
+        <div class="btn-list">
+            <a href="/paket/create-manual" class="btn btn-orange shadow-sm">
+                <span style="width: 16px; height: 16px;" data-feather="edit-3"></span>
+                Input Data Manual
+            </a>
+        </div>
+    </div>
+    {% endif %}
     <div class="col-auto">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/home">Home</a></li>

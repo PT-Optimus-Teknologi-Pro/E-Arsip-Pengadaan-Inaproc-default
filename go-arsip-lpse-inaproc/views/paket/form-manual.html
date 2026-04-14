@@ -1,0 +1,170 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Input Data Manual - Arsip Digital
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col">
+        <h2 class="page-title text-primary">Input Pengarsipan Manual</h2>
+        <div class="text-muted">Gunakan form ini untuk mengarsipkan data lama yang tidak ada di SIRUP.</div>
+    </div>
+    <div class="col-auto">
+        <a href="/paket/edit" class="btn btn-secondary">
+            <span style="width: 16px; height: 16px;" data-feather="arrow-left"></span>
+            Kembali ke Daftar SIRUP
+        </a>
+    </div>
+</div>
+
+<div class="col-12">
+    <div class="card shadow-sm border-0">
+        {% include "alert.html" %}
+        <form action="/paket/create-manual" method="POST" enctype="multipart/form-data">
+            <div class="card-body">
+                <div class="row">
+                    <!-- Informasi Utama -->
+                    <div class="col-md-7 border-end-md">
+                        <div class="form-group mb-3">
+                            <label class="form-label required">Nama Paket Pengadaan</label>
+                            <input type="text" name="nama" class="form-control" placeholder="Contoh: Pengadaan Alat Tulis Kantor Tahun 2022" required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label required">Tahun Anggaran</label>
+                                <input type="number" name="tahun" class="form-control" value="2023" min="1900" max="2100" required>
+                                <div class="text-muted small mt-1">Masukkan tahun (contoh: 2018)</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label required">Satker / SKPD</label>
+                                <select name="satker_id" class="form-select" required>
+                                    {% for s in satkers %}
+                                    <option value="{{ s.ID }}">{{ s.Nama }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label required">Pagu Anggaran</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" name="pagu" class="form-control rupiah" placeholder="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label required">HPS (Harga Perkiraan Sendiri)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" name="hps" class="form-control rupiah" placeholder="0" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label required">Jenis Pengadaan</label>
+                                <select id="select-jenis" class="form-select mb-2" onchange="checkLainnya(this, 'manual-jenis')" required>
+                                    <option value="" disabled selected>Pilih Jenis Pengadaan...</option>
+                                    <option value="Barang">Barang</option>
+                                    <option value="Pekerjaan Konstruksi">Pekerjaan Konstruksi</option>
+                                    <option value="Jasa Konsultansi">Jasa Konsultansi</option>
+                                    <option value="Jasa Lainnya">Jasa Lainnya</option>
+                                    <option value="custom">-- Lainnya (Ketik Manual) --</option>
+                                </select>
+                                <input type="text" id="manual-jenis" name="jenis" class="form-control d-none" placeholder="Ketik Jenis Pengadaan kustom...">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label required">Metode Pengadaan</label>
+                                <select id="select-metode" class="form-select mb-2" onchange="checkLainnya(this, 'manual-metode')" required>
+                                    <option value="" disabled selected>Pilih Metode Pengadaan...</option>
+                                    <option value="E-Purchasing">E-Purchasing</option>
+                                    <option value="Pengadaan Langsung">Pengadaan Langsung</option>
+                                    <option value="Penunjukan Langsung">Penunjukan Langsung</option>
+                                    <option value="Tender">Tender</option>
+                                    <option value="Seleksi">Seleksi</option>
+                                    <option value="Tender Cepat">Tender Cepat</option>
+                                    <option value="custom">-- Lainnya (Ketik Manual) --</option>
+                                </select>
+                                <input type="text" id="manual-metode" name="metode" class="form-control d-none" placeholder="Ketik Metode Pengadaan kustom...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bukti & Keterangan -->
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Keterangan / Deskripsi</label>
+                            <textarea name="keterangan" class="form-control" rows="4" placeholder="Jelaskan alasan pengarsipan manual atau detail tambahan lainnya..."></textarea>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Dokumen Bukti (Opsional)</label>
+                            <input type="file" name="bukti" class="form-control" accept=".pdf,.xlsx,.csv,.zip,.docx">
+                            <div class="text-muted small mt-2">
+                                <span style="width: 14px; height: 14px;" data-feather="info"></span>
+                                Unggah dokumen pendukung seperti SK, Ringkasan Kontrak, atau Bukti Selesai Pekerjaan.
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning border-start border-3 border-warning mt-4">
+                            <div class="d-flex">
+                                <div class="me-2">
+                                    <span style="width: 20px; height: 20px;" data-feather="alert-triangle" class="text-warning"></span>
+                                </div>
+                                <div class="small">
+                                    Data manual ini akan tersimpan permanen dalam repositori arsip digital. Pastikan data yang diinput sudah benar.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light d-flex justify-content-end gap-2">
+                <button type="reset" class="btn btn-link link-secondary">Hapus Form</button>
+                <button type="submit" class="btn btn-success shadow-sm">
+                    <span style="width: 16px; height: 16px;" data-feather="check"></span>
+                    Simpan & Lanjutkan Pengarsipan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    feather.replace();
+    $(document).ready(function(){
+        $('.rupiah').mask('000.000.000.000.000', {reverse: true});
+    });
+
+    function checkLainnya(select, targetId) {
+        const manualInput = document.getElementById(targetId);
+        if (select.value === 'custom') {
+            manualInput.classList.remove('d-none');
+            manualInput.setAttribute('required', 'required');
+            manualInput.value = '';
+            manualInput.focus();
+            
+            // Set the main name to this input
+            manualInput.name = select.id.replace('select-', '');
+            select.removeAttribute('name');
+        } else {
+            manualInput.classList.add('d-none');
+            manualInput.removeAttribute('required');
+            
+            // Set the main name to the select
+            select.name = select.id.replace('select-', '');
+            manualInput.removeAttribute('name');
+        }
+    }
+
+    // Initialize labels
+    document.getElementById('select-jenis').name = 'jenis';
+    document.getElementById('select-metode').name = 'metode';
+</script>
+{% endblock %}

@@ -29,7 +29,11 @@ func (c UserSession) IsAdmAgency() bool {
 }
 
 func (c UserSession) IsUkpbj() bool {
-	return len(c.Role) > 0 && c.Role == UKPBJ
+	return len(c.Role) > 0 && (c.Role == UKPBJ || c.Role == ARSIPARIS)
+}
+
+func (c UserSession) IsArsiparis() bool {
+	return len(c.Role) > 0 && c.Role == ARSIPARIS
 }
 
 func (c UserSession) Pegawai() Pegawai {
