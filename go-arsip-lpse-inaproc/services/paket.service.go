@@ -398,7 +398,8 @@ func AuthorisasiPaket(paket models.Paket, sessionMap fiber.Map) bool {
 	if sessionMap["isPPK"].(bool) {
 		return paket.Ppk().ID == id
 	} else if sessionMap["isPokja"].(bool) {
-		return paket.Pokja().IsAnggota(id)
+		// Pokja bisa akses paket jika status sudah tahap pokja atau dia anggota panitia paket ini
+		return paket.Status >= 2 || paket.Pokja().IsAnggota(id)
 	} else if sessionMap["isPP"].(bool) {
 		return paket.Pp().ID == id
 	} else if sessionMap["isUkpbj"].(bool) || sessionMap["isArsiparis"].(bool) {

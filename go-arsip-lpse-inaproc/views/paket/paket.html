@@ -49,7 +49,7 @@ Daftar Paket
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-vcenter card-table" id="table-sirup">
+                        <table class="table table-bordered table-vcenter card-table" id="table-sirup" data-can-delete="{% if isPPK or isArsiparis %}true{% else %}false{% endif %}">
                             <thead>
                                 <tr>
                                     <th width="5%">ID</th>
@@ -83,7 +83,7 @@ Daftar Paket
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-vcenter card-table" id="table-manual">
+                        <table class="table table-bordered table-vcenter card-table" id="table-manual" data-is-arsiparis="{% if isArsiparis %}true{% else %}false{% endif %}">
                             <thead>
                                 <tr>
                                     <th width="5%">ID</th>
@@ -141,9 +141,10 @@ Daftar Paket
                     return moment(data).format("DD/MM/YYYY");
                 }
             },
-            {data : "ID", render: function(data, type, row){
+            {data : "ID", render: function(data, type, row, meta){
+                    let canDelete = $(meta.settings.nTable).data('can-delete');
                     let html = '<div class="btn-list flex-nowrap">';
-                    if(row["status"] < 2 && ({% if isPPK or isArsiparis %}true{% else %}false{% endif %})) {
+                    if(row["status"] < 2 && canDelete) {
                         html += `<a href="/paket/hapus/${data}" class="btn btn-sm btn-icon btn-white text-danger" title="Hapus"><span style="width: 16px; height: 16px;" data-feather="trash-2"></span></a>`;
                     }
                     if(row["status"] > 2) {
@@ -178,11 +179,12 @@ Daftar Paket
                   return row["metode_arsip"] || metode(data);
               }
             },
-            {data : "ID", render: function(data, type, row){
+            {data : "ID", render: function(data, type, row, meta){
+                    let isArsiparis = $(meta.settings.nTable).data('is-arsiparis');
                     let html = '<div class="btn-list flex-nowrap">';
-                    {% if isArsiparis %}
-                    html += `<a href="/paket/edit-manual/${data}" class="btn btn-sm btn-icon btn-white text-primary" title="Edit"><span style="width: 16px; height: 16px;" data-feather="edit-2"></span></a>`;
-                    {% endif %}
+                    if(isArsiparis) {
+                        html += `<a href="/paket/edit-manual/${data}" class="btn btn-sm btn-icon btn-white text-primary" title="Edit"><span style="width: 16px; height: 16px;" data-feather="edit-2"></span></a>`;
+                    }
                     html += `<a href="/paket/hapus/${data}" class="btn btn-sm btn-icon btn-white text-danger" title="Hapus"><span style="width: 16px; height: 16px;" data-feather="trash-2"></span></a>`;
                     html += '</div>';
                     return html;

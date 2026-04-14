@@ -164,13 +164,13 @@ func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp, isA
 	pegawai := GetPegawai(id)
 	if isArsiparis {
 		// Arsiparis lihat semua paket (untuk keperluan pengarsipan data lama)
-		orm = orm 
 	} else if isPPK && pegawai.IsApprove(){
 		orm = orm.Where("ppk_id = ?", id)
 	} else if isUkpbj {
 		orm = orm.Where("ukpbj_id <> 0 OR status >= 1")
 	} else if isPokja && pegawai.IsApprove() {
-		orm = orm.Where("pnt_id IN (SELECT pnt_id FROM anggota_panitia WHERE peg_id=? and deleted_at IS NULL)", id)
+		// Pokja bisa melihat semua paket yang sudah masuk tahap pokja
+		orm = orm.Where("paket.status >= 2 OR pnt_id IN (SELECT pnt_id FROM anggota_panitia WHERE peg_id=? AND deleted_at IS NULL)", id)
 	} else if isPp && pegawai.IsApprove() {
 		orm = orm.Where("pp_id = ?", id)
 	} else {
@@ -182,9 +182,10 @@ func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp, isA
 	}
 
 	source := c.Query("source")
-	if source == "sirup" {
+	switch source {
+	case "sirup":
 		orm = orm.Where("paket.rup_id > 0")
-	} else if source == "manual" {
+	case "manual":
 		orm = orm.Where("paket.rup_id = 0")
 	}
 
