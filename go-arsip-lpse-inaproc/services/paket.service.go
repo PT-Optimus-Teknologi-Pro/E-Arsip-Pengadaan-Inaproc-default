@@ -91,6 +91,17 @@ func ApprovePaket(id uint, approve bool, reject bool, alasan string, prioritas b
 // ajukan paket ke ukpbj
 func KirimPaketUkpbj(id uint) error {
 	paket := GetPaket(id)
+	
+	// Validasi HPS
+	if paket.Hps <= 0 {
+		return errors.New("HPS wajib diisi dan tidak boleh Rp0 sebelum kirim ke UKPBJ")
+	}
+
+	// Validasi Persyaratan Dokumen
+	if !paket.IsPersyaratanLengkap() {
+		return errors.New("Seluruh dokumen persyaratan (Checklist) wajib diunggah terlebih dahulu")
+	}
+
 	ukpbj := models.GetUkpbjAktif()
 	paket.TglAssignUkpbj = models.Datetime(time.Now())
 	paket.UkpbjId = ukpbj.ID
@@ -118,7 +129,6 @@ func AssignPaketPp(id uint, pegId uint) error {
 	pp := GetPegawai(pegId)
 	paket.TglAssignPp = models.Datetime(time.Now())
 	paket.PpId = pp.ID
-	paket.Status = 2
 	return models.SavePaket(&paket)
 }
 

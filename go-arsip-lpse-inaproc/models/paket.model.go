@@ -74,15 +74,24 @@ func (obj Paket) IsSelesai() bool {
 }
 
 func (obj Paket) StatusLabel() string {
-	return statusPaket[obj.Status]
+	if obj.Status >= 0 && obj.Status < len(statusPaket) {
+		return statusPaket[obj.Status]
+	}
+	return "Unknown"
 }
 
 func (obj Paket) Jenis() string {
-	return jenisPengadaan[obj.KgrId]
+	if obj.KgrId >= 0 && obj.KgrId < len(jenisPengadaan) {
+		return jenisPengadaan[obj.KgrId]
+	}
+	return "Belum Ditentukan"
 }
 
 func (obj Paket) MetodePengadaan() string {
-	return metodePengadaan[obj.Metode]
+	if obj.Metode >= 0 && obj.Metode < len(metodePengadaan) {
+		return metodePengadaan[obj.Metode]
+	}
+	return "Belum Ditentukan"
 }
 
 func (obj Paket) Satker() SatkerSirup {
@@ -113,6 +122,12 @@ func (obj Paket) CountChecklistWithDok() int64 {
 	var count int64
 	db.Model(&ChecklistPaket{}).Where("pkt_id=? and dok_id > 0 and deleted_at IS NULL", obj.ID).Count(&count)
 	return count
+}
+
+func (obj Paket) IsPersyaratanLengkap() bool {
+	total := obj.CountChecklist()
+	isi := obj.CountChecklistWithDok()
+	return total > 0 && isi >= total
 }
 
 func (obj Paket) Ukpbj() Ukpbj {
@@ -179,7 +194,11 @@ func (obj Paket) GeneratePersyaratan() error {
 	// generate checklist CreatePaket
 	checklist := GetChecklistsBYJenisMetode(obj.KgrId, obj.Metode)
 	if len(checklist) == 0 {
-		return errors.New("Pembuatan paket Gagal.Admin Belum menentukan Persyaratan")
+		// Fallback to testing generic jenis without specific metode
+		checklist = GetChecklistsBYjenis(obj.KgrId)
+		if len(checklist) == 0 {
+			return errors.New("Pembuatan paket Gagal.Admin Belum menentukan Persyaratan")
+		}
 	}
 	checks := []ChecklistPaket{}
 	for _, o := range checklist {
@@ -308,9 +327,9 @@ func CreatePaket(sirup PaketSirup, userId uint) (uint, error) {
 	}
 	err = paket.GeneratePersyaratan()
 	if err != nil {
-		db.Delete(&paket) // Rollback if checklist is missing
-		log.Error(err)
-		return uint(0), err
+		log.Error("Warning: ", err.Error())
+		// db.Delete(&paket) // Rollback if checklist is missing
+		// return uint(0), err
 	}
 	return paket.ID, nil
 }

@@ -157,7 +157,7 @@ func GetCountPegawai() int64 {
 func GetPPs(satkerid uint) []Pegawai {
 	var res []Pegawai
 	ppSatker := GetPejabatPengadaanSatker(satkerid)
-	db.Find(&res, "usrgroup = ? AND peg_status IN (1, 2) AND id IN (SELECT peg_id FROM pejabat_pengadaan_pegawai WHERE pp_id=?)", PP, ppSatker.PpId)
+	db.Find(&res, "usrgroup IN ('PP', 'PEGAWAI') AND peg_status IN (1, 2) AND id IN (SELECT peg_id FROM pejabat_pengadaan_pegawai WHERE pp_id=?)", ppSatker.PpId)
 	return res
 }
 

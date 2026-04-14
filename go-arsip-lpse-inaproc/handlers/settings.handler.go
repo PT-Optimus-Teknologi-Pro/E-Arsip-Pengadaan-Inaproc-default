@@ -76,6 +76,38 @@ func UpdateLogoSettings(c *fiber.Ctx) error {
 		settings.LoadingSubtitle = loadingSubtitle
 	}
 
+	// Identitas Instansi (Kop Surat)
+	settings.DocInstansi = c.FormValue("doc_instansi")
+	settings.DocSubInstansi = c.FormValue("doc_sub_instansi")
+	settings.DocAddress = c.FormValue("doc_address")
+	settings.DocPhone = c.FormValue("doc_phone")
+	settings.DocFax = c.FormValue("doc_fax")
+	settings.DocWebsite = c.FormValue("doc_website")
+	settings.DocEmail = c.FormValue("doc_email")
+	settings.DocPejabatNama = c.FormValue("doc_pejabat_nama")
+	settings.DocPejabatJabata = c.FormValue("doc_pejabat_jabata")
+
+	// Handle upload logo dokumen
+	docLogoFile, err := c.FormFile("doc_logo")
+	if err == nil && docLogoFile != nil {
+		log.Infof("Receiving doc_logo upload: %s (%d bytes)", docLogoFile.Filename, docLogoFile.Size)
+		ext := strings.ToLower(filepath.Ext(docLogoFile.Filename))
+		if ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".svg" || ext == ".webp" {
+			filename := fmt.Sprintf("doc_logo_%d%s", time.Now().Unix(), ext)
+			dst := filepath.Join(settingsUploadDir, filename)
+			if err := c.SaveFile(docLogoFile, dst); err != nil {
+				log.Error("Gagal simpan logo dokumen: ", err)
+			} else {
+				settings.DocLogoPath = "/uploads/settings/" + filename
+				log.Infof("Logo dokumen berhasil disimpan: %s", settings.DocLogoPath)
+			}
+		} else {
+			log.Warnf("Extension logo dokumen tidak valid: %s", ext)
+		}
+	} else if err != nil && !strings.Contains(err.Error(), "no such file") {
+		log.Errorf("Error receiving doc_logo file: %v", err)
+	}
+
 	if err := services.SaveSettings(&settings); err != nil {
 		log.Error("save settings: ", err)
 		return flashError(c, "Gagal menyimpan pengaturan", "/settings/logo")

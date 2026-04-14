@@ -18,6 +18,17 @@ type AppSettings struct {
 	FooterInstagram   string `json:"footer_instagram" gorm:"default:'#'"`
 	FooterTwitter     string `json:"footer_twitter" gorm:"default:'#'"`
 	LoadingSubtitle   string `json:"loading_subtitle" gorm:"default:'Portal Pengarsipan'"`
+	// Identitas Instansi untuk Dokumen/Kop Surat
+	DocInstansi      string `json:"doc_instansi" gorm:"default:'PEMERINTAH KOTA BANJARMASIN'"`
+	DocSubInstansi   string `json:"doc_sub_instansi" gorm:"default:'S E K R E T A R I A T D A E R A H'"`
+	DocAddress       string `json:"doc_address" gorm:"default:'J . RE. Martadinata No.1 Banjarmasin 70111'"`
+	DocPhone         string `json:"doc_phone" gorm:"default:'(0511) 4368142 4368145'"`
+	DocFax           string `json:"doc_fax" gorm:"default:'3353933'"`
+	DocWebsite       string `json:"doc_website" gorm:"default:'http://www.banjarmasinkota.go.id/'"`
+	DocEmail         string `json:"doc_email" gorm:"default:'admin@banjarmasinkota.go.id'"`
+	DocPejabatNama   string `json:"doc_pejabat_nama" gorm:"default:'AHSAN BUDIMAN'"`
+	DocPejabatJabata string `json:"doc_pejabat_jabata" gorm:"default:'SEKRETARIS DAERAH'"`
+	DocLogoPath      string `json:"doc_logo_path" gorm:"default:''"`
 }
 
 func (AppSettings) TableName() string {

@@ -172,7 +172,7 @@ func KirimPaketUkpbj(c *fiber.Ctx) error {
 	err := services.KirimPaketUkpbj(id)
 	if err != nil {
 		log.Error(err)
-		return flashError(c, "Gagal Kirim ke UKPBJ", "/paket/" + utils.UintToString(id))
+		return flashError(c, err.Error(), "/paket/" + utils.UintToString(id))
 	}
 	// Return the updated user
 	return flashSuccess(c, "Berhasil Kirim ke UKPBJ","/paket/"+utils.UintToString(id))
@@ -421,11 +421,19 @@ func SavePPk(c *fiber.Ctx) error {
 	if !services.AuthorisasiPaket(paket, mp) {
 		return Forbiden(c)
 	}
+
 	if paket.IsOnlyPpk() {
-    	paket.Status = 2
-     	paket.TglDisetujui = models.Datetime(time.Now())
+		paket.Status = 2
+		paket.TglDisetujui = models.Datetime(time.Now())
+	} else if paket.IsPaketPp() {
+		if paket.PpId == 0 {
+			return flashError(c, "Gagal: Silakan Pilih Pejabat Pengadaan terlebih dahulu sebelum menyimpan", "/paket/" + utils.UintToString(id))
+		}
+		paket.Status = 2
+		paket.TglDisetujui = models.Datetime(time.Now())
 	}
-    err := services.SavePaket(paket)
+
+	err := services.SavePaket(paket)
     if err != nil {
 		log.Error(err)
 		return flashError(c, "Simpan Paket Gagal","/paket/" + utils.UintToString(id))

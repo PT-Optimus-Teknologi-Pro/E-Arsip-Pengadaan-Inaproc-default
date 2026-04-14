@@ -146,8 +146,8 @@ type PejabatPengadaanDTO struct {
 	NoSk			string 		`json:"no_sk"`
 	PeriodeAwal		time.Time	`json:"periode_awal"`
 	PeriodeAkhir	time.Time	`json:"periode_akhir"`
-	Satker 			[]uint      `json:"satker"`
-	Pegawai 		[]uint 		`json:"pegawai"`
+	Satker 			[]uint      `json:"satker" form:"satker"`
+	Pegawai 		[]uint 		`json:"pegawai" form:"pegawai"`
 }
 
 func GetPejabatPengadaanSatker(satkerId uint) PejabatPengadaanSatker {

@@ -13,8 +13,10 @@ import (
 )
 
 var BULAN = [12]string{"Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"}
+var Engine *django.Engine
 
 func Setup(engine *django.Engine) {
+	Engine = engine
 	engine.AddFunc("rupiah", FormatRupiah)
 	engine.AddFunc("number", FormatNumber)
 	engine.AddFunc("formatDate", FormatDate)

@@ -292,6 +292,93 @@
       </div>
     </div>
 
+    <!-- ===== IDENTITAS INSTANSI (KOP SURAT) ===== -->
+    <div class="logo-card">
+      <div class="logo-card-header">
+        <div class="s-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
+        <span>Identitas Instansi (Kop Surat)</span>
+      </div>
+      <div class="logo-card-body" style="flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Logo Kop Surat -->
+        <div style="display: flex; gap: 2rem; align-items: flex-start; width: 100%; border-bottom: 1px solid #f0f2f5; padding-bottom: 1.5rem;">
+          <div class="preview-box" id="docLogoPreviewBox">
+            <img id="docLogoPreviewImg" src="{% if settings.DocLogoPath %}{{ settings.DocLogoPath }}{% else %}/images/logo-instansi.jpeg{% endif %}" alt="Preview Logo Dokumen"/>
+            <span class="preview-label">Logo Dokumen</span>
+          </div>
+          <div class="upload-area">
+            <label>Upload Logo Khusus Kop Surat</label>
+            <div class="file-row" onclick="document.getElementById('fileDocLogo').click()" style="cursor:pointer;">
+              <button type="button" class="btn-pick">Pilih File</button>
+              <span class="fname" id="docLogoName">Tidak ada file dipilih</span>
+              <input type="file" id="fileDocLogo" name="doc_logo" class="file-real" accept=".png,.jpg,.jpeg,.svg,.webp"
+                onchange="previewImage(this,'docLogoPreviewImg','docLogoName')"/>
+            </div>
+            <p class="hint">Format: PNG (transparan disarankan), JPG. Muncul di Kop Surat.</p>
+          </div>
+        </div>
+
+        <!-- Teks Identitas -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%;">
+          <div class="upload-area">
+            <label>Nama Instansi Utama</label>
+            <input type="text" name="doc_instansi" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.DocInstansi }}" placeholder="PEMERINTAH KOTA BANJARMASIN"/>
+          </div>
+          <div class="upload-area">
+            <label>Sub Instansi / Bagian</label>
+            <input type="text" name="doc_sub_instansi" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.DocSubInstansi }}" placeholder="S E K R E T A R I A T D A E R A H"/>
+          </div>
+          <div class="upload-area" style="grid-column: span 2;">
+            <label>Alamat Lengkap (Kop)</label>
+            <input type="text" name="doc_address" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.DocAddress }}" placeholder="J . RE. Martadinata No.1 Banjarmasin 70111"/>
+          </div>
+          <div class="upload-area">
+            <label>Nomor Telepon</label>
+            <input type="text" name="doc_phone" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.DocPhone }}" placeholder="(0511) 4368142"/>
+          </div>
+          <div class="upload-area">
+            <label>Nomor Fax</label>
+            <input type="text" name="doc_fax" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.DocFax }}" placeholder="3353933"/>
+          </div>
+          <div class="upload-area">
+            <label>Website</label>
+            <input type="text" name="doc_website" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.DocWebsite }}" placeholder="http://www.banjarmasinkota.go.id/"/>
+          </div>
+          <div class="upload-area">
+            <label>Email Official</label>
+            <input type="text" name="doc_email" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.DocEmail }}" placeholder="admin@banjarmasinkota.go.id"/>
+          </div>
+        </div>
+
+        <!-- Pejabat Penandatangan -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%; background: #f9fafb; padding: 1.5rem; border-radius: 10px; border: 1px solid #e5e7eb;">
+          <div class="upload-area">
+            <label>Nama Pejabat Penandatangan</label>
+            <input type="text" name="doc_pejabat_nama" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem; font-weight: bold;"
+                   value="{{ settings.DocPejabatNama }}" placeholder="AHSAN BUDIMAN"/>
+          </div>
+          <div class="upload-area">
+            <label>Jabatan Pejabat</label>
+            <input type="text" name="doc_pejabat_jabata" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.DocPejabatJabata }}" placeholder="SEKRETARIS DAERAH"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== ACTION BAR ===== -->
     <div class="action-bar" style="background:#fff; border:1px solid #e5e7eb; border-radius:12px; margin-bottom: 2rem;">
       <button type="submit" class="btn-save">
