@@ -254,6 +254,7 @@ func currentMap(c *fiber.Ctx) fiber.Map {
 		mp["isAdmin"] = sess.Get("group") == models.ADMIN
 		mp["isAdminAgency"] = sess.Get("group") == models.ADM_AGENCY
 		mp["isPegawai"] = sess.Get("group") == models.PEGAWAI
+		mp["isArsiparis"] = sess.Get("group") == models.ARSIPARIS
 	}
 	mp["path"] = string(c.Request().URI().Path())
 

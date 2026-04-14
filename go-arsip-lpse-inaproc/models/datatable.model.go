@@ -96,7 +96,7 @@ func GetDataTablePerubahanData(c *fiber.Ctx, usrsession UserSession) error {
 
 func GetDataTableVerifikasi(c *fiber.Ctx) error {
 	var datas []Pegawai
-	orm := db.Model(&Pegawai{}).Where("usrgroup IN ('PPK', 'PP', 'POKJA', 'PEGAWAI', '') and deleted_at IS NULL")
+	orm := db.Model(&Pegawai{}).Where("usrgroup IN ('PPK', 'PP', 'POKJA', 'PEGAWAI', 'ARSIPARIS', '') and deleted_at IS NULL")
 	statusFilter := c.Query("status")
 	if statusFilter != "" && statusFilter != "all" {
 		orm = orm.Where("peg_status = ?", statusFilter)
@@ -148,7 +148,7 @@ func GetDataTablePegawai(c *fiber.Ctx, usrgroup string) error {
 	if usrgroup == ADMIN {
 		orm.Where("peg_status IN (1, 2) AND usrgroup NOT IN ('ADMIN')")
 	} else {
-		orm.Where("peg_status IN (1, 2) AND usrgroup IN ('PPK', 'POKJA', 'PP')")
+		orm.Where("peg_status IN (1, 2) AND usrgroup IN ('PPK', 'POKJA', 'PP', 'ARSIPARIS')")
 	}
 	var datas []Pegawai
 	return populate(orm, c, &datas,  "id", "peg_nama", "peg_nip", "peg_namauser")

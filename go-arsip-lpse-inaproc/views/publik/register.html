@@ -237,7 +237,7 @@
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     background: #fff;
-    cursor: crosshair !important;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1.5"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>'), auto !important;
     touch-action: none;
     z-index: 2;
     position: relative;
@@ -263,10 +263,17 @@
     gap: 10px;
     z-index: 3;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    visibility: visible;
+  }
+  .sig-hint-wrap.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -40%);
   }
   .sig-arrow {
-    color: #0026B4;
+    color: #000000;
     animation: pulsateArrow 1.5s infinite;
   }
   @keyframes pulsateArrow {
@@ -275,9 +282,9 @@
     100% { transform: translateY(0) scale(1); opacity: 0.8; }
   }
   .sig-hint {
-    color: #4b5563;
+    color: #000000;
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: 700;
     margin: 0;
     text-shadow: 0 0 10px #fff;
   }
@@ -351,11 +358,11 @@
 
   {% include "alert.html" %}
 
-  <form action="/register" method="post" enctype="multipart/form-data" id="regForm">
+  <form action="/register" method="post" enctype="multipart/form-data" id="regForm" autocomplete="off">
   <div class="reg-card">
 
     
-    <div class="reg-section">
+    <div class="reg-section"> 
       <div class="reg-section-title">
         <div class="s-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -369,14 +376,15 @@
       <div class="reg-field">
         <label>Pengangkatan Menjadi</label>
         <select name="usrgroup" class="form-select" required>
-          <option value="PEGAWAI">PP/ POKJA</option>
+          <option value="POKJA">PP/ POKJA</option>
           <option value="PPK">PPK</option>
+          <option value="ARSIPARIS">ARSIPARIS (ARSIP PARIS)</option>
         </select>
       </div>
       <div class="reg-grid">
         <div class="reg-field">
           <label>Nama Pegawai</label>
-          <input type="text" name="peg_nama" class="form-control" placeholder="Masukkan Nama Lengkap..." value="{{ pegawai.PegNama }}" required/>
+          <input type="text" name="peg_nama" class="form-control" placeholder="Masukkan Nama Lengkap..." value="{{ pegawai.PegNama }}" required autocomplete="off"/>
         </div>
         <div class="reg-field">
           <label>NIK</label>
@@ -388,7 +396,7 @@
         </div>
         <div class="reg-field">
           <label>Email</label>
-          <input type="email" name="peg_email" class="form-control" placeholder="Masukkan Email.." value="{{ pegawai.PegEmail }}" required/>
+          <input type="email" name="peg_email" class="form-control" placeholder="Masukkan Email.." value="{{ pegawai.PegEmail }}" required autocomplete="off"/>
         </div>
         <div class="reg-field">
           <label>No. Telepon</label>
@@ -453,13 +461,13 @@
       </div>
       <div class="reg-field">
         <label>User ID</label>
-        <input type="text" name="peg_namauser" class="form-control" placeholder="Masukkan ID..." value="{{ pegawai.PegNamauser }}" required/>
+        <input type="text" name="peg_namauser" class="form-control" placeholder="Masukkan ID..." value="{{ pegawai.PegNamauser }}" required autocomplete="off"/>
       </div>
       <div class="reg-grid">
         <div class="reg-field">
           <label>Password</label>
           <div class="pw-wrap">
-            <input type="password" name="passw" id="passField" class="form-control" placeholder="••••••••" required/>
+            <input type="password" name="passw" id="passField" class="form-control" placeholder="••••••••" required autocomplete="new-password"/>
             <button type="button" class="pw-toggle" onclick="togglePw('passField',this)">
               <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -482,7 +490,7 @@
         <div class="reg-field">
           <label>Confirm Password</label>
           <div class="pw-wrap">
-            <input type="password" name="passw2" id="passField2" class="form-control" placeholder="••••••••"/>
+            <input type="password" name="passw2" id="passField2" class="form-control" placeholder="••••••••" autocomplete="new-password"/>
             <button type="button" class="pw-toggle" onclick="togglePw('passField2',this)">
               <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -613,7 +621,11 @@
     function updateSigHint() {
         var hint = document.getElementById('sigHint');
         if (hint) {
-            hint.style.display = signaturePad.isEmpty() ? '' : 'none';
+            if (signaturePad.isEmpty()) {
+                hint.classList.remove('hidden');
+            } else {
+                hint.classList.add('hidden');
+            }
         }
     }
 

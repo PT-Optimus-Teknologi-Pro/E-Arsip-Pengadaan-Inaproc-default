@@ -21,6 +21,7 @@ const (
 	PEGAWAI			= "PEGAWAI"
 	POKJA			= "POKJA"
 	PP				= "PP"
+	ARSIPARIS		= "ARSIPARIS"
 )
 
 // Pegawai model
@@ -120,6 +121,8 @@ func (u Pegawai) RoleLabel() string {
 		return "Pejabat Pengadaan"
 	case PEGAWAI:
 		return "Pejabat Pengadaan / Pokja"
+	case ARSIPARIS:
+		return "Arsiparis"
 	}
 	return ""
 }
@@ -134,6 +137,10 @@ func (u Pegawai) IsPokja() bool {
 
 func (u Pegawai) IsPP() bool {
 	return u.Usrgroup == PP
+}
+
+func (u Pegawai) IsArsiparis() bool {
+	return u.Usrgroup == ARSIPARIS
 }
 
 func GetPegawai(id uint) Pegawai {

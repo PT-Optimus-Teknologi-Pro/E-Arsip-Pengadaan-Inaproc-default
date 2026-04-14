@@ -97,13 +97,15 @@
         </li>
         {% endif %}
 
-        {% if isPPK or isPokja or isPP or isPegawai %}
+        {% if isPPK or isPokja or isPP or isPegawai or isArsiparis %}
         <li class="app-nav-item {% if path == '/paket' %} active {% endif %}">
           <a class="app-nav-link" href="/paket"><span>Paket</span></a>
         </li>
+        {% if not isArsiparis %}
         <li class="app-nav-item {% if path == '/perubahan-data' %} active {% endif %}">
           <a class="app-nav-link" href="/perubahan-data"><span>Perubahan Data</span></a>
         </li>
+        {% endif %}
         <li class="app-nav-item {% if path == '/inbox' %} active {% endif %}">
           <a class="app-nav-link" href="/inbox"><span>Inbox</span></a>
         </li>
