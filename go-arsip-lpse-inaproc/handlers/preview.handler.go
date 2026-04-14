@@ -70,10 +70,10 @@ func CetakSkPp(c *fiber.Ctx) error {
 	fullUrl := fmt.Sprintf("%s://%s/preview/sk-pp/%s", c.Protocol(), c.Hostname(), id)
 
 	// Build HTML langsung di Go (tidak pakai Django template engine untuk menghindari masalah layout)
-	htmlContent := buildSkPpHtml(sk, pegawai, paket, satker, appSettings, fullUrl)
+	htmlContent := buildSkPpHtml(sk, pegawai, satker, appSettings, fullUrl)
 
 	result := utils.ExportHtmlToPdf(htmlContent, "")
-	if result == nil || len(result) == 0 {
+	if len(result) == 0 {
 		log.Error("PDF generation returned empty/nil result")
 		return flashError(c, "Gagal membuat PDF", "/paket/"+id)
 	}
@@ -97,7 +97,7 @@ func renderToString(templateName string, data fiber.Map) (string, error) {
 	return buf.String(), err
 }
 
-func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, paket models.Paket, satker models.SatkerSirup, settings models.AppSettings, fullUrl string) string {
+func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, satker models.SatkerSirup, settings models.AppSettings, fullUrl string) string {
 	docInstansi := settings.DocInstansi
 	if docInstansi == "" { docInstansi = "PEMERINTAH KOTA BANJARMASIN" }
 	docSub := settings.DocSubInstansi
@@ -151,11 +151,12 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, paket mod
 			log.Infof("Logo ditemukan dan dibaca dari: %s", finalPath)
 			ext := strings.ToLower(filepath.Ext(finalPath))
 			mime := "image/png"
-			if ext == ".jpg" || ext == ".jpeg" {
+			switch ext {
+			case ".jpg", ".jpeg":
 				mime = "image/jpeg"
-			} else if ext == ".svg" {
+			case ".svg":
 				mime = "image/svg+xml"
-			} else if ext == ".webp" {
+			case ".webp":
 				mime = "image/webp"
 			}
 			b64 := base64.StdEncoding.EncodeToString(logoData)
