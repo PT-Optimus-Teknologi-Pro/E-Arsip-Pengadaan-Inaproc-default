@@ -39,6 +39,8 @@ func CreatePp(c *fiber.Ctx) error {
 	}
 	pp.PeriodeAwal, _ = time.Parse("2006-01-02", c.FormValue("periode_awal"))
 	pp.PeriodeAkhir, _ = time.Parse("2006-01-02", c.FormValue("periode_akhir"))
+	pp.TglSk, _ = time.Parse("2006-01-02", c.FormValue("tgl_sk"))
+	pp.TempatSk = c.FormValue("tempat_sk")
 	err = services.SavePejabatPengadaan(pp)
 	if err != nil {
 		log.Error(err)
@@ -77,6 +79,8 @@ func UpdatePp(c *fiber.Ctx) error {
 	pp.ID = uint(id)
 	pp.PeriodeAwal, _ = time.Parse("2006-01-02", c.FormValue("periode_awal"))
 	pp.PeriodeAkhir, _ = time.Parse("2006-01-02", c.FormValue("periode_akhir"))
+	pp.TglSk, _ = time.Parse("2006-01-02", c.FormValue("tgl_sk"))
+	pp.TempatSk = c.FormValue("tempat_sk")
 	err = services.SavePejabatPengadaan(&pp)
 	if err != nil {
 		return flashError(c, err.Error(), "/pp/edit/" + utils.IntToString(id))

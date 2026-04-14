@@ -127,14 +127,29 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, paket mod
 	logoHtml := ""
 	if settings.DocLogoPath != "" {
 		cwd, _ := os.Getwd()
-		// DocLogoPath berformat: /uploads/settings/filename.png
-		// Disk path: {cwd}/public/uploads/settings/filename.png
 		logoWebPath := strings.TrimPrefix(settings.DocLogoPath, "/")
-		logoDiskPath := filepath.Join(cwd, "public", logoWebPath)
+		// Coba beberapa variasi path untuk Windows
+		pathsToTry := []string{
+			filepath.Join(cwd, "public", logoWebPath),
+			filepath.Join(cwd, logoWebPath),
+			filepath.Join("public", logoWebPath),
+		}
 
-		logoData, err := os.ReadFile(logoDiskPath)
+		var logoData []byte
+		var err error
+		var finalPath string
+
+		for _, p := range pathsToTry {
+			finalPath = p
+			logoData, err = os.ReadFile(p)
+			if err == nil {
+				break
+			}
+		}
+
 		if err == nil {
-			ext := strings.ToLower(filepath.Ext(logoDiskPath))
+			log.Infof("Logo ditemukan dan dibaca dari: %s", finalPath)
+			ext := strings.ToLower(filepath.Ext(finalPath))
 			mime := "image/png"
 			if ext == ".jpg" || ext == ".jpeg" {
 				mime = "image/jpeg"
@@ -144,9 +159,9 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, paket mod
 				mime = "image/webp"
 			}
 			b64 := base64.StdEncoding.EncodeToString(logoData)
-			logoHtml = fmt.Sprintf(`<img src="data:%s;base64,%s" alt="Logo" style="width:80px;">`, mime, b64)
+			logoHtml = fmt.Sprintf(`<img src="data:%s;base64,%s" alt="Logo" style="width:80px; max-height:80px;">`, mime, b64)
 		} else {
-			log.Warnf("Logo tidak ditemukan di: %s", logoDiskPath)
+			log.Warnf("Logo TIDAK ditemukan. Percobaan terakhir di: %s. Error: %v", finalPath, err)
 		}
 	}
 
@@ -176,7 +191,7 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, paket mod
         <div style="font-size:14pt; font-weight:bold; text-transform:uppercase;">%s</div>
         <div style="font-size:16pt; font-weight:bold; text-transform:uppercase;">%s</div>
         <div style="font-size:9pt;">%s %s</div>
-        <div style="font-size:9pt;">%s</div>
+        <div style="font-size:9pt;">Website: %s | Email: %s</div>
       </td>
       <td style="width:15%%; text-align:right; vertical-align:top;">
         %s
@@ -279,12 +294,13 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, paket mod
 
   <!-- Tanda Tangan -->
   <div style="float:right; width:40%%; margin-top:30px; text-align:left;">
-    <p style="margin:0;">Ditetapkan di Banjarmasin</p>
-    <p style="margin:0;">pada tanggal 9 Desember 2024</p>
+    <p style="margin:0;">Ditetapkan di %s</p>
+    <p style="margin:0;">pada tanggal %s</p>
     <p style="margin-top:10px; font-weight:bold; text-transform:uppercase;">%s</p>
     <p style="margin:0; font-weight:bold; text-transform:uppercase;">%s</p>
     <br><br><br><br>
     <p style="margin:0; font-weight:bold; text-decoration:underline; text-transform:uppercase;">%s</p>
+    <p style="margin:0;">NIP. %s</p>
   </div>
   <div style="clear:both;"></div>
 
@@ -294,11 +310,11 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, paket mod
 		logoHtml, docInstansi, docSub, docAddr,
 		func() string {
 			s := ""
-			if settings.DocPhone != "" { s += "("+settings.DocPhone+") " }
-			if settings.DocFax != "" { s += settings.DocFax }
+			if settings.DocPhone != "" { s += "Telp: "+settings.DocPhone+" " }
+			if settings.DocFax != "" { s += "| Fax: "+settings.DocFax }
 			return s
 		}(),
-		settings.DocWebsite,
+		settings.DocWebsite, settings.DocEmail,
 		// Verifikasi box (kanan atas)
 		qrCell,
 		// Judul
@@ -317,7 +333,9 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, paket mod
 		// Keempat
 		docPejabatJabatan,
 		// TTD
-		docPejabatJabatan, docInstansi, docPejabatNama,
+		func() string { if sk.TempatSk != "" { return sk.TempatSk }; return "Banjarmasin" }(),
+		func() string { if !sk.TglSk.IsZero() { return sk.TglSk.Format("02-01-2006") }; return "..." }(),
+		docPejabatJabatan, docInstansi, docPejabatNama, settings.DocPejabatNip,
 	)
 }
 

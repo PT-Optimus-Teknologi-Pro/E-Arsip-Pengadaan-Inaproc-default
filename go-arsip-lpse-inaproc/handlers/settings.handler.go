@@ -76,16 +76,17 @@ func UpdateLogoSettings(c *fiber.Ctx) error {
 		settings.LoadingSubtitle = loadingSubtitle
 	}
 
-	// Identitas Instansi (Kop Surat)
-	settings.DocInstansi = c.FormValue("doc_instansi")
-	settings.DocSubInstansi = c.FormValue("doc_sub_instansi")
-	settings.DocAddress = c.FormValue("doc_address")
-	settings.DocPhone = c.FormValue("doc_phone")
-	settings.DocFax = c.FormValue("doc_fax")
-	settings.DocWebsite = c.FormValue("doc_website")
-	settings.DocEmail = c.FormValue("doc_email")
-	settings.DocPejabatNama = c.FormValue("doc_pejabat_nama")
-	settings.DocPejabatJabata = c.FormValue("doc_pejabat_jabata")
+	// Identitas Instansi (Kop Surat) - Hanya update jika tidak kosong
+	if v := c.FormValue("doc_instansi"); v != "" { settings.DocInstansi = v }
+	if v := c.FormValue("doc_sub_instansi"); v != "" { settings.DocSubInstansi = v }
+	if v := c.FormValue("doc_address"); v != "" { settings.DocAddress = v }
+	if v := c.FormValue("doc_phone"); v != "" { settings.DocPhone = v }
+	if v := c.FormValue("doc_fax"); v != "" { settings.DocFax = v }
+	if v := c.FormValue("doc_website"); v != "" { settings.DocWebsite = v }
+	if v := c.FormValue("doc_email"); v != "" { settings.DocEmail = v }
+	if v := c.FormValue("doc_pejabat_nama"); v != "" { settings.DocPejabatNama = v }
+	if v := c.FormValue("doc_pejabat_jabata"); v != "" { settings.DocPejabatJabata = v }
+	if v := c.FormValue("doc_pejabat_nip"); v != "" { settings.DocPejabatNip = v }
 
 	// Handle upload logo dokumen
 	docLogoFile, err := c.FormFile("doc_logo")
@@ -113,7 +114,10 @@ func UpdateLogoSettings(c *fiber.Ctx) error {
 		return flashError(c, "Gagal menyimpan pengaturan", "/settings/logo")
 	}
 
+	// Hapus semua cache yang mungkin menyimpan settings lama
 	cache.Delete("app_settings")
+	log.Info("Cache app_settings dihapus")
+	
 	return flashSuccess(c, "Pengaturan berhasil disimpan", "/settings/logo")
 }
 

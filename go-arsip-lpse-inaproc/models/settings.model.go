@@ -28,6 +28,7 @@ type AppSettings struct {
 	DocEmail         string `json:"doc_email" gorm:"default:'admin@banjarmasinkota.go.id'"`
 	DocPejabatNama   string `json:"doc_pejabat_nama" gorm:"default:'AHSAN BUDIMAN'"`
 	DocPejabatJabata string `json:"doc_pejabat_jabata" gorm:"default:'SEKRETARIS DAERAH'"`
+	DocPejabatNip    string `json:"doc_pejabat_nip" gorm:"default:''"`
 	DocLogoPath      string `json:"doc_logo_path" gorm:"default:''"`
 }
 

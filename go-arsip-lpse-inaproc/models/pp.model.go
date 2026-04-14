@@ -13,6 +13,8 @@ type PejabatPengadaan struct {
 	Groups 			string 		`json:"groups"`
 	Tahun			int 		`json:"tahun"`
 	NoSk			string 		`json:"no_sk"`
+	TglSk			time.Time	`json:"tgl_sk"`
+	TempatSk		string 		`json:"tempat_sk"`
 	PeriodeAwal		time.Time	`json:"periode_awal"`
 	PeriodeAkhir	time.Time	`json:"periode_akhir"`
 	UkpbjId			uint 		`json:"ukpbj_id"`
@@ -143,9 +145,11 @@ type PejabatPengadaanDTO struct {
 	ID 				uint 		`json:"id"`
 	Groups			string 		`json:"groups"`
 	Tahun			int 		`json:"tahun"`
-	NoSk			string 		`json:"no_sk"`
-	PeriodeAwal		time.Time	`json:"periode_awal"`
-	PeriodeAkhir	time.Time	`json:"periode_akhir"`
+	NoSk			string 		`json:"no_sk" form:"no_sk"`
+	TglSk			time.Time	`json:"tgl_sk" form:"tgl_sk"`
+	TempatSk		string 		`json:"tempat_sk" form:"tempat_sk"`
+	PeriodeAwal		time.Time	`json:"periode_awal" form:"periode_awal"`
+	PeriodeAkhir	time.Time	`json:"periode_akhir" form:"periode_akhir"`
 	Satker 			[]uint      `json:"satker" form:"satker"`
 	Pegawai 		[]uint 		`json:"pegawai" form:"pegawai"`
 }
