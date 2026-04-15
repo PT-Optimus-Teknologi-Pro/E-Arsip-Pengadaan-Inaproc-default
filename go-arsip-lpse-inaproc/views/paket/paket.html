@@ -21,6 +21,20 @@ Daftar Paket
     <div class="card shadow-sm border-0">
         <div class="card-header border-bottom-0">
             <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+                {% if isArsiparis %}
+                <li class="nav-item">
+                    <a href="#tabs-tender" class="nav-link active" data-bs-toggle="tab">
+                        <span style="width: 16px; height: 16px;" data-feather="database" class="me-2"></span>
+                        Data SPSE Tender
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#tabs-nontender" class="nav-link" data-bs-toggle="tab">
+                        <span style="width: 16px; height: 16px;" data-feather="file-text" class="me-2"></span>
+                        Data SPSE Non-Tender
+                    </a>
+                </li>
+                {% else %}
                 <li class="nav-item">
                     <a href="#tabs-sirup" class="nav-link active" data-bs-toggle="tab">
                         <span style="width: 16px; height: 16px;" data-feather="refresh-cw" class="me-2"></span>
@@ -33,44 +47,70 @@ Daftar Paket
                         Data Manual (Historis)
                     </a>
                 </li>
+                {% endif %}
             </ul>
         </div>
         <div class="card-body">
             {% include "alert.html" %}
             <div class="tab-content">
-                <!-- Tab SIRUP -->
-                <div class="tab-pane fade active show" id="tabs-sirup">
-                    <div class="row mb-3 align-items-end">
-                        <div class="col-md-4">
-                            <label class="form-label small font-weight-bold">Filter Metode</label>
-                            <select id="filter_metode_sirup" class="form-select shadow-sm">
-                                <option value="all">Semua Metode</option>
-                            </select>
+                {% if isArsiparis %}
+                <div class="tab-pane fade active show" id="tabs-tender">
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-md-12">
+                            <label class="form-label small font-weight-bold mb-2">Filter Metode</label>
+                            <div id="filter_metode_tender" class="d-flex flex-wrap gap-2">
+                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="Tender"><span class="pill-label">Tender</span></label>
+                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="Seleksi"><span class="pill-label">Seleksi</span></label>
+                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="Tender Cepat"><span class="pill-label">Tender Cepat</span></label>
+                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="Penunjukan Langsung"><span class="pill-label">Penunjukan Langsung</span></label>
+                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="E-Purchasing"><span class="pill-label">E-Purchasing</span></label>
+                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="Pengadaan Langsung"><span class="pill-label">Pengadaan Langsung</span></label>
+                            </div>
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-vcenter card-table" id="table-sirup" data-can-delete="{% if isPPK or isArsiparis %}true{% else %}false{% endif %}">
+                        <table class="table table-bordered table-vcenter card-table" id="table-tender">
                             <thead>
                                 <tr>
-                                    <th width="5%">ID</th>
-                                    <th>Nama Paket</th>
-                                    <th width="12%">Pagu</th>
-                                    <th width="12%">HPS</th>
-                                    <th width="12%">Metode</th>
-                                    <th width="10%">Dibuat</th>
+                                    <th width="10%">Kode RUP</th>
+                                    <th width="10%">Kode Tender</th>
+                                    <th>Nama Tender</th>
+                                    <th width="12%">Metode Pengadaan</th>
+                                    <th width="12%">Jenis Pengadaan</th>
+                                    <th width="12%">Pagu Anggaran</th>
                                     <th width="5%">Aksi</th>
                                 </tr>
                             </thead>
                         </table>
                     </div>
-                    {% if allowBuatPaket %}
-                    <div class="mt-3">
-                        <a href="/paket/edit" class="btn btn-success shadow-sm">
-                            <span style="width: 16px;" data-feather="plus-circle"></span> Tambah dari SIRUP
-                        </a>
+                <div class="tab-pane fade" id="tabs-nontender">
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-md-12">
+                            <label class="form-label small font-weight-bold mb-2">Filter Metode (Non-Tender)</label>
+                            <div id="filter_metode_nontender" class="d-flex flex-wrap gap-2">
+                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-nontender" type="checkbox" value="Pengadaan Langsung"><span class="pill-label">Pengadaan Langsung</span></label>
+                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-nontender" type="checkbox" value="Penunjukan Langsung"><span class="pill-label">Penunjukan Langsung</span></label>
+                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-nontender" type="checkbox" value="E-Purchasing"><span class="pill-label">E-Purchasing</span></label>
+                            </div>
+                        </div>
                     </div>
-                    {% endif %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-vcenter card-table" id="table-nontender">
+                            <thead>
+                                <tr>
+                                    <th width="10%">Kode RUP</th>
+                                    <th width="10%">Kode Paket</th>
+                                    <th>Nama Paket</th>
+                                    <th width="12%">Metode Pengadaan</th>
+                                    <th width="12%">Jenis Pengadaan</th>
+                                    <th width="12%">Pagu Anggaran</th>
+                                    <th width="5%">Aksi</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                 </div>
+                {% endif %}
 
                 <!-- Tab Manual -->
                 <div class="tab-pane fade" id="tabs-manual">
@@ -79,11 +119,14 @@ Daftar Paket
                             <div class="me-2">
                                 <span style="width: 20px; height: 20px;" data-feather="info"></span>
                             </div>
-                            <div>Daftar paket pengarsipan data historis (tahun lama) yang diinput manual.</div>
+                            <div>
+                                Daftar paket pengarsipan data historis (tahun lama) yang diinput manual.
+                            </div>
                         </div>
                     </div>
+                    {% if !isArsiparis %}
                     <div class="table-responsive">
-                        <table class="table table-bordered table-vcenter card-table" id="table-manual" data-is-arsiparis="{% if isArsiparis %}true{% else %}false{% endif %}">
+                        <table class="table table-bordered table-vcenter card-table" id="table-manual" data-is-arsiparis="false">
                             <thead>
                                 <tr>
                                     <th width="5%">ID</th>
@@ -96,14 +139,13 @@ Daftar Paket
                             </thead>
                         </table>
                     </div>
-                    {% if isArsiparis %}
-                    <div class="mt-3">
-                        <a href="/paket/create-manual" class="btn btn-orange shadow-sm">
-                            <span style="width: 16px;" data-feather="edit"></span> Input Data Manual
-                        </a>
+                    {% else %}
+                    <div class="p-4 text-center">
+                        <p class="text-muted">Gunakan tab <b>SPSE Tender</b> atau <b>SPSE Non-Tender</b> untuk mengarsipkan data dari SPSE.</p>
                     </div>
                     {% endif %}
                 </div>
+            </div>
             </div>
         </div>
     </div>
@@ -111,9 +153,150 @@ Daftar Paket
 {% endblock %}
 
 {% block script %}
+<style>
+    .custom-pill-checkbox input[type="checkbox"] {
+        display: none;
+    }
+    .custom-pill-checkbox .pill-label {
+        background-color: #ffffff;
+        color: #495057;
+        border: 1px solid #ced4da;
+        padding: 6px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        user-select: none;
+        display: inline-block;
+        margin: 0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .custom-pill-checkbox:hover .pill-label {
+        background-color: #f1f3f5;
+        border-color: #adb5bd;
+    }
+    .custom-pill-checkbox input[type="checkbox"]:checked + .pill-label {
+        background-color: #206bc4;
+        color: #ffffff;
+        border-color: #206bc4;
+        box-shadow: 0 3px 6px rgba(32, 107, 196, 0.2);
+        transform: translateY(-1px);
+    }
+</style>
 <script>
     feather.replace();
 
+    {% if !isArsiparis %}
+    // Table Manual initialization
+    var tableManual = new DataTable("#table-manual", {
+        ajax: '/paket/data?source=manual',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "ID"},
+            {data : "nama", render : function(data, type, row){
+                    return '<a href="/paket/'+row["ID"]+'" class="font-weight-bold">'+data+'</a>'
+                }
+            },
+            {data : "pagu", render : function(data, type, row){
+                  return `Rp ${data.toLocaleString("id-ID")}`;
+              }
+            },
+            {data : "tahun"},
+            {data : "metode", render : function(data, type, row){
+                  return row["metode_arsip"] || metode(data);
+              }
+            },
+            {data : "ID", render: function(data, type, row, meta){
+                    let isArsiparis = $(meta.settings.nTable).data('is-arsiparis');
+                    let html = '<div class="btn-list flex-nowrap">';
+                    if(isArsiparis) {
+                        html += `<a href="/paket/edit-manual/${data}" class="btn btn-sm btn-icon btn-white text-primary" title="Edit"><span style="width: 16px; height: 16px;" data-feather="edit-2"></span></a>`;
+                        html += `<a href="/paket/hapus/${data}" class="btn btn-sm btn-icon btn-white text-danger" title="Hapus"><span style="width: 16px; height: 16px;" data-feather="trash-2"></span></a>`;
+                    } else {
+                        html += `<a href="/download-all/${data}" class="btn btn-sm btn-icon btn-white text-info" title="Download" data-no-loader><span style="width: 16px; height: 16px;" data-feather="download"></span></a>`;
+                    }
+                    html += '</div>';
+                    return html;
+                }
+            },
+        ],
+        aaSorting: [[0, 'desc']],
+        drawCallback: function() { feather.replace(); }
+    });
+    {% endif %}
+
+    {% if isArsiparis %}
+    // Table Arsiparis Tender initialization
+    var tableTender = new DataTable("#table-tender", {
+        ajax: '/paket/data-tender',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "kd_rup"},
+            {data : "kd_tender"},
+            {data : "nama_paket", render: function(data, type, row){
+                return '<a href="/paket/detail-tender/'+row["kd_tender"]+'" class="font-weight-bold">'+data+'</a>';
+            }},
+            {data : "mtd_pemilihan"},
+            {data : "jenis_pengadaan"},
+            {data : "pagu", render : function(data, type, row){
+                  return `Rp ${data.toLocaleString("id-ID")}`;
+              }
+            },
+            {data : "kd_tender", render: function(data, type, row, meta){
+                return `<a href="/paket/detail-tender/${data}" class="btn btn-sm btn-icon btn-white text-info" title="Detail"><span style="width: 16px; height: 16px;" data-feather="eye"></span></a>`;
+            }}
+        ],
+        aaSorting: [[1, 'desc']],
+        drawCallback: function() { feather.replace(); }
+    });
+
+    $('.filter-metode-cb-tender').on('change', function() {
+        let selected = [];
+        $('.filter-metode-cb-tender:checked').each(function() {
+            selected.push($(this).val());
+        });
+        let val = selected.length > 0 ? selected.join(',') : 'all';
+        tableTender.ajax.url('/paket/data-tender?metode=' + val).load();
+    });
+
+    // Table Arsiparis Nontender initialization
+    var tableNontender = new DataTable("#table-nontender", {
+        ajax: '/paket/data-nontender',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "kd_rup"},
+            {data : "kd_nontender"},
+            {data : "nama_paket", render: function(data, type, row){
+                return '<a href="/paket/detail-nontender/'+row["kd_nontender"]+'" class="font-weight-bold">'+data+'</a>';
+            }},
+            {data : "mtd_pemilihan"},
+            {data : "jenis_pengadaan"},
+            {data : "pagu", render : function(data, type, row){
+                  return `Rp ${data.toLocaleString("id-ID")}`;
+              }
+            },
+            {data : "kd_nontender", render: function(data, type, row, meta){
+                return `<a href="/paket/detail-nontender/${data}" class="btn btn-sm btn-icon btn-white text-info" title="Detail"><span style="width: 16px; height: 16px;" data-feather="eye"></span></a>`;
+            }}
+        ],
+        aaSorting: [[1, 'desc']],
+        drawCallback: function() { feather.replace(); }
+    });
+
+    $('.filter-metode-cb-nontender').on('change', function() {
+        let selected = [];
+        $('.filter-metode-cb-nontender:checked').each(function() {
+            selected.push($(this).val());
+        });
+        let val = selected.length > 0 ? selected.join(',') : 'all';
+        tableNontender.ajax.url('/paket/data-nontender?metode=' + val).load();
+    });
+
+    {% else %}
     // Table SIRUP initialization
     var tableSirup = new DataTable("#table-sirup", {
         ajax: '/paket/data?source=sirup',
@@ -159,54 +342,27 @@ Daftar Paket
         drawCallback: function() { feather.replace(); }
     });
 
-    // Table Manual initialization
-    var tableManual = new DataTable("#table-manual", {
-        ajax: '/paket/data?source=manual',
-        processing: true,
-        serverSide: true,
-        columns: [
-            {data : "ID"},
-            {data : "nama", render : function(data, type, row){
-                    return '<a href="/paket/'+row["ID"]+'" class="font-weight-bold">'+data+'</a>'
-                }
-            },
-            {data : "pagu", render : function(data, type, row){
-                  return `Rp ${data.toLocaleString("id-ID")}`;
-              }
-            },
-            {data : "tahun"},
-            {data : "metode", render : function(data, type, row){
-                  return row["metode_arsip"] || metode(data);
-              }
-            },
-            {data : "ID", render: function(data, type, row, meta){
-                    let isArsiparis = $(meta.settings.nTable).data('is-arsiparis');
-                    let html = '<div class="btn-list flex-nowrap">';
-                    if(isArsiparis) {
-                        html += `<a href="/paket/edit-manual/${data}" class="btn btn-sm btn-icon btn-white text-primary" title="Edit"><span style="width: 16px; height: 16px;" data-feather="edit-2"></span></a>`;
-                        html += `<a href="/paket/hapus/${data}" class="btn btn-sm btn-icon btn-white text-danger" title="Hapus"><span style="width: 16px; height: 16px;" data-feather="trash-2"></span></a>`;
-                    } else {
-                        html += `<a href="/download-all/${data}" class="btn btn-sm btn-icon btn-white text-info" title="Download" data-no-loader><span style="width: 16px; height: 16px;" data-feather="download"></span></a>`;
-                    }
-                    html += '</div>';
-                    return html;
-                }
-            },
-        ],
-        aaSorting: [[0, 'desc']],
-        drawCallback: function() { feather.replace(); }
-    });
-
     // Populate Filters
     $.get('/paket/metode-filter', function(data) {
         data.forEach(function(item) {
-            $('#filter_metode_sirup').append(`<option value="${item.id}">${item.label}</option>`);
+            $('#filter_metode_sirup').append(`
+                <label class="custom-pill-checkbox m-0">
+                    <input class="filter-metode-cb" type="checkbox" value="${item.id}">
+                    <span class="pill-label">${item.label}</span>
+                </label>
+            `);
+        });
+
+        $('.filter-metode-cb').on('change', function() {
+            let selected = [];
+            $('.filter-metode-cb:checked').each(function() {
+                selected.push($(this).val());
+            });
+            let val = selected.length > 0 ? selected.join(',') : 'all';
+            tableSirup.ajax.url('/paket/data?source=sirup&metode=' + val).load();
         });
     });
-
-    $('#filter_metode_sirup').on('change', function() {
-        tableSirup.ajax.url('/paket/data?source=sirup&metode=' + $(this).val()).load();
-    });
+    {% endif %}
 
     // Fix header alignment when switching tabs
     $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {

@@ -213,6 +213,93 @@ func GetJsonPaket(c *fiber.Ctx) error {
 	return services.GetDataTablePaket(c, id, isPPk, isUkpbj, isPokja, isPp, isArsiparis)
 }
 
+func GetJsonTenderArsiparis(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	isArsiparis := mp["isArsiparis"].(bool)
+	if !isArsiparis {
+		return Forbiden(c)
+	}
+	return models.GetDataTableTenderArsiparis(c)
+}
+
+func GetDetailTenderArsiparis(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	mp := currentMap(c)
+	isArsiparis := mp["isArsiparis"].(bool)
+	if !isArsiparis {
+		return Forbiden(c)
+	}
+
+	var tender models.Tender
+	models.GetDB().First(&tender, id)
+	if tender.KdTender == 0 {
+		return c.Status(404).SendString("Tender not found")
+	}
+
+	var tenderSelesai models.TenderSelesai
+	models.GetDB().First(&tenderSelesai, id)
+
+	// Fetch if any paket exists locally with this KodeTender
+	var paket models.Paket
+	models.GetDB().Where("kode_tender = ?", id).First(&paket)
+
+	mp["tender"] = tender
+	mp["tenderSelesai"] = tenderSelesai
+	if paket.ID > 0 {
+		mp["paket"] = paket
+		mp["dok_persiapan"] = models.GetDokPaketJenis(paket.ID, "Dokumen Persiapan")
+		mp["dok_hasil"] = models.GetDokPaketJenis(paket.ID, "Dokumen Hasil Pengadaan")
+		mp["dok_kontrak"] = models.GetDokPaketJenis(paket.ID, "Dokumen Kontrak")
+		mp["dok_tambahan"] = models.GetDokPaketJenis(paket.ID, "Dokumen Tambahan")
+	}
+
+	return c.Render("paket/detail-tender-arsiparis", mp)
+}
+
+func GetJsonNontenderArsiparis(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	isArsiparis := mp["isArsiparis"].(bool)
+	if !isArsiparis {
+		return Forbiden(c)
+	}
+	return models.GetDataTableNontenderArsiparis(c)
+}
+
+func GetDetailNontenderArsiparis(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	mp := currentMap(c)
+	isArsiparis := mp["isArsiparis"].(bool)
+	if !isArsiparis {
+		return Forbiden(c)
+	}
+
+	var nontender models.Nontender
+	models.GetDB().First(&nontender, id)
+	if nontender.KdNontender == 0 {
+		return c.Status(404).SendString("Non-Tender not found")
+	}
+
+	var nontenderSelesai models.NontenderSelesai
+	models.GetDB().First(&nontenderSelesai, id)
+
+	// Fetch if any paket exists locally with this KodeNontender
+	var paket models.Paket
+	models.GetDB().Where("kode_tender = ?", id).First(&paket)
+
+	mp["tender"] = nontender
+	mp["tenderSelesai"] = nontenderSelesai
+	mp["isNontender"] = true
+	if paket.ID > 0 {
+		mp["paket"] = paket
+		mp["dok_persiapan"] = models.GetDokPaketJenis(paket.ID, "Dokumen Persiapan")
+		mp["dok_hasil"] = models.GetDokPaketJenis(paket.ID, "Dokumen Hasil Pengadaan")
+		mp["dok_kontrak"] = models.GetDokPaketJenis(paket.ID, "Dokumen Kontrak")
+		mp["dok_tambahan"] = models.GetDokPaketJenis(paket.ID, "Dokumen Tambahan")
+	}
+
+	return c.Render("paket/detail-tender-arsiparis", mp)
+}
+
 func UpdateHpsPaket(c *fiber.Ctx) error {
 	formHps := c.FormValue("Hps")
 	formHps = strings.Replace(formHps, ".", "", -1)

@@ -345,6 +345,15 @@
     transition: background 0.2s, box-shadow 0.2s;
   }
   .btn-daftar:hover { background: #11215D; box-shadow: 0 4px 14px rgba(0,38,180,0.25); color:#fff; }
+
+  /* Captcha */
+  .security-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; }
+  .btn-refresh-captcha {
+    font-size: 0.82rem; color: #0026B4; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0; font-weight: 500;
+  }
+  .btn-refresh-captcha:hover { color: #11215D; }
+  .captcha-box { background: #f8f9fe; border: 1px solid #dde3f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0.6rem; min-height: 60px; margin-bottom: 0.6rem; }
+  .captcha-box img { max-height: 50px; border-radius: 4px; }
 </style>
 {% endblock %}
 
@@ -580,6 +589,28 @@
       </div>
     </div>
 
+    <!-- CAPTCHA Section -->
+    <div class="reg-section" style="border-bottom:none;">
+      <div class="reg-field">
+        <div class="security-header">
+          <label class="form-label" style="font-size: 0.855rem;">Security Check <span class="badge bg-red-lt ms-1">Wajib</span></label>
+          <a href="/register" class="btn-refresh-captcha">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            Refresh Captcha
+          </a>
+        </div>
+        <div class="captcha-box">
+          <img src="{{base64Image}}" alt="captcha" />
+        </div>
+        <input type="hidden" name="token" value="{{token}}" />
+        <input type="text" class="form-control" placeholder="Masukan Captcha..." name="captchaText" required autocomplete="off" style="width: 100%; padding: 0.55rem 0.85rem; border-radius: 8px; border: 1.5px solid #d1d5db;">
+      </div>
+    </div>
     
     <div class="reg-action-bar">
       <a href="/" class="btn-back-home">

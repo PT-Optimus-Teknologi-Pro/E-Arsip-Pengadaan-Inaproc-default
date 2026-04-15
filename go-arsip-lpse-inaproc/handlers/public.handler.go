@@ -26,10 +26,31 @@ func Design(c *fiber.Ctx) error {
 
 func Register(c *fiber.Ctx) error {
 	mp := currentMap(c)
+	cap := captcha.New("qwertyasdfzxcv1234")
+	base64Image, text, token, err := cap.Generate()
+	if err != nil {
+		log.Error(err)
+	}
+	key := "capthca"+token
+	cache.Set(key, text)
+	mp["token"] = token
+	mp["base64Image"] = base64Image
 	return c.Render("publik/register", mp)
 }
 
 func SubmitRegister(c *fiber.Ctx) error {
+	// Validate Captcha
+	token := c.FormValue("token")
+	captchaText := c.FormValue("captchaText")
+	key := "capthca"+token
+	text, found := cache.Get(key)
+	if found {
+		cache.Delete(key)
+	}
+	if text != captchaText {
+		return flashError(c,  "invalid Captcha","/register")
+	}
+
 	user := new(models.Pegawai)
 	// Store the body in the user and return error if encountered
 	err := c.BodyParser(user)

@@ -1,0 +1,169 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Detil Tender SPSE
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Detil Tender SPSE</h2>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/paket">Daftar Paket</a></li>
+            <li class="breadcrumb-item active">Detil {% if isNontender %}Non-Tender{% else %}Tender{% endif %}</li>
+        </ol>
+    </div>
+</div>
+
+<div class="col-lg-12 pt-2">
+    <div class="card shadow-sm border-0 mb-3">
+        <div class="card-header bg-light">
+            <h3 class="card-title text-primary"><span style="width: 18px; height: 18px;" data-feather="monitor" class="me-2"></span> Informasi Sistem Pengadaan Secara Elektronik (SPSE) - {% if isNontender %}Non-Tender{% else %}Tender{% endif %}</h3>
+        </div>
+        <div class="card-body">
+            <div class="basic-form">
+                <div class="form-group mb-3 row">
+                    <label class="col-sm-2 text-end control-label col-form-label font-weight-bold">Kode RUP</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-plaintext">{{ tender.KdRup }}</p>
+                    </div>
+                    <label class="col-sm-2 text-end control-label col-form-label font-weight-bold">Kode {% if isNontender %}Non-Tender{% else %}Tender{% endif %}</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-plaintext">{% if isNontender %}{{ tender.KdNontender }}{% else %}{{ tender.KdTender }}{% endif %}</p>
+                    </div>
+                </div>
+                <div class="form-group mb-3 row">
+                    <label class="col-sm-2 text-end control-label col-form-label font-weight-bold">Nama {% if isNontender %}Non-Tender{% else %}Tender{% endif %}</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-plaintext">{{ tender.NamaPaket }}</p>
+                    </div>
+                </div>
+                <div class="form-group mb-3 row">
+                    <label class="col-sm-2 text-end control-label col-form-label font-weight-bold">Metode Pengadaan</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-plaintext">{{ tender.MtdPemilihan }}</p>
+                    </div>
+                    <label class="col-sm-2 text-end control-label col-form-label font-weight-bold">Jenis Pengadaan</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-plaintext">{{ tender.JenisPengadaan }}</p>
+                    </div>
+                </div>
+                <div class="form-group mb-3 row">
+                    <label class="col-sm-2 text-end control-label col-form-label font-weight-bold">Pagu Anggaran</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-plaintext">{{ rupiah(tender.Pagu) }}</p>
+                    </div>
+                    <label class="col-sm-2 text-end control-label col-form-label font-weight-bold">Nilai Kontrak</label>
+                    <div class="col-sm-4">
+                        <p class="form-control-plaintext">
+                            {% if tenderSelesai.NilaiKontrak > 0 %}
+                                <span class="badge bg-green text-green-fg">{{ rupiah(tenderSelesai.NilaiKontrak) }}</span>
+                            {% else %}
+                                <span class="text-muted">Belum ada kontrak / Nilai 0</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 border-top pt-3 text-end">
+                <a href="/paket" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali ke Daftar</a>
+            </div>
+        </div>
+    </div>
+
+    {% if paket.ID > 0 %}
+    <div class="card shadow-sm border-0 mt-3 border-start border-4 border-success">
+        <div class="card-header bg-success-lt">
+            <h3 class="card-title text-success"><span style="width: 18px; height: 18px;" data-feather="folder" class="me-2"></span> Temuan Arsip Internal Sistem (Terkoneksi)</h3>
+        </div>
+        <div class="card-body">
+            <p class="text-muted small mb-4">
+                Sistem E-Arsip menemukan bahwa Paket SPSE ({% if isNontender %}Non-Tender{% else %}Tender{% endif %}) ini telah diproses oleh PPK/Pokja melalui aplikasi ini. Di bawah ini adalah seluruh lampiran dokumen yang telah diunggah dan bisa diarsipkan.
+            </p>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5 class="font-weight-bold border-bottom pb-2">Dokumen Persiapan</h5>
+                    {% if len(dok_persiapan) > 0 %}
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for dok in dok_persiapan %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ dok.Document().Filename }}
+                            <a href="/download/{{ dok.DokId }}" class="btn btn-sm btn-outline-info" title="Download"><span style="width: 14px; height: 14px;" data-feather="download"></span></a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted small">Kosong</p>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <h5 class="font-weight-bold border-bottom pb-2">Dokumen Hasil Pengadaan</h5>
+                    {% if len(dok_hasil) > 0 %}
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for dok in dok_hasil %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ dok.Document().Filename }}
+                            <a href="/download/{{ dok.DokId }}" class="btn btn-sm btn-outline-info" title="Download"><span style="width: 14px; height: 14px;" data-feather="download"></span></a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted small">Kosong</p>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <h5 class="font-weight-bold border-bottom pb-2">Dokumen Kontrak / Pelaksanaan</h5>
+                    {% if len(dok_kontrak) > 0 %}
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for dok in dok_kontrak %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ dok.Document().Filename }}
+                            <a href="/download/{{ dok.DokId }}" class="btn btn-sm btn-outline-info" title="Download"><span style="width: 14px; height: 14px;" data-feather="download"></span></a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted small">Kosong</p>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <h5 class="font-weight-bold border-bottom pb-2">Dokumen Tambahan</h5>
+                    {% if len(dok_tambahan) > 0 %}
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for dok in dok_tambahan %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ dok.Document().Filename }}
+                            <a href="/download/{{ dok.DokId }}" class="btn btn-sm btn-outline-info" title="Download"><span style="width: 14px; height: 14px;" data-feather="download"></span></a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted small">Kosong</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-2 pt-3 text-center border-top">
+                <a href="/download-all/{{ paket.ID }}" class="btn btn-success shadow-sm">
+                    <span style="width: 16px;" data-feather="download-cloud"></span> Download Semua Master Arsip (ZIP)
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    feather.replace();
+</script>
+{% endblock %}

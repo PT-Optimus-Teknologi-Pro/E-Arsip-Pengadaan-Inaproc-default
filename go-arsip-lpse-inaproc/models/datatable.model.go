@@ -178,7 +178,19 @@ func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp, isA
 	}
 	metode := c.Query("metode")
 	if metode != "" && metode != "all" {
-		orm = orm.Where("paket.metode = ?", metode)
+		if strings.Contains(metode, ",") {
+			metodeStrArr := strings.Split(metode, ",")
+			var metodeArr []int
+			for _, mStr := range metodeStrArr {
+				mId, err := strconv.Atoi(mStr)
+				if err == nil {
+					metodeArr = append(metodeArr, mId)
+				}
+			}
+			orm = orm.Where("paket.metode IN (?)", metodeArr)
+		} else {
+			orm = orm.Where("paket.metode = ?", metode)
+		}
 	}
 
 	source := c.Query("source")
@@ -192,6 +204,72 @@ func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp, isA
 	var datas []Paket
 	// Pass the selection columns to populate for ordering/searching
 	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode", "paket.metode_arsip", "paket.tahun", "paket.created_at", "paket.status")
+}
+
+type TenderArsiparis struct {
+	KdTender       uint    `json:"kd_tender" gorm:"column:kd_tender"`
+	KdRup          string  `json:"kd_rup" gorm:"column:kd_rup"`
+	NamaPaket      string  `json:"nama_paket" gorm:"column:nama_paket"`
+	MtdPemilihan   string  `json:"mtd_pemilihan" gorm:"column:mtd_pemilihan"`
+	JenisPengadaan string  `json:"jenis_pengadaan" gorm:"column:jenis_pengadaan"`
+	Pagu           float64 `json:"pagu" gorm:"column:pagu"`
+	NilaiKontrak   float64 `json:"nilai_kontrak" gorm:"column:nilai_kontrak"`
+}
+
+func GetDataTableTenderArsiparis(c *fiber.Ctx) error {
+	orm := db.Table("tender").
+		Select("tender.kd_tender, tender.kd_rup, tender.nama_paket, tender.mtd_pemilihan, tender.jenis_pengadaan, tender.pagu, ts.nilai_kontrak").
+		Joins("LEFT JOIN tender_selesai ts ON tender.kd_tender = ts.kd_tender")
+
+	metode := c.Query("metode")
+	if metode != "" && metode != "all" {
+		if strings.Contains(metode, ",") {
+			metodeStrArr := strings.Split(metode, ",")
+			var metodeArr []string
+			for _, mStr := range metodeStrArr {
+				metodeArr = append(metodeArr, strings.TrimSpace(mStr))
+			}
+			orm = orm.Where("tender.mtd_pemilihan IN (?)", metodeArr)
+		} else {
+			orm = orm.Where("tender.mtd_pemilihan = ?", metode)
+		}
+	}
+
+	var datas []TenderArsiparis
+	return populate(orm, c, &datas, "tender.kd_rup", "tender.kd_tender", "tender.nama_paket", "tender.mtd_pemilihan", "tender.jenis_pengadaan", "tender.pagu", "ts.nilai_kontrak")
+}
+
+type NontenderArsiparis struct {
+	KdNontender    uint    `json:"kd_nontender" gorm:"column:kd_nontender"`
+	KdRup          string  `json:"kd_rup" gorm:"column:kd_rup"`
+	NamaPaket      string  `json:"nama_paket" gorm:"column:nama_paket"`
+	MtdPemilihan   string  `json:"mtd_pemilihan" gorm:"column:mtd_pemilihan"`
+	JenisPengadaan string  `json:"jenis_pengadaan" gorm:"column:jenis_pengadaan"`
+	Pagu           float64 `json:"pagu" gorm:"column:pagu"`
+	NilaiKontrak   float64 `json:"nilai_kontrak" gorm:"column:nilai_kontrak"`
+}
+
+func GetDataTableNontenderArsiparis(c *fiber.Ctx) error {
+	orm := db.Table("nontender").
+		Select("nontender.kd_nontender, nontender.kd_rup, nontender.nama_paket, nontender.mtd_pemilihan, nontender.jenis_pengadaan, nontender.pagu, nts.nilai_kontrak").
+		Joins("LEFT JOIN nontender_selesai nts ON nontender.kd_nontender = nts.kd_nontender")
+
+	metode := c.Query("metode")
+	if metode != "" && metode != "all" {
+		if strings.Contains(metode, ",") {
+			metodeStrArr := strings.Split(metode, ",")
+			var metodeArr []string
+			for _, mStr := range metodeStrArr {
+				metodeArr = append(metodeArr, strings.TrimSpace(mStr))
+			}
+			orm = orm.Where("nontender.mtd_pemilihan IN (?)", metodeArr)
+		} else {
+			orm = orm.Where("nontender.mtd_pemilihan = ?", metode)
+		}
+	}
+
+	var datas []NontenderArsiparis
+	return populate(orm, c, &datas, "nontender.kd_rup", "nontender.kd_nontender", "nontender.nama_paket", "nontender.mtd_pemilihan", "nontender.jenis_pengadaan", "nontender.pagu", "nts.nilai_kontrak")
 }
 
 func GetDataTableTemplates(c *fiber.Ctx) error {
