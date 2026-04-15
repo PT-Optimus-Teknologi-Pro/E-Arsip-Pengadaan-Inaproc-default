@@ -200,6 +200,12 @@ func (obj Paket) DokTambahanList() []DokPaket {
 	return res
 }
 
+func (obj Paket) DokPaketList() []DokPaket {
+	var res []DokPaket
+	db.Find(&res, "pkt_id=?", obj.ID)
+	return res
+}
+
 func (obj Paket) GeneratePersyaratan() error {
 	// generate checklist CreatePaket
 	checklist := GetChecklistsBYJenisMetode(obj.KgrId, obj.Metode)
@@ -293,19 +299,13 @@ func (obj Paket) GetAllDocument(isPPK bool) []Document {
 	for _, v := range obj.DokPersiapan() {
 		documents = append(documents, v.Dokumen())
 	}
-	if isPPK {
-		for _, v := range obj.DokPendukungList() {
+	for _, v := range obj.DokPaketList() {
+		// Respect isPPK restriction for specific document types if necessary,
+		// but typically for Download All we want to include what's available for the role.
+		// For manual packages, we definitely want "Bukti Manual".
+		if v.Jenis == "Bukti Manual" || v.Jenis == HASIL_PENGADAAN || v.Jenis == TAMBAHAN {
 			documents = append(documents, v.Document())
-		}
-	}
-	for _, v := range obj.DokHasilList() {
-		documents = append(documents, v.Document())
-	}
-	if isPPK {
-		for _, v := range obj.DokKontrakList() {
-			documents = append(documents, v.Document())
-		}
-		for _, v := range obj.DokPekerjaanList() {
+		} else if isPPK && (v.Jenis == PENDUKUNG || v.Jenis == KONTRAK || v.Jenis == HASIL_PEKERJAAN) {
 			documents = append(documents, v.Document())
 		}
 	}

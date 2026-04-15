@@ -93,7 +93,7 @@ func PrintToPdf(c *fiber.Ctx) error {
 func Download(c *fiber.Ctx) error {
 	id, _ := c.ParamsInt("id")
 	document := services.GetDocument(uint(id))
-	return c.SendFile(document.Filepath)
+	return c.Download(document.Filepath, document.Filename)
 }
 
 func DownloadAll(c *fiber.Ctx) error {
@@ -109,11 +109,11 @@ func DownloadAll(c *fiber.Ctx) error {
 	for _,v := range paket.GetAllDocument(isPPK) {
 		files = append(files, v.Filepath)
 	}
-	zipFile,  err := utils.CreateZip(files, "download-all.zip");
+	zipFile, err := utils.CreateZip(files, "download-all.zip")
 	if err != nil {
 		log.Error("Error creating ", zipFile, " : ", err)
 	}
-	return c.SendFile(zipFile)
+	return c.Download(zipFile, "download-all.zip")
 }
 
 func SubmitLogin(c *fiber.Ctx) error {
@@ -446,5 +446,5 @@ func DownloadAllAdminDocument(c *fiber.Ctx) error {
 		log.Error("Error creating ", zipFile, " : ", err)
 		return flashError(c, "Gagal membuat file zip: "+err.Error(), "/admin-document")
 	}
-	return c.SendFile(zipFile)
+	return c.Download(zipFile, "dokumen-admin.zip")
 }

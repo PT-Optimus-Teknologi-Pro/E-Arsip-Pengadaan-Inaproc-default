@@ -256,6 +256,8 @@
         link.getAttribute('href') && 
         !link.target && 
         !link.hasAttribute('data-no-loader') &&
+        !link.hasAttribute('download') &&
+        !link.getAttribute('href').includes('/download') &&
         !link.getAttribute('href').startsWith('#') && 
         !link.getAttribute('href').startsWith('javascript:') &&
         !link.getAttribute('href').startsWith('mailto:') &&

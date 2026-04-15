@@ -148,7 +148,7 @@ Daftar Paket
                         html += `<a href="/paket/hapus/${data}" class="btn btn-sm btn-icon btn-white text-danger" title="Hapus"><span style="width: 16px; height: 16px;" data-feather="trash-2"></span></a>`;
                     }
                     if(row["status"] > 2) {
-                        html += `<a href="/download-all/${data}" class="btn btn-sm btn-icon btn-white text-info" title="Download"><span style="width: 16px; height: 16px;" data-feather="download"></span></a>`;
+                        html += `<a href="/download-all/${data}" class="btn btn-sm btn-icon btn-white text-info" title="Download" data-no-loader><span style="width: 16px; height: 16px;" data-feather="download"></span></a>`;
                     }
                     html += '</div>';
                     return html;
@@ -184,8 +184,10 @@ Daftar Paket
                     let html = '<div class="btn-list flex-nowrap">';
                     if(isArsiparis) {
                         html += `<a href="/paket/edit-manual/${data}" class="btn btn-sm btn-icon btn-white text-primary" title="Edit"><span style="width: 16px; height: 16px;" data-feather="edit-2"></span></a>`;
+                        html += `<a href="/paket/hapus/${data}" class="btn btn-sm btn-icon btn-white text-danger" title="Hapus"><span style="width: 16px; height: 16px;" data-feather="trash-2"></span></a>`;
+                    } else {
+                        html += `<a href="/download-all/${data}" class="btn btn-sm btn-icon btn-white text-info" title="Download" data-no-loader><span style="width: 16px; height: 16px;" data-feather="download"></span></a>`;
                     }
-                    html += `<a href="/paket/hapus/${data}" class="btn btn-sm btn-icon btn-white text-danger" title="Hapus"><span style="width: 16px; height: 16px;" data-feather="trash-2"></span></a>`;
                     html += '</div>';
                     return html;
                 }

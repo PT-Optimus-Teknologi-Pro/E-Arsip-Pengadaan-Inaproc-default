@@ -181,12 +181,25 @@ func UpdatePaket(c *fiber.Ctx) error {
 // delete user in db by ID
 func DeletePaket(c *fiber.Ctx) error {
 	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if paket.ID == 0 {
+		return flashError(c, "Paket tidak ditemukan", "/paket")
+	}
+
+	mp := currentMap(c)
+	isArsiparis := mp["isArsiparis"].(bool)
+
+	// Restrict manual packages (RupId == 0) to Arsiparis only
+	if paket.RupId == 0 && !isArsiparis {
+		return Forbiden(c)
+	}
+
 	err := services.HapusPaket(id)
 	if err != nil {
 		log.Error(err)
-		return flashError(c, err.Error(),"/paket")
+		return flashError(c, err.Error(), "/paket")
 	}
-	return flashSuccess(c, "Hapus Paket Sukses","/paket")
+	return flashSuccess(c, "Hapus Paket Sukses", "/paket")
 }
 
 func GetJsonPaket(c *fiber.Ctx) error {
