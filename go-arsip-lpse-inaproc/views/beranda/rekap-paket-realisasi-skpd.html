@@ -1,117 +1,66 @@
-﻿ <div class="form-group mb-3 row">
-     <label class="col-sm-2 col-form-label">Satuan Kerja</label>
-     <div class="col-sm-10">
-         <p class="form-control-plaintext">{{namaSatker}}</p>
-     </div>
- </div>
- <div class="form-group mb-3 row">
-     <label class="col-sm-2 col-form-label">Bulan</label>
-     <div class="col-sm-10">
-        <p class="form-control-plaintext">{{bulanLabel(bulan)}} {{tahun}}</p>
-     </div>
- </div>
- <div class="card">
-     <div class="card-header">Tender</div>
-     <div class="card-body">
-        <table class="table table-modal-detail">
-            <thead>
-                <tr>
-                    <th width="15%">Kode Paket</th>
-                    <th>Nama Paket</th>
-                    <th width="15%">Tanggal Realisasi</th>
-                    <th width="20%">Realisasi</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for obj in tender %}
-            <tr>
-                <td>{{ obj.Kode }}</td>
-                <td>{{ obj.NamaPaket }}</td>
-                <td>{{ obj.TglRealisasi.Format() }}</td>
-                <td>{{ rupiah(obj.Realisasi) }}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-     </div>
- </div>
- <div class="card mt-2">
-     <div class="card-header">Non Tender</div>
-     <div class="card-body">
-        <table class="table table-modal-detail">
-            <thead>
-            <tr>
-                <th width="15%">Kode Paket</th>
-                <th>Nama Paket</th>
-                <th width="15%">Tanggal Realisasi</th>
-                <th width="15%">Realisasi</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for obj in nontender %}
-            <tr>
-                <td>{{ obj.Kode }}</td>
-                <td>{{ obj.NamaPaket }}</td>
-                <td>{{ obj.TglRealisasi.Format() }}</td>
-                <td>{{ rupiah(obj.Realisasi) }}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-     </div>
- </div>
- <div class="card mt-2">
-     <div class="card-header">Pencatatan</div>
-     <div class="card-body">
-        <table class="table table-modal-detail">
-            <thead>
-                <tr>
-                    <th width="15%">Kode Paket</th>
-                    <th>Nama Paket</th>
-                    <th width="15%">Tanggal Realisasi</th>
-                    <th width="15%">Realisasi</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for obj in pencatatan %}
-            <tr>
-                <td>{{ obj.Kode }}</td>
-                <td>{{ obj.NamaPaket }}</td>
-                <td>{{ obj.TglRealisasi.Format() }}</td>
-                <td>{{ rupiah(obj.Realisasi) }}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-     </div>
- </div>
- <div class="card mt-2">
-    <div class="card-header">Katalog</div>
-    <div class="card-body">
-        <table class="table table-modal-detail">
-            <thead>
-                <tr>
-                    <th width="15%">Kode Paket</th>
-                    <th>Nama Paket</th>
-                    <th width="15%">Tanggal Realisasi</th>
-                    <th width="20%">Realisasi</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for obj in purchase %}
-            <tr>
-                <td>{{ obj.Kode }}</td>
-                <td>{{ obj.NamaPaket }}</td>
-                <td>{{ obj.TglRealisasi.Format() }}</td>
-                <td>{{ rupiah(obj.Realisasi) }}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
- </div>
+<dl class="row mb-3">
+  <dt class="col-sm-3" style="font-weight:700;">Satuan Kerja</dt>
+  <dd class="col-sm-9">{{namaSatker}}</dd>
+  <dt class="col-sm-3" style="font-weight:700;">Bulan</dt>
+  <dd class="col-sm-9">{{bulanLabel(bulan)}} {{tahun}}</dd>
+</dl>
+<div class="card mb-2">
+  <div class="card-header fw-bold">Tender</div>
+  <div class="table-responsive">
+    <table class="table table-sm table-modal-detail table-realisasi-tender">
+      <thead><tr><th>Kode Paket</th><th>Nama Paket</th><th>Tgl Realisasi</th><th>Realisasi</th></tr></thead>
+      <tbody>
+      {% for obj in tender %}
+      <tr><td>{{ obj.Kode }}</td><td>{{ obj.NamaPaket }}</td><td>{{ obj.TglRealisasi.Format() }}</td><td>{{ rupiah(obj.Realisasi) }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="card mb-2">
+  <div class="card-header fw-bold">Non Tender</div>
+  <div class="table-responsive">
+    <table class="table table-sm table-modal-detail table-realisasi-nontender">
+      <thead><tr><th>Kode Paket</th><th>Nama Paket</th><th>Tgl Realisasi</th><th>Realisasi</th></tr></thead>
+      <tbody>
+      {% for obj in nontender %}
+      <tr><td>{{ obj.Kode }}</td><td>{{ obj.NamaPaket }}</td><td>{{ obj.TglRealisasi.Format() }}</td><td>{{ rupiah(obj.Realisasi) }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="card mb-2">
+  <div class="card-header fw-bold">Pencatatan</div>
+  <div class="table-responsive">
+    <table class="table table-sm table-modal-detail table-realisasi-pencatatan">
+      <thead><tr><th>Kode Paket</th><th>Nama Paket</th><th>Tgl Realisasi</th><th>Realisasi</th></tr></thead>
+      <tbody>
+      {% for obj in pencatatan %}
+      <tr><td>{{ obj.Kode }}</td><td>{{ obj.NamaPaket }}</td><td>{{ obj.TglRealisasi.Format() }}</td><td>{{ rupiah(obj.Realisasi) }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="card mb-2">
+  <div class="card-header fw-bold">Katalog</div>
+  <div class="table-responsive">
+    <table class="table table-sm table-modal-detail table-realisasi-katalog">
+      <thead><tr><th>Kode Paket</th><th>Nama Paket</th><th>Tgl Realisasi</th><th>Realisasi</th></tr></thead>
+      <tbody>
+      {% for obj in purchase %}
+      <tr><td>{{ obj.Kode }}</td><td>{{ obj.NamaPaket }}</td><td>{{ obj.TglRealisasi.Format() }}</td><td>{{ rupiah(obj.Realisasi) }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 
- <script>
-   new DataTable(".table-modal-detail");
- </script>
+<script>
+  new DataTable('.table-realisasi-tender',   { scrollX: true, scrollCollapse: true });
+  new DataTable('.table-realisasi-nontender', { scrollX: true, scrollCollapse: true });
+  new DataTable('.table-realisasi-pencatatan',{ scrollX: true, scrollCollapse: true });
+  new DataTable('.table-realisasi-katalog',   { scrollX: true, scrollCollapse: true });
+</script>
 

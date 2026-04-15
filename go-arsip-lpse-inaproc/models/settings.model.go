@@ -12,6 +12,8 @@ type AppSettings struct {
 	FooterDescription string `json:"footer_description" gorm:"default:'Portal Informasi Monitoring Pengadaan Daerah. Menyediakan transparansi data rencana dan realisasi pengadaan barang/jasa secara real-time untuk efektivitas tata kelola pemerintahan.'"`
 	FooterEmail       string `json:"footer_email" gorm:"default:'admin@lpse.example.go.id'"`
 	FooterAddress     string `json:"footer_address" gorm:"default:'Gedung Sekretariat Daerah, Lantai 2. Bagian Pengadaan Barang dan Jasa.'"`
+	FooterPhone       string `json:"footer_phone" gorm:"default:''"`
+	FooterWorkHours   string `json:"footer_work_hours" gorm:"default:'Senin - Jumat: 08.00 - 16.00 WITA'"`
 	FooterFacebook    string `json:"footer_facebook" gorm:"default:'#'"`
 	FooterInstagram   string `json:"footer_instagram" gorm:"default:'#'"`
 	FooterTwitter     string `json:"footer_twitter" gorm:"default:'#'"`

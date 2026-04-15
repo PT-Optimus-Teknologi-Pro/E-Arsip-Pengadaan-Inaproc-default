@@ -232,6 +232,8 @@ func UpdateFooterSettings(c *fiber.Ctx) error {
 	settings.FooterDescription = c.FormValue("footer_description")
 	settings.FooterEmail = c.FormValue("footer_email")
 	settings.FooterAddress = c.FormValue("footer_address")
+	settings.FooterPhone = c.FormValue("footer_phone")
+	settings.FooterWorkHours = c.FormValue("footer_work_hours")
 	settings.FooterFacebook = c.FormValue("footer_facebook")
 	settings.FooterInstagram = c.FormValue("footer_instagram")
 	settings.FooterTwitter = c.FormValue("footer_twitter")

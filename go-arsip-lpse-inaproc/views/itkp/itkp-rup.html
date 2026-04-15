@@ -1,34 +1,30 @@
-﻿ <div class="form-group mb-3 row">
-     <label class="col-sm-2 col-form-label">Satuan Kerja</label>
-     <div class="col-sm-10">
-         <p class="form-control-plaintext">{{namaSatker}}</p>
-     </div>
- </div>
- <div class="form-group mb-3 row">
-     <label class="col-sm-2 col-form-label">Tahun Anggaran </label>
-     <div class="col-sm-10">
-        <p class="form-control-plaintext">{{tahun}}</p>
-     </div>
- </div>
- <table class="table" id="rekap-paket">
-      <thead>
+<dl class="row mb-3">
+  <dt class="col-sm-3" style="font-weight:700;">Satuan Kerja</dt>
+  <dd class="col-sm-9">{{namaSatker}}</dd>
+  <dt class="col-sm-3" style="font-weight:700;">Tahun Anggaran</dt>
+  <dd class="col-sm-9">{{tahun}}</dd>
+</dl>
+<div class="table-responsive">
+  <table class="table table-sm table-itkp-rup" id="rekap-paket">
+    <thead>
       <tr>
-          <th width="10%">Kode Paket</th>
-          <th>Nama Paket</th>
-          <th width="20%">Pagu</th>
+        <th>Kode Paket</th>
+        <th>Nama Paket</th>
+        <th>Pagu</th>
       </tr>
-      </thead>
-      <tbody>
-      {% for obj in paket %}
-      <tr>
-          <td>{{ obj.KdRup }}</td>
-          <td>{{ obj.NamaPaket }}</td>
-          <td>{{ rupiah(obj.Pagu) }}</td>
-      </tr>
-      {% endfor %}
-      </tbody>
+    </thead>
+    <tbody>
+    {% for obj in paket %}
+    <tr>
+      <td>{{ obj.KdRup }}</td>
+      <td>{{ obj.NamaPaket }}</td>
+      <td>{{ rupiah(obj.Pagu) }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
   </table>
+</div>
 
 <script>
-  new DataTable("#rekap-paket");
+  new DataTable('.table-itkp-rup', { scrollX: true, scrollCollapse: true });
 </script>

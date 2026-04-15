@@ -1,73 +1,67 @@
-﻿ <div class="form-group mb-3 row">
-     <label class="col-sm-2 col-form-label">Tahun Anggaran</label>
-     <div class="col-sm-10">
-        <p class="form-control-plaintext">{{tahun}}</p>
-     </div>
- </div>
- <div class="card">
-     <div class="card-header">Tender</div>
-    <table class="table" id="rekap-skpd">
-        <thead>
-            <tr>
-                <th width="10%">Kode Paket</th>
-                <th>Nama Paket</th>
-                <th width="15%">Pagu</th>
-                <th width="20%">HPS</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for obj in tender %}
-        <tr>
-            <td>{{ obj.KdTender }}</td>
-            <td>{{ obj.NamaPaket }}</td>
-            <td>{{ rupiah(obj.Pagu) }}</td>
-            <td>{{ rupiah(obj.Hps) }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
+<dl class="row mb-3">
+  <dt class="col-sm-3" style="font-weight:700;">Tahun Anggaran</dt>
+  <dd class="col-sm-9">{{tahun}}</dd>
+</dl>
+<div class="card mb-2">
+  <div class="card-header fw-bold">Tender</div>
+  <div class="table-responsive">
+    <table class="table table-sm table-ppk-tender">
+      <thead><tr><th>Kode Paket</th><th>Nama Paket</th><th>Pagu</th><th>HPS</th></tr></thead>
+      <tbody>
+      {% for obj in tender %}
+      <tr><td>{{ obj.KdTender }}</td><td>{{ obj.NamaPaket }}</td><td>{{ rupiah(obj.Pagu) }}</td><td>{{ rupiah(obj.Hps) }}</td></tr>
+      {% endfor %}
+      </tbody>
     </table>
- </div>
- <div class="card mt-2">
-     <div class="card-header">Non Tender</div>
-    <table class="table" id="rekap-skpd">
-        <thead>
-        <tr>
-            <th width="10%">Kode Paket</th>
-            <th>Nama Paket</th>
-            <th width="15%">Pagu</th>
-            <th width="20%">HPS</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for obj in nontender %}
-        <tr>
-            <td>{{ obj.KdNontender }}</td>
-            <td>{{ obj.NamaPaket }}</td>
-            <td>{{ rupiah(obj.Pagu) }}</td>
-            <td>{{ rupiah(obj.Hps) }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
+  </div>
+</div>
+<div class="card mb-2">
+  <div class="card-header fw-bold">Non Tender</div>
+  <div class="table-responsive">
+    <table class="table table-sm table-ppk-nontender">
+      <thead><tr><th>Kode Paket</th><th>Nama Paket</th><th>Pagu</th><th>HPS</th></tr></thead>
+      <tbody>
+      {% for obj in nontender %}
+      <tr><td>{{ obj.KdNontender }}</td><td>{{ obj.NamaPaket }}</td><td>{{ rupiah(obj.Pagu) }}</td><td>{{ rupiah(obj.Hps) }}</td></tr>
+      {% endfor %}
+      </tbody>
     </table>
- </div>
- <div class="card mt-2">
-     <div class="card-header">Pencatatan</div>
-    <table class="table" id="rekap-skpd">
-        <thead>
-            <tr>
-                <th width="10%">Kode Paket</th>
-                <th>Nama Paket</th>
-                <th width="15%">Pagu</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for obj in pencatatan %}
-        <tr>
-            <td>{{ obj.KdNontenderPct }}</td>
-            <td>{{ obj.NamaPaket }}</td>
-            <td>{{ rupiah(obj.Pagu) }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
+  </div>
+</div>
+<div class="card mb-2">
+  <div class="card-header fw-bold">Pencatatan</div>
+  <div class="table-responsive">
+    <table class="table table-sm table-ppk-pencatatan">
+      <thead><tr><th>Kode Paket</th><th>Nama Paket</th><th>Pagu</th></tr></thead>
+      <tbody>
+      {% for obj in pencatatan %}
+      <tr><td>{{ obj.KdNontenderPct }}</td><td>{{ obj.NamaPaket }}</td><td>{{ rupiah(obj.Pagu) }}</td></tr>
+      {% endfor %}
+      </tbody>
     </table>
- </div>
+  </div>
+</div>
+{% if purchase %}
+<div class="card mb-2">
+  <div class="card-header fw-bold">Katalog</div>
+  <div class="table-responsive">
+    <table class="table table-sm table-ppk-katalog">
+      <thead><tr><th>Kode Paket</th><th>Nama Paket</th><th>Pagu</th></tr></thead>
+      <tbody>
+      {% for obj in purchase %}
+      <tr><td>{{ obj.Kode }}</td><td>{{ obj.NamaPaket }}</td><td>{{ rupiah(obj.Pagu) }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<script>
+  new DataTable('.table-ppk-tender',      { scrollX: true, scrollCollapse: true });
+  new DataTable('.table-ppk-nontender',   { scrollX: true, scrollCollapse: true });
+  new DataTable('.table-ppk-pencatatan',  { scrollX: true, scrollCollapse: true });
+  {% if purchase %}
+  new DataTable('.table-ppk-katalog',     { scrollX: true, scrollCollapse: true });
+  {% endif %}
+</script>

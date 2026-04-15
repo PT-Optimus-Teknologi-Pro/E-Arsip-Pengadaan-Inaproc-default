@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 ITKP
@@ -19,8 +19,8 @@ ITKP
     <div class="col-12 pt-2">
         <div class="card">
             <div class="card-body">
-                <form class="form-inline form-group mb-3 row">
-                    <div class="input-group">
+                <form class="mb-3">
+                    <div class="input-group" style="max-width:300px;">
                         <div class="input-group-text">Tahun Anggaran</div>
                         <select class="form-control" name="tahun" onchange="this.form.submit()">
                             <option value="">pilih tahun</option>
@@ -32,8 +32,8 @@ ITKP
                 </form>
                 {% include "alert.html" %}
                 <div class="card">
-                  <div class="card-header">
-                    <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+                  <div class="card-header pt-3">
+                    <ul class="nav nav-tabs card-header-tabs nav-tabs-scroll" data-bs-toggle="tabs">
                       <li class="nav-item">
                         <a href="#tabs-home-ex1" class="nav-link active" data-bs-toggle="tab">Dashboard</a>
                       </li>
@@ -111,6 +111,65 @@ ITKP
 {% block css%}
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.3/css/buttons.dataTables.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.css">
+<style>
+/* Memungkinkan modal body scroll ke samping jika tabel lebar di Layar sempit */
+.modal-body {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+/* Memperbaiki tab agar bisa scroll horizontal tanpa terpotong / flex-wrap pada mobile */
+.nav-tabs-scroll {
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  padding-bottom: 2px;
+}
+.nav-tabs-scroll::-webkit-scrollbar {
+  height: 4px; /* Optional: smaller scrollbar on desktop */
+}
+.nav-tabs-scroll::-webkit-scrollbar-thumb {
+  background-color: #d1d5db; 
+  border-radius: 4px;
+}
+
+/* DT buttons styling "polosan modern" (like home.html) */
+.dt-buttons .dt-button {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  padding: 6px 14px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+  font-size: 12.5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-right: 6px !important;
+  transition: background 0.2s, border-color 0.2s !important;
+}
+.dt-buttons .dt-button:hover {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Search input styling modern */
+.dt-search input {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 6px !important;
+  padding: 6px 14px 6px 36px !important;
+  font-size: 13px !important;
+  color: #334155 !important;
+  background-color: #ffffff !important;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>');
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  background-size: 16px;
+}
+
+</style>
 {% endblock %}
 
 {% block script %}
@@ -128,6 +187,8 @@ ITKP
         ajax: '/itkp/rekap?tahun={{tahun}}',
         processing: true,
         serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
         columns: [
             {data : "kd_satker", title:"Kode", visible: false},
             {data : "nama", title: "SKPD"},
@@ -150,9 +211,14 @@ ITKP
             {data : "itkp_lokal", title:"ITKP"},
         ],
         layout: {
-                topEnd: ['search', 'buttons']
+            topStart: {
+                buttons: [
+                    { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Excel' },
+                    { extend: 'pdfHtml5', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> PDF' }
+                ]
+            },
+            topEnd: { search: { placeholder: 'Cari...' } }
         },
-        buttons: ['excel', 'pdf'],
         lengthMenu: [
                 [10, 25, 50, -1],
                 [10, 25, 50, 'All']
@@ -162,6 +228,8 @@ ITKP
         ajax: '/itkp/rup?tahun={{tahun}}',
         processing: true,
         serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
         columns: [
             {data : "kd_satker", title:"Kode", visible: false},
             {data : "nama", title: "SKPD", render : function (data, type, row, meta){
@@ -179,9 +247,14 @@ ITKP
             {data : "itkp_rup", title:"ITKP"},
         ],
         layout: {
-                topEnd: ['search', 'buttons']
+            topStart: {
+                buttons: [
+                    { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Excel' },
+                    { extend: 'pdfHtml5', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> PDF' }
+                ]
+            },
+            topEnd: { search: { placeholder: 'Cari...' } }
         },
-        buttons: ['excel', 'pdf'],
         lengthMenu: [
                 [10, 25, 50, -1],
                 [10, 25, 50, 'All']
@@ -191,6 +264,8 @@ ITKP
         ajax: '/itkp/pemilihan?tahun={{tahun}}',
         processing: true,
         serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
         columns: [
             {data : "kd_satker", title:"Kode", visible: false},
             {data : "nama", title: "SKPD", render : function (data, type, row, meta){
@@ -202,9 +277,14 @@ ITKP
             {data : "itkp_pemilihan", title:"ITKP"},
         ],
         layout: {
-                topEnd: ['search', 'buttons']
+            topStart: {
+                buttons: [
+                    { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Excel' },
+                    { extend: 'pdfHtml5', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> PDF' }
+                ]
+            },
+            topEnd: { search: { placeholder: 'Cari...' } }
         },
-        buttons: ['excel', 'pdf'],
         lengthMenu: [
                 [10, 25, 50, -1],
                 [10, 25, 50, 'All']
@@ -214,6 +294,8 @@ ITKP
         ajax: '/itkp/tender?tahun={{tahun}}',
         processing: true,
         serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
         columns: [
             {data : "kd_satker", title:"Kode", visible: false},
             {data : "nama", title: "SKPD", render : function (data, type, row, meta){
@@ -231,9 +313,14 @@ ITKP
             {data : "itkp_tender", title:"ITKP"},
         ],
         layout: {
-                topEnd: ['search', 'buttons']
+            topStart: {
+                buttons: [
+                    { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Excel' },
+                    { extend: 'pdfHtml5', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> PDF' }
+                ]
+            },
+            topEnd: { search: { placeholder: 'Cari...' } }
         },
-        buttons: ['excel', 'pdf'],
         lengthMenu: [
                 [10, 25, 50, -1],
                 [10, 25, 50, 'All']
@@ -243,6 +330,8 @@ ITKP
         ajax: '/itkp/purchase?tahun={{tahun}}',
         processing: true,
         serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
         columns: [
             {data : "kd_satker", title:"Kode", visible: false},
             {data : "nama", title: "SKPD", render : function (data, type, row, meta){
@@ -254,14 +343,21 @@ ITKP
             {data : "itkp_purchase", title:"ITKP"},
         ],
         layout: {
-                topEnd: ['search', 'buttons']
-        },
-        buttons: ['excel', 'pdf']
+            topStart: {
+                buttons: [
+                    { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Excel' },
+                    { extend: 'pdfHtml5', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> PDF' }
+                ]
+            },
+            topEnd: { search: { placeholder: 'Cari...' } }
+        }
     });
     new DataTable("#tableItkpNontender", {
         ajax: '/itkp/nontender?tahun={{tahun}}',
         processing: true,
         serverSide: true,
+        scrollX: true,
+        scrollCollapse: true,
         columns: [
             {data : "kd_satker", title:"Kode", visible: false},
             {data : "nama", title: "SKPD", render : function (data, type, row, meta){
@@ -279,9 +375,14 @@ ITKP
             {data : "itkp_nontender", title:"ITKP"},
         ],
         layout: {
-                topEnd: ['search', 'buttons']
+            topStart: {
+                buttons: [
+                    { extend: 'excel', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Excel' },
+                    { extend: 'pdfHtml5', text: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> PDF' }
+                ]
+            },
+            topEnd: { search: { placeholder: 'Cari...' } }
         },
-        buttons: ['excel', 'pdf'],
         lengthMenu: [
                 [10, 25, 50, -1],
                 [10, 25, 50, 'All']
