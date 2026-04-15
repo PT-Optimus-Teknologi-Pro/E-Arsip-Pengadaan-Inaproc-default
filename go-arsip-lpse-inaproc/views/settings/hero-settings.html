@@ -103,9 +103,9 @@
             <button type="button" class="btn-pick">Pilih Gambar</button>
             <span class="fname" id="sliderName">Tidak ada file dipilih</span>
             <input type="file" id="fileSlider" name="slider_image" class="file-real" accept=".png,.jpg,.jpeg,.webp"
-              onchange="document.getElementById('sliderName').textContent = this.files[0].name"/>
+              onchange="handleSliderUpload(this)"/>
           </div>
-          <p class="hint">Upload gambar dengan resolusi tinggi (min 1920x1080) untuk hasil terbaik.</p>
+          <p class="hint">Sistem akan mengompres paksa gambar Anda maksimal <strong style="color:#1d4ed8;">100 KB</strong> agar website memuat sangat cepat.</p>
           <button type="submit" class="btn-save mt-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Unggah Slider
@@ -135,4 +135,84 @@
     {% endfor %}
   </div>
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+async function handleSliderUpload(input) {
+  if (!input.files || input.files.length === 0) return;
+  let file = input.files[0];
+  let nameEl = document.getElementById('sliderName');
+  let form = input.closest('form');
+  let btnSave = form.querySelector('.btn-save');
+  
+  // Jika sudah kecil (di bawah 105 KB), biarkan
+  if (file.size / 1024 <= 105) {
+    nameEl.innerHTML = file.name + ' <span style="color:#059669; font-weight:bold;">(' + (file.size/1024).toFixed(0) + ' KB)</span>';
+    return;
+  }
+  
+  nameEl.innerHTML = file.name + ' <span style="color:#d97706; font-weight:bold;">(Mengompres... Harap tunggu)</span>';
+  if(btnSave) btnSave.disabled = true;
+
+  try {
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    await new Promise(r => img.onload = r);
+    
+    const canvas = document.createElement('canvas');
+    let width = img.width;
+    let height = img.height;
+
+    // Batasi lebar maksimal 1920 (standar HD layar komputer)
+    if (width > 1920) {
+        height = Math.round(1920 * height / width);
+        width = 1920;
+    }
+    
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, width, height);
+
+    let quality = 0.9;
+    let blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+    
+    // Turunkan kualitas secara progresif sampai ukuran file <= 105 KB
+    while(blob.size / 1024 > 105 && quality > 0.1) {
+        quality -= 0.15;
+        blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+    }
+    
+    // Jika masih terlalu besar (misal gambarnya sangat kompleks), kita turunkan resolusinya lagi
+    if (blob.size / 1024 > 105) {
+        width = width * 0.7;
+        height = height * 0.7;
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+        blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.5));
+    }
+
+    let ext = file.name.split('.').pop().toLowerCase();
+    let newName = file.name;
+    if (ext !== 'jpg' && ext !== 'jpeg') newName = file.name.replace(/\.[^/.]+$/, ".jpg");
+
+    // Buat file baru dari hasil kompresi
+    const compressedFile = new File([blob], newName, { type: 'image/jpeg' });
+    
+    // Ganti file di input (fitur modern browser)
+    let dt = new DataTransfer();
+    dt.items.add(compressedFile);
+    input.files = dt.files;
+
+    nameEl.innerHTML = compressedFile.name + ' <span style="color:#059669; font-weight:bold;">(Sukses dikompres: ' + (compressedFile.size/1024).toFixed(0) + ' KB)</span>';
+  } catch(e) {
+    console.error("Gagal mengompres:", e);
+    nameEl.textContent = file.name + ' (Gagal kompres)';
+  } finally {
+    if(btnSave) btnSave.disabled = false;
+  }
+}
+</script>
 {% endblock %}

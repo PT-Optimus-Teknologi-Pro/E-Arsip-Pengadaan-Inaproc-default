@@ -64,9 +64,9 @@ Detil Verifikasi
                                 {% else %}
                                <select class="form-control role-highlight" name="usrgroup" required oninvalid="this.setCustomValidity('PEMBERITAHUAN: Anda harus memilih (Pengangkatan Menjadi) terlebih dahulu sebelum melakukan Approve!')" oninput="this.setCustomValidity('')">
                                    <option value="" selected disabled>-- Pilih Pengangkatan --</option>
-                                   <option value="PP" {% if pegawai.Usrgroup == 'PP' %} selected {% endif %}>Pejabat Pengadaan (PP)</option>
-                                   <option value="POKJA" {% if pegawai.Usrgroup == 'POKJA' %} selected {% endif %}>Pokja</option>
-                                   <option value="ARSIPARIS" {% if pegawai.Usrgroup == 'ARSIPARIS' %} selected {% endif %}>Arsiparis (Arsip Paris)</option>
+                                   <option value="PP">Pejabat Pengadaan (PP)</option>
+                                   <option value="POKJA">Pokja</option>
+                                   <option value="ARSIPARIS">Arsiparis (Arsip Paris)</option>
                                 </select>
                                 {% endif %}
                                 {% else %}
