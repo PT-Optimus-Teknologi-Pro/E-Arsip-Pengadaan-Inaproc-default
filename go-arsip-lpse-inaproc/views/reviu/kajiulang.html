@@ -7,14 +7,14 @@ Detil Paket
 {% block content %}
 <div class="row align-items-center">
     <div class="col">
-        <h2 class="page-title">Kaji Ulang</h2>
+        <h2 class="page-title">Reviu Dokumen</h2>
     </div>
     <div class="col-auto">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/home">Home</a></li>
             <li class="breadcrumb-item"><a href="/paket">Daftar Paket</a></li>
             <li class="breadcrumb-item"><a href="/paket/{{ paket.ID }}">Detil Paket</a></li>
-            <li class="breadcrumb-item active">Kaji Ulang</li>
+            <li class="breadcrumb-item active">Reviu Dokumen</li>
         </ol>
     </div>
 </div>
@@ -34,7 +34,7 @@ Detil Paket
                     <p class="form-control-plaintext">{{ paket.Nama }}</p>
                     {% if isPPK or isPP or isPokja %}
                     <div class="text-end">
-                    <a href="/kajiulang/berita-acara/{{ paket.ID }}" class="btn btn-primary me-2"><span style="width: 16px;" data-feather="file-text"></span> Foto Rapat Kaji Ulang</a>
+                    <a href="/kajiulang/berita-acara/{{ paket.ID }}" class="btn btn-primary me-2"><span style="width: 16px;" data-feather="file-text"></span> Foto Rapat Reviu Dokumen</a>
                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#pertanyaan">Kirim Pertanyaan</button>
                     </div>
                     {% endif %}

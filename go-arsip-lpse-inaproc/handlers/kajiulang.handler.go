@@ -49,7 +49,7 @@ func PublishKajiUlang(c *fiber.Ctx) error {
 		log.Error(err)
 		return flashError(c, "Kirim Pertanyaan Gagal","/kajiulang/"+utils.UintToString(id))
 	}
-	if paket.Status < 4 { // set status paket kaji ulang
+	if paket.Status < 4 { // set status paket reviu dokumen
 		paket.Status = 4
 		services.SavePaket(paket)
 	}

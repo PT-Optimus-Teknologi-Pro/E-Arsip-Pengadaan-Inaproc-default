@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var statusPaket = []string {"Draft", "Pengajuan", "Disetujui", "Tolak", "Kaji Ulang", "Proses", "selesai"}
+var statusPaket = []string {"Draft", "Pengajuan", "Disetujui", "Tolak", "Reviu Dokumen", "Proses", "selesai"}
 var HPS_BATAS float64 = 2e8 // 200 jt
 var HPS_BATAS_KONSTRUKSI float64 = 4e8 // 400jt
 
@@ -263,6 +263,13 @@ func (obj Paket) IsOnlyPpk() bool {
 		return obj.Hps > HPS_BATAS
 	}
 	return false
+}
+
+func (obj Paket) IsAssigned() bool {
+	if obj.IsOnlyPpk() {
+		return true
+	}
+	return obj.PntId > 0 || obj.PpId > 0
 }
 
 func (obj Paket) IsPaketPokja() bool {

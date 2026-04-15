@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Hasil Pengadaan
@@ -113,7 +113,7 @@ Hasil Pengadaan
               <option value="1" {% if paket.Status == 1 %} selected {% endif %}>Pengajuan</option>
               <option value="2" {% if paket.Status == 2 %} selected {% endif %}>Disetujui</option>
               <option value="3" {% if paket.Status == 3 %} selected {% endif %}>Tolak</option>
-              <option value="4" {% if paket.Status == 4 %} selected {% endif %}>Kaji Ulang</option>
+              <option value="4" {% if paket.Status == 4 %} selected {% endif %}>Reviu Dokumen</option>
               <option value="5" {% if paket.Status == 5 %} selected {% endif %}>Proses</option>
               <option value="6" {% if paket.Status == 6 %} selected {% endif %}>Selesai</option>
           </select>

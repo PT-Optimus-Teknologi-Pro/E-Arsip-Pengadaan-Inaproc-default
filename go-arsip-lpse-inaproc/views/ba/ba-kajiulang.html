@@ -1,20 +1,20 @@
 {% extends "border.html" %}
 
 {% block pagetitle %}
-Berita Acara Kaji Ulang
+Berita Acara Reviu Dokumen
 {% endblock %}
 
 {% block content %}
 <div class="row align-items-center">
     <div class="col">
-        <h2 class="page-title">Berita Acara Kaji Ulang</h2>
+        <h2 class="page-title">Berita Acara Reviu Dokumen</h2>
     </div>
     <div class="col-auto">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/home">Home</a></li>
             <li class="breadcrumb-item"><a href="/paket">Daftar Paket</a></li>
-            <li class="breadcrumb-item"><a href="/kajiulang/{{ paket.ID }}">Kaji Ulangt</a></li>
-            <li class="breadcrumb-item active">Berita Acara Kaji Ulang</li>
+            <li class="breadcrumb-item"><a href="/kajiulang/{{ paket.ID }}">Reviu Dokumen</a></li>
+            <li class="breadcrumb-item active">Berita Acara Reviu Dokumen</li>
         </ol>
     </div>
 </div>
@@ -23,8 +23,8 @@ Berita Acara Kaji Ulang
     <div class="card tab-content">
         <div class="card-body">
             <div id="pdf">
-            <h4>Berita Acara Kaji Ulang</h4>
-            <p>[template Berita Acara Kaji Ulang]</p>
+            <h4>Berita Acara Reviu Dokumen</h4>
+            <p>[template Berita Acara Reviu Dokumen]</p>
             
             {% if fotoRapat.ID != 0 %}
             <div class="mt-4">

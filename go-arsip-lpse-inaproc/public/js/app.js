@@ -19,7 +19,7 @@ const statusPaket = (number) => {
     return "Tolak";
   }
   if (number == 4) {
-    return "Kaji Ulang";
+    return "Reviu Dokumen";
   }
   if (number == 5) {
     return "Proses";

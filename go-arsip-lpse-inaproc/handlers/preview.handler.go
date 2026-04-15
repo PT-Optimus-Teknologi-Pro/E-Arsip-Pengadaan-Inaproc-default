@@ -358,7 +358,7 @@ func CetakSkPokja(c *fiber.Ctx) error {
 
 func PreviewBAKajiUlang(c *fiber.Ctx) error {
 	id, _ := c.ParamsInt("id")
-	log.Info("priview BA Kaji Ulang")
+	log.Info("priview BA Reviu Dokumen")
 	mp := currentMap(c)
 	paket := services.GetPaket(uint(id))
 	mp["paket"] = paket
@@ -372,7 +372,7 @@ func PreviewBAKajiUlang(c *fiber.Ctx) error {
 }
 
 func CetakBAKajiUlang(c *fiber.Ctx) error {
-	log.Info("cetak BA Kaji ulang")
+	log.Info("cetak BA Reviu Dokumen")
 	url := fmt.Sprintf("http://localhost:%s/preview/ba-kajiulang/%s", config.Port(),c.Params("id"))
 	return print(c, url, "BA-kajiulang.pdf")
 }
