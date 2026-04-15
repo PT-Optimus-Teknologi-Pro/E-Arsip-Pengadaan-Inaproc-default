@@ -238,7 +238,9 @@ Dashboard
 .hero-container {
   position: relative;
   width: 100%;
-  min-height: 520px;
+  aspect-ratio: 16 / 9;
+  max-height: 720px;
+  min-height: 480px;
   background: #020b26;
   border-radius: 24px;
   overflow: hidden;
@@ -254,29 +256,79 @@ Dashboard
   z-index: 1;
 }
 
+/* ══════════════════════════════════════════════
+   SLIDER — CLEAN BASE STATE
+══════════════════════════════════════════════ */
 .hs-slide {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 1.2s ease, transform 10s linear;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   z-index: 1;
+  /* Visibility entirely controlled by JS - no CSS opacity here */
 }
 
-.hs-slide.is-active {
-  opacity: 1;
-  visibility: visible;
-  transform: scale(1.1);
-  z-index: 2;
+/* ══════════════════════════════════════════════
+   ANIM 1 — GRAND FADE  (elegan, halus)
+══════════════════════════════════════════════ */
+@keyframes grandFadeIn  { from { opacity:0; } to { opacity:1; } }
+@keyframes grandFadeOut { from { opacity:1; } to { opacity:0; } }
+.hs-anim-enter-fade { animation: grandFadeIn  1.4s ease forwards; }
+.hs-anim-exit-fade  { animation: grandFadeOut 1.0s ease forwards; }
+
+/* ══════════════════════════════════════════════
+   ANIM 2 — PUSH SLIDE  (gambar baru dorong gambar lama)
+══════════════════════════════════════════════ */
+@keyframes pushIn  { from { transform: translateX(100%); opacity:1; } to { transform: translateX(0); opacity:1; } }
+@keyframes pushOut { from { transform: translateX(0);    opacity:1; } to { transform: translateX(-40%); opacity:0; } }
+.hs-anim-enter-push { animation: pushIn  0.9s cubic-bezier(0.76,0,0.24,1) forwards; }
+.hs-anim-exit-push  { animation: pushOut 0.9s cubic-bezier(0.76,0,0.24,1) forwards; }
+
+/* ══════════════════════════════════════════════
+   ANIM 3 — IRIS OPEN  (membuka seperti lensa kamera)
+══════════════════════════════════════════════ */
+@keyframes irisIn   { from { clip-path: circle(0% at 50% 50%);   opacity:1; } to { clip-path: circle(150% at 50% 50%); opacity:1; } }
+@keyframes irisOut  { from { clip-path: circle(150% at 50% 50%); opacity:1; } to { clip-path: circle(0% at 50% 50%);   opacity:0; } }
+.hs-anim-enter-iris { animation: irisIn  1.2s cubic-bezier(0.4,0,0.2,1) forwards; }
+.hs-anim-exit-iris  { animation: irisOut 0.8s cubic-bezier(0.4,0,0.2,1) forwards; }
+
+/* ══════════════════════════════════════════════
+   ANIM 4 — DIAGONAL WIPE  (tirai menyapu diagonal)
+══════════════════════════════════════════════ */
+@keyframes diagIn  {
+  from { clip-path: polygon(-10% 0, 0 0, 0 110%, -10% 100%); opacity:1; }
+  to   { clip-path: polygon(-10% 0, 110% 0, 110% 110%, -10% 100%); opacity:1; }
 }
+@keyframes diagOut {
+  from { opacity:1; }
+  to   { opacity:0; }
+}
+.hs-anim-enter-diag { animation: diagIn  1.0s cubic-bezier(0.77,0,0.18,1) forwards; }
+.hs-anim-exit-diag  { animation: diagOut 0.7s ease forwards; }
+
+/* ══════════════════════════════════════════════
+   ANIM 5 — GLITCH REVEAL  (efek glitch digital)
+══════════════════════════════════════════════ */
+@keyframes glitchRevealIn {
+  0%   { opacity:0; transform: translateX(0);   filter: hue-rotate(0deg)   brightness(1); }
+  10%  { opacity:1; transform: translateX(8px);  filter: hue-rotate(90deg)  brightness(2); }
+  20%  { opacity:1; transform: translateX(-6px); filter: hue-rotate(-90deg) brightness(0.8); }
+  30%  { opacity:1; transform: translateX(4px);  filter: hue-rotate(40deg)  brightness(1.5); }
+  50%  { opacity:1; transform: translateX(-2px); filter: hue-rotate(0deg)   brightness(1.1); }
+  100% { opacity:1; transform: translateX(0);   filter: hue-rotate(0deg)   brightness(1); }
+}
+@keyframes glitchOut {
+  0%   { opacity:1; transform: translateX(0); }
+  40%  { opacity:1; transform: translateX(-10px); filter: saturate(3); }
+  100% { opacity:0; transform: translateX(0); }
+}
+.hs-anim-enter-glitch { animation: glitchRevealIn 1.0s cubic-bezier(0.4,0,0.2,1) forwards; }
+.hs-anim-exit-glitch  { animation: glitchOut      0.7s ease forwards; }
 
 .hs-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   filter: brightness(0.7) contrast(1.1);
 }
 
@@ -299,10 +351,36 @@ Dashboard
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0 2rem 5rem;
+  padding: 0 2rem 5.5rem;
   text-align: center;
   color: #fff;
 }
+
+@keyframes heroFadeUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(40px) scale(0.95);
+    filter: blur(4px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.hs-slide.is-active ~ .hero-content .hero-badge,
+.hs-slide.is-active ~ .hero-content .hero-title,
+.hs-slide.is-active ~ .hero-content .hero-subtitle,
+.hs-slide.is-active ~ .hero-content .hero-actions {
+  animation: heroFadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.hero-badge    { animation-delay: 0.2s !important; }
+.hero-title    { animation-delay: 0.4s !important; }
+.hero-subtitle { animation-delay: 0.6s !important; }
+.hero-actions  { animation-delay: 0.8s !important; }
 
 .hero-badge {
   background: rgba(255, 255, 255, 0.1);
@@ -1011,43 +1089,99 @@ Dashboard
 <script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/fixedColumns.dataTables.js"></script>
 <script>
-// Premium Hero Slider Logic
-const hsWrap = document.getElementById('hsWrap');
-const hsSlides = document.querySelectorAll('.hs-slide');
-const hsPrev = document.getElementById('hsPrev');
-const hsNext = document.getElementById('hsNext');
-const hsDotsContainer = document.getElementById('hsDots');
-let hsIndex = 0;
-let hsInterval;
+// ══════════════════════════════════════════════════
+// Premium Hero Slider — 5 Cinematic Transitions
+// Architecture: JS drives opacity/z-index, CSS handles motion
+// ──────────────────────────────────────────────────
+(function() {
+  const slides = Array.from(document.querySelectorAll('.hs-slide'));
+  const hsPrev = document.getElementById('hsPrev');
+  const hsNext = document.getElementById('hsNext');
+  const hsDotsCont = document.getElementById('hsDots');
+  if (!slides.length) return;
 
-if (hsSlides.length > 0) {
-    hsSlides.forEach((_, i) => {
-        const dot = document.createElement('div');
-        dot.className = `hs-dot ${i === 0 ? 'is-active' : ''}`;
-        dot.addEventListener('click', () => hsGoTo(i));
-        hsDotsContainer.appendChild(dot);
-    });
+  const ANIMS = [
+    { enter: 'hs-anim-enter-fade',   exit: 'hs-anim-exit-fade'   },
+    { enter: 'hs-anim-enter-push',   exit: 'hs-anim-exit-push'   },
+    { enter: 'hs-anim-enter-iris',   exit: 'hs-anim-exit-iris'   },
+    { enter: 'hs-anim-enter-diag',   exit: 'hs-anim-exit-diag'   },
+    { enter: 'hs-anim-enter-glitch', exit: 'hs-anim-exit-glitch' },
+  ];
+  const ALL_CLASSES = ANIMS.reduce((a, b) => a.concat([b.enter, b.exit]), []);
 
-    const hsDots = document.querySelectorAll('.hs-dot');
+  let current = 0;
+  let animIdx  = 0;
+  let timer;
+  const DURATION = 4500;
+  const EXIT_DURATION = 900; // ms before hiding exited slide
 
-    function hsGoTo(index) {
-        hsSlides[hsIndex].classList.remove('is-active');
-        hsDots[hsIndex].classList.remove('is-active');
-        hsIndex = (index + hsSlides.length) % hsSlides.length;
-        hsSlides[hsIndex].classList.add('is-active');
-        hsDots[hsIndex].classList.add('is-active');
-        resetHsInterval();
-    }
+  // Dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'hs-dot' + (i === 0 ? ' is-active' : '');
+    d.onclick = () => goTo(i);
+    hsDotsCont.appendChild(d);
+  });
+  const dots = Array.from(document.querySelectorAll('.hs-dot'));
 
-    function resetHsInterval() {
-        clearInterval(hsInterval);
-        hsInterval = setInterval(() => hsGoTo(hsIndex + 1), 7000);
-    }
+  // Show first slide immediately
+  slides[0].style.cssText = 'opacity:1; visibility:visible; z-index:2;';
 
-    hsPrev.addEventListener('click', () => hsGoTo(hsIndex - 1));
-    hsNext.addEventListener('click', () => hsGoTo(hsIndex + 1));
-    resetHsInterval();
-}
+  function clearClasses(el) {
+    ALL_CLASSES.forEach(c => el.classList.remove(c));
+  }
+
+  function goTo(next) {
+    next = (next + slides.length) % slides.length;
+    if (next === current) return;
+
+    const prev  = slides[current];
+    const nextEl = slides[next];
+    const anim  = ANIMS[animIdx % ANIMS.length];
+    animIdx++;
+
+    // Layer setup
+    prev.style.zIndex   = '2';
+    nextEl.style.zIndex = '3';
+    nextEl.style.opacity    = '1';
+    nextEl.style.visibility = 'visible';
+
+    // Clear old classes
+    clearClasses(prev);
+    clearClasses(nextEl);
+
+    // Force reflow
+    void nextEl.offsetWidth;
+
+    // Fire animations
+    prev.classList.add(anim.exit);
+    nextEl.classList.add(anim.enter);
+
+    // Hide prev after exit animation
+    setTimeout(() => {
+      prev.style.opacity    = '0';
+      prev.style.visibility = 'hidden';
+      prev.style.zIndex     = '1';
+      clearClasses(prev);
+    }, EXIT_DURATION);
+
+    // Update dots
+    dots.forEach(d => d.classList.remove('is-active'));
+    dots[next].classList.add('is-active');
+
+    current = next;
+    resetTimer();
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => goTo(current + 1), DURATION);
+  }
+
+  if (hsPrev) hsPrev.onclick = () => goTo(current - 1);
+  if (hsNext) hsNext.onclick = () => goTo(current + 1);
+  resetTimer();
+})();
 
 new DataTable("#table-progress", {
   layout: {
