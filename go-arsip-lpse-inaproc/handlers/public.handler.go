@@ -251,6 +251,28 @@ func LoggedMiddleware(c *fiber.Ctx) error {
 	if id == nil {
 		return Forbiden(c)
 	}
+
+	// Exempt ADMIN and UKPBJ from verification check
+	group := sess.Get("group")
+	if group == models.ADMIN || group == models.UKPBJ {
+		return c.Next()
+	}
+
+	// Check verification status for all other roles
+	pegawai := services.GetPegawai(id.(uint))
+	if pegawai.ID == 0 {
+		return Forbiden(c)
+	}
+	if !pegawai.IsApprove() {
+		// User exists but is not yet verified - show friendly error
+		mp := currentMap(c)
+		mp["message"] = "Akun Anda belum diverifikasi oleh Admin. Silakan hubungi administrator untuk melanjutkan."
+		if pegawai.PegStatus == models.REJECT {
+			mp["message"] = "Akun Anda telah ditolak oleh Admin. Silakan hubungi administrator untuk informasi lebih lanjut."
+		}
+		return c.Status(fiber.StatusForbidden).Render("errors/error-403", mp)
+	}
+
 	return c.Next()
 }
 
