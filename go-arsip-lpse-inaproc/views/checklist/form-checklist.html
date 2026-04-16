@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Form Persyaratan
@@ -68,7 +68,13 @@ Form Persyaratan
                                 <tr>
                                     <td><input type="checkbox" name="syarat" value="{{ obj.ID }}" {%if checklistDok != null && obj.IsInChecklist(checklistDok) %} checked="checked" {% endif %}  /></td>
                                     <td>{{ obj.Jenis }}</td>
-                                    <td><a href="/download/{{ obj.Template.DokId }}"><span style="width: 16px;" data-feather="download"></span> Download template</a></td>
+                                    <td>
+                                        {% if obj.DokId > 0 %}
+                                        <a href="/download/{{ obj.DokId }}"><span style="width: 16px;" data-feather="download"></span> Download template</a>
+                                        {% else %}
+                                        <span class="text-muted">Tidak ada template</span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </table>

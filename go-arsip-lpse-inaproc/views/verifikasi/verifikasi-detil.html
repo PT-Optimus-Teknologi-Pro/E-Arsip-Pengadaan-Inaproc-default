@@ -10,7 +10,7 @@ Detil Verifikasi
         font-weight: 700;
         color: #11215D;
     }
-    /* Khusus field Pengangkatan Menjadi */
+    /* Role highlight for already-set roles */
     .role-highlight {
         background-color: #11215D !important;
         color: #ffffff !important;
@@ -21,17 +21,51 @@ Detil Verifikasi
         padding: 0.5rem 0.75rem;
         display: block;
     }
-    .form-control.role-highlight {
-        background-color: #11215D !important;
-        color: #ffffff !important;
-        border: 2px solid #0c1940 !important;
-        font-weight: 600;
+
+    /* ── Custom Select Monev Style ── */
+    .cs-wrap { position: relative; width: 100%; user-select: none; }
+    .cs-trigger {
+        display: flex; align-items: center; gap: 10px;
+        border: 2px solid #F5852A; border-radius: 12px;
+        padding: 10px 14px; background: #fff;
+        cursor: pointer; transition: all 0.2s;
+        font-weight: 600; color: #1a202c; font-size: 14px;
     }
-    .form-control.role-highlight option {
-        background-color: #fff;
-        color: #11215D;
-        font-weight: 600;
+    .cs-trigger:hover { border-color: #e06b15; box-shadow: 0 0 0 3px rgba(245,133,42,0.15); }
+    .cs-trigger.open { border-color: #F5852A; box-shadow: 0 0 0 3px rgba(245,133,42,0.15); }
+    .cs-icon {
+        width: 34px; height: 34px; border-radius: 8px;
+        background: rgba(245,133,42,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0;
     }
+    .cs-icon svg { color: #F5852A; }
+    .cs-label { flex: 1; }
+    .cs-arrow { margin-left: auto; color: #F5852A; transition: transform 0.25s; }
+    .cs-trigger.open .cs-arrow { transform: rotate(180deg); }
+    .cs-dropdown {
+        display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+        background: #fff; border-radius: 12px; z-index: 999;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.13); overflow: hidden;
+        animation: csSlideDown 0.18s ease;
+    }
+    .cs-dropdown.open { display: block; }
+    @keyframes csSlideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+    .cs-search {
+        padding: 10px 12px; border-bottom: 1px solid #f1f5f9;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .cs-search input {
+        border: none; outline: none; flex: 1; font-size: 14px; color: #374151; background: transparent;
+    }
+    .cs-search svg { color: #9ca3af; flex-shrink:0; }
+    .cs-options { max-height: 200px; overflow-y: auto; }
+    .cs-option {
+        padding: 11px 16px; cursor: pointer; font-size: 14px; font-weight: 500; color: #374151;
+        transition: background 0.15s; display: flex; align-items: center; gap: 8px;
+    }
+    .cs-option:hover { background: rgba(245,133,42,0.08); color: #e06b15; }
+    .cs-option.selected { background: rgba(245,133,42,0.12); color: #F5852A; font-weight: 700; }
+    .cs-empty { padding: 28px 16px; text-align: center; color: #9ca3af; font-size: 13px; }
+    .cs-empty svg { display:block; margin: 0 auto 8px; opacity:0.4; }
 </style>
 {% endblock %}
 
@@ -62,12 +96,44 @@ Detil Verifikasi
                                 <p class="form-control-plaintext role-highlight">{{ pegawai.RoleLabel }}</p>
                                 <input type="hidden" name="usrgroup" value="{{ pegawai.Usrgroup }}"/>
                                 {% else %}
-                               <select class="form-control role-highlight" name="usrgroup" required oninvalid="this.setCustomValidity('PEMBERITAHUAN: Anda harus memilih (Pengangkatan Menjadi) terlebih dahulu sebelum melakukan Approve!')" oninput="this.setCustomValidity('')">
-                                   <option value="" selected disabled>-- Pilih Pengangkatan --</option>
-                                   <option value="PP">Pejabat Pengadaan (PP)</option>
-                                   <option value="POKJA">Pokja</option>
-                                   <option value="ARSIPARIS">Arsiparis (Arsip Paris)</option>
-                                </select>
+
+                                <!-- Hidden real input for form submit -->
+                                <input type="hidden" name="usrgroup" id="usrgroup-val" required
+                                    oninvalid="this.setCustomValidity('PEMBERITAHUAN: Anda harus memilih Pengangkatan Menjadi terlebih dahulu!')"
+                                    oninput="this.setCustomValidity('')"/>
+
+                                <!-- Custom Select -->
+                                <div class="cs-wrap" id="cs-pengangkatan">
+                                    <div class="cs-trigger" id="cs-trigger" onclick="toggleCS()">
+                                        <div class="cs-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                                        </div>
+                                        <span class="cs-label" id="cs-label">-- Pilih Pengangkatan --</span>
+                                        <svg class="cs-arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                    </div>
+                                    <div class="cs-dropdown" id="cs-dropdown">
+                                        <div class="cs-search">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                            <input type="text" id="cs-search-input" placeholder="Cari..." oninput="filterCS(this.value)" autocomplete="off"/>
+                                        </div>
+                                        <div class="cs-options" id="cs-options">
+                                            <div class="cs-option" data-value="PP" onclick="selectCS('PP','Pejabat Pengadaan (PP)')">
+                                                Pejabat Pengadaan (PP)
+                                            </div>
+                                            <div class="cs-option" data-value="POKJA" onclick="selectCS('POKJA','Pokja')">
+                                                Pokja
+                                            </div>
+                                            <div class="cs-option" data-value="ARSIPARIS" onclick="selectCS('ARSIPARIS','Arsiparis (Arsip Paris)')">
+                                                Arsiparis (Arsip Paris)
+                                            </div>
+                                        </div>
+                                        <div class="cs-empty" id="cs-empty" style="display:none">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                            Tidak ada hasil
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {% endif %}
                                 {% else %}
                                 <p class="form-control-plaintext role-highlight">{{ pegawai.RoleLabel }}</p>
@@ -218,6 +284,56 @@ Detil Verifikasi
     $(".datepicker").flatpickr({
         enableTime: true,
         dateFormat: "Y-m-d",
+    });
+
+    // ── Custom Select Logic ──
+    function toggleCS() {
+        var trigger = document.getElementById('cs-trigger');
+        var dropdown = document.getElementById('cs-dropdown');
+        if (!trigger) return;
+        var isOpen = trigger.classList.contains('open');
+        if (isOpen) {
+            trigger.classList.remove('open');
+            dropdown.classList.remove('open');
+        } else {
+            trigger.classList.add('open');
+            dropdown.classList.add('open');
+            document.getElementById('cs-search-input').focus();
+        }
+    }
+
+    function selectCS(val, label) {
+        document.getElementById('usrgroup-val').value = val;
+        document.getElementById('cs-label').textContent = label;
+        // Mark selected
+        document.querySelectorAll('#cs-options .cs-option').forEach(function(el) {
+            el.classList.toggle('selected', el.dataset.value === val);
+        });
+        // Close
+        document.getElementById('cs-trigger').classList.remove('open');
+        document.getElementById('cs-dropdown').classList.remove('open');
+    }
+
+    function filterCS(q) {
+        var opts = document.querySelectorAll('#cs-options .cs-option');
+        var hasResult = false;
+        opts.forEach(function(el) {
+            var match = el.textContent.toLowerCase().includes(q.toLowerCase());
+            el.style.display = match ? '' : 'none';
+            if (match) hasResult = true;
+        });
+        document.getElementById('cs-empty').style.display = hasResult ? 'none' : 'block';
+    }
+
+    // Close when clicking outside
+    document.addEventListener('click', function(e) {
+        var wrap = document.getElementById('cs-pengangkatan');
+        if (wrap && !wrap.contains(e.target)) {
+            var t = document.getElementById('cs-trigger');
+            var d = document.getElementById('cs-dropdown');
+            if (t) t.classList.remove('open');
+            if (d) d.classList.remove('open');
+        }
     });
 </script>
 {% endblock %}

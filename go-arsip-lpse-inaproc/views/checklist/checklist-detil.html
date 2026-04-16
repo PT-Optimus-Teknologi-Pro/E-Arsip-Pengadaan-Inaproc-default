@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Detil Persyaratan
@@ -49,7 +49,13 @@ Detil Persyaratan
                                     {% for obj in checklist.ChecklistDok %}
                                     <tr>
                                         <td>{{ obj.Template.Jenis }}</td>
-                                        <td><a href="/download/{{ obj.Template.DokId }}"><span style="width: 16px;" data-feather="download"></span> Download template</a></td>
+                                         <td>
+                                             {% if obj.Template.DokId > 0 %}
+                                             <a href="/download/{{ obj.Template.DokId }}"><span style="width: 16px;" data-feather="download"></span> Download template</a>
+                                             {% else %}
+                                             <span class="text-muted">Tidak ada template</span>
+                                             {% endif %}
+                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </table>
