@@ -26,7 +26,7 @@ func GetKajiUlang(c *fiber.Ctx) error {
 
 func PublishKajiUlang(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	id := utils.StringToUint(c.Params("id"))
 	paket := services.GetPaket(id)
 	payload := new(models.KajiUlang)
@@ -81,7 +81,7 @@ func GetJawabKajiUlang (c *fiber.Ctx) error {
 
 func JawabKajiUlang(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	id := utils.StringToUint(c.Params("id"))
 	payload := new(models.KajiUlang)
 	if err := c.BodyParser(payload); err != nil {
@@ -124,7 +124,7 @@ func PreviewBA(c *fiber.Ctx) error {
 
 func UploadFotoRapat(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	id := utils.StringToUint(c.Params("id"))
 	if id == 0 {
 		id = utils.StringToUint(c.FormValue("pkt_id"))

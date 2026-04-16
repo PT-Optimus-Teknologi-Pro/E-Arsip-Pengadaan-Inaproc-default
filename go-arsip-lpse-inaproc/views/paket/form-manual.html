@@ -7,14 +7,29 @@ Input Data Manual - Arsip Digital
 {% block content %}
 <div class="row align-items-center mb-4">
     <div class="col">
-        <h2 class="page-title text-primary">Input Pengarsipan Manual</h2>
-        <div class="text-muted">Gunakan form ini untuk mengarsipkan data lama yang tidak ada di SIRUP.</div>
+        <h2 class="page-title text-primary">
+            {% if callerRole == "ppk" %}Tambah Paket Mandiri{% else %}Input Pengarsipan Manual{% endif %}
+        </h2>
+        <div class="text-muted">
+            {% if callerRole == "ppk" %}
+            Tambahkan data paket pengadaan yang tidak tersedia di SiRUP untuk Dokumen Privat Anda.
+            {% else %}
+            Gunakan form ini untuk mengarsipkan data lama yang tidak ada di SIRUP.
+            {% endif %}
+        </div>
     </div>
     <div class="col-auto">
+        {% if callerRole == "ppk" %}
+        <a href="/ppk/dokumen-privat" class="btn btn-secondary">
+            <span style="width: 16px; height: 16px;" data-feather="arrow-left"></span>
+            Kembali ke Dokumen Privat
+        </a>
+        {% else %}
         <a href="/paket/edit" class="btn btn-secondary">
             <span style="width: 16px; height: 16px;" data-feather="arrow-left"></span>
             Kembali ke Daftar SIRUP
         </a>
+        {% endif %}
     </div>
 </div>
 

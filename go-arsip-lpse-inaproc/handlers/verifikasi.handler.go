@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"arsip/services"
+	"arsip/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 )
@@ -62,7 +63,7 @@ func GetVerifikasi(c *fiber.Ctx) error {
 
 func GetVerifikasiView(c *fiber.Ctx) error {
 	sess := getSession(c)
-	id := sess.Get("id").(uint)
+	id := utils.InterfaceToUint(sess.Get("id"))
 	user := services.GetPegawai(uint(id))
 	if user.ID == 0 {
 		return c.SendStatus(404)

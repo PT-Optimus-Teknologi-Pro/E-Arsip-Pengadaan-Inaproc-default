@@ -9,6 +9,8 @@
     <li class="nav-item"><a href="/reviu" class="nav-link {% if path == "/reviu" %} active {% endif %}"><span style="width: 16px;" data-feather="briefcase"></span><span class="nav-text">Reviu</span></a></li>
     <li class="nav-item"><a href="/templates" class="nav-link {% if path == "/templates" %} active {% endif %}"><span style="width: 16px;" data-feather="align-left"></span><span class="nav-text">Template</span></a></li>
     <li class="nav-item"><a href="/admin-document" class="nav-link {% if path == "/admin-document" %} active {% endif %}"><span style="width: 16px;" data-feather="plus-circle"></span><span class="nav-text">Dok. Tambahan Lainnya</span></a></li>
+    <li class="nav-item"><a href="/paket" class="nav-link {% if path == "/paket" %} active {% endif %}"><span style="width: 16px;" data-feather="package"></span><span class="nav-text">Daftar Paket</span></a></li>
+    <li class="nav-item"><a href="/paket/edit" class="nav-link {% if path == "/paket/edit" %} active {% endif %}"><span style="width: 16px;" data-feather="plus-circle"></span><span class="nav-text">Entri Paket Baru</span></a></li>
     <li class="nav-item"><hr class="my-1 border-top" style="opacity: 0.1;"></li>
     <li class="nav-item"><a href="/settings/logo" class="nav-link {% if path == "/settings/logo" %} active {% endif %}"><span style="width: 16px;" data-feather="image"></span><span class="nav-text">Pengaturan Logo</span></a></li>
     <li class="nav-item"><a href="/settings/hero" class="nav-link {% if path == "/settings/hero" %} active {% endif %}"><span style="width: 16px;" data-feather="monitor"></span><span class="nav-text">Manajemen Hero / Slider</span></a></li>
@@ -21,12 +23,19 @@
     <li class="nav-item"><a href="/verifikasi" class="nav-link {% if path == "/verifikasi" %} active {% endif %}"><span style="width: 16px;" data-feather="bookmark"></span><span class="nav-text">Permohonan</span></a></li>
     <li class="nav-item"><a href="/perubahan-data" class="nav-link {% if path == "/perubahan-data" %} active {% endif %}"><span style="width: 16px;" data-feather="bookmark"></span><span class="nav-text">Perubahan Data</span></a></li>
     <li class="nav-item"><a href="/pokja" class="nav-link {% if path == "/pokja" %} active {% endif %}"><span style="width: 16px;" data-feather="users"></span><span class="nav-text">Pokja</span></a></li>
-    <li class="nav-item"><a href="/paket" class="nav-link {% if path == "/paket" %} active {% endif %}"><span style="width: 16px;" data-feather="package"></span><span class="nav-text">Paket</span></a></li>
+    <li class="nav-item"><a href="/pp" class="nav-link {% if path == "/pp" %} active {% endif %}"><span style="width: 16px;" data-feather="user-check"></span><span class="nav-text">Pejabat Pengadaan</span></a></li>
+    <li class="nav-item"><a href="/paket" class="nav-link {% if path == "/paket" %} active {% endif %}"><span style="width: 16px;" data-feather="package"></span><span class="nav-text">Daftar Paket</span></a></li>
+    <li class="nav-item"><a href="/paket/edit" class="nav-link {% if path == "/paket/edit" %} active {% endif %}"><span style="width: 16px;" data-feather="plus-circle"></span><span class="nav-text">Entri Paket Baru</span></a></li>
     <li class="nav-item"><a href="/bukutamu/list" class="nav-link {% if path == "/bukutamu/list" %} active {% endif %}"><span style="width: 16px;" data-feather="book"></span><span class="nav-text">Buku</span></a></li>
     <li class="nav-item"><a href="/feedback/list" class="nav-link {% if path == "/feedback/list" %} active {% endif %}"><span style="width: 16px;" data-feather="rss"></span><span class="nav-text">Feedback</span></a></li>
     {% endif %}
     {% if isPPK or isPokja or isPP or isArsiparis %}
-    <li class="nav-item"><a href="/paket" class="nav-link {% if path == "/paket" %} active {% endif %}"><span style="width: 16px;" data-feather="package"></span>&nbsp;<span class="nav-text">Paket</span></a></li>
+    <li class="nav-item"><a href="/paket" class="nav-link {% if path == "/paket" %} active {% endif %}"><span style="width: 16px;" data-feather="package"></span>&nbsp;<span class="nav-text">Daftar Paket</span></a></li>
+    <li class="nav-item">
+        <a href="/paket/edit" class="nav-link {% if path == "/paket/edit" %} active {% endif %}">
+            <span style="width: 16px;" data-feather="plus-circle"></span>&nbsp;<span class="nav-text">Entri Paket Baru</span>
+        </a>
+    </li>
     {% if isPPK or isPokja or isPP or group == "PPK" %}
     <li class="nav-item"><a href="{% if isPPK or group == 'PPK' %}/ppk/dokumen-privat{% elif isPokja %}/pokja/dokumen-privat{% else %}/pp/dokumen-privat{% endif %}" class="nav-link {% if path == "/ppk/dokumen-privat" or path == "/pokja/dokumen-privat" or path == "/pp/dokumen-privat" %} active {% endif %}"><span style="width: 16px;" data-feather="shield"></span>&nbsp;<span class="nav-text">Dokumen Privat</span></a></li>
     {% endif %}

@@ -73,7 +73,7 @@ func BukuTamuUpdate(c *fiber.Ctx) error {
 		return c.SendStatus(404)
 	}
 	buku.Status = status
-	buku.PegId = mp["id"].(uint)
+	buku.PegId = utils.InterfaceToUint(mp["id"])
 	switch buku.Status {
 	case 1:
 		buku.TglProses = time.Now()

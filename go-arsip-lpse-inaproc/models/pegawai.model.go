@@ -209,6 +209,21 @@ func SavePegawai(user *Pegawai) error {
 }
 
 func DeletePegawai(user *Pegawai) error {
+	// Cascade delete related records to avoid foreign key constraints
+	// Use raw table names and DB calls for maximum reliability across all models
+	db.Where("peg_id = ?", user.ID).Delete(&Document{})
+	db.Where("peg_id = ?", user.ID).Delete(&Inbox{})
+	db.Where("peg_id = ?", user.ID).Delete(&PerubahanData{})
+	db.Where("peg_id = ?", user.ID).Delete(&HakAkses{})
+	db.Where("peg_id = ?", user.ID).Delete(&AnggotaPanitia{})
+	db.Where("peg_id = ?", user.ID).Delete(&PejabatPengadaanPegawai{})
+	db.Where("peg_id = ?", user.ID).Delete(&PersetujuanDokPersiapan{})
+	db.Where("peg_id = ?", user.ID).Delete(&ReviuPaket{})
+	db.Where("peg_id = ?", user.ID).Delete(&DokPaket{})
+	db.Where("peg_id = ?", user.ID).Delete(&BukuTamu{})
+	db.Where("ppk_id = ?", user.ID).Delete(&PaketPPk{})
+	db.Where("peg_id = ?", user.ID).Delete(&PaketPPk{})
+	
 	return db.Delete(user).Error
 }
 

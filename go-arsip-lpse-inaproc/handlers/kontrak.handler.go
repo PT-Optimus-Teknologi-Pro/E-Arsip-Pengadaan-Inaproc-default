@@ -96,7 +96,7 @@ func SimpanKontrakPaket(c *fiber.Ctx) error {
 
 func SimpanDokKontrak(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	id := utils.StringToUint(c.Params("id"))
 	err := services.SimpanDokKontrak(c, id, userid)
 	if err != nil {

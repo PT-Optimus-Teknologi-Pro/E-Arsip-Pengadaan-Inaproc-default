@@ -134,7 +134,8 @@ func GetDataTablePaketSirup(c *fiber.Ctx, tahun int, satker string, metode strin
 		}
 		orm = orm.Where("jenis_paket = ?", jenisId)
 	}
-	return populate(orm, c, &datas,  "id", "nama", "pagu", "tahun", "kode_kldi")
+		return populate(orm, c, &datas, "id", "nama", "pagu", "tahun", "kode_kldi", "metode_pengadaan")
+
 }
 
 func GetDataTableSwakelolaSirup(c *fiber.Ctx) error {
@@ -215,6 +216,29 @@ func GetDataTablePaketPPK(c *fiber.Ctx, ppkId uint) error {
 
 	var datas []Paket
 	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode", "paket.metode_arsip", "paket.tahun", "paket.created_at", "paket.status")
+}
+
+// GetDataTablePaketPPKSirup returns PPK packages sourced from SiRUP (rup_id > 0)
+func GetDataTablePaketPPKSirup(c *fiber.Ctx, ppkId uint) error {
+	orm := db.Model(&Paket{}).Where("ppk_id = ? AND rup_id > 0", ppkId)
+	orm = orm.Select("paket.*, COALESCE(NULLIF(paket.tahun, 0), paket_sirup.tahun) as tahun").
+		Joins("LEFT JOIN paket_sirup ON paket.rup_id = paket_sirup.id")
+	var datas []Paket
+	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode", "paket.metode_arsip", "paket.tahun", "paket.created_at", "paket.status")
+}
+
+// GetDataTablePaketPPKMandiri returns PPK packages entered manually/locally (rup_id = 0)
+func GetDataTablePaketPPKMandiri(c *fiber.Ctx, ppkId uint) error {
+	orm := db.Model(&Paket{}).Where("ppk_id = ? AND (rup_id = 0 OR rup_id IS NULL)", ppkId)
+	var datas []Paket
+	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode_arsip", "paket.jenis_arsip", "paket.tahun", "paket.created_at", "paket.status")
+}
+
+// GetDataTablePaketMandiriByCreator returns manually-entered packages created by any user (for non-PPK roles)
+func GetDataTablePaketMandiriByCreator(c *fiber.Ctx, creatorId uint) error {
+	orm := db.Model(&Paket{}).Where("created_by = ? AND (rup_id = 0 OR rup_id IS NULL)", creatorId)
+	var datas []Paket
+	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode_arsip", "paket.jenis_arsip", "paket.tahun", "paket.created_at", "paket.status")
 }
 
 func GetDataTablePaketPokja(c *fiber.Ctx, pegId uint) error {

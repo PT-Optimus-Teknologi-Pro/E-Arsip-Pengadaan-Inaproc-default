@@ -66,7 +66,7 @@ Form Persyaratan
                                 </tr>
                                 {% for obj in templateList %}
                                 <tr>
-                                    <td><input type="checkbox" name="syarat" value="{{ obj.ID }}" {%if checklistDok != null && obj.IsInChecklist(checklistDok) %} checked="checked" {% endif %}  /></td>
+                                    <td><input type="checkbox" name="syarat" value="{{ obj.ID }}" {%if checklistDok != null and obj.IsInChecklist(checklistDok) %} checked="checked" {% endif %}  /></td>
                                     <td>{{ obj.Jenis }}</td>
                                     <td>
                                         {% if obj.DokId > 0 %}

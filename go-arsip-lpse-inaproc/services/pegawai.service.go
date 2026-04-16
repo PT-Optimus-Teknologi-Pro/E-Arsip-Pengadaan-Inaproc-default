@@ -44,6 +44,7 @@ func DeletePegawai(id uint) error {
 	if user.ID == 0 {
 		return errors.New("Pegawai tidak ditemukan")
 	}
+	
 	err := models.DeletePegawai(&user)
 	if err != nil {
 		log.Error(err)

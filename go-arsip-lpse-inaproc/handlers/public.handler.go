@@ -180,7 +180,7 @@ func Home(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	tahun := c.QueryInt("tahun", time.Now().Year())
 	if mp["id"] != nil {
-	id := mp["id"].(uint)
+	id := utils.InterfaceToUint(mp["id"])
 		mp["countAgency"] = services.GetCountAgency()
 		mp["countUkpbj"] = services.GetCountUkpbj()
 		mp["countPegawai"] = services.GetCountPegawai()
@@ -238,7 +238,7 @@ func Home(c *fiber.Ctx) error {
 
 func Profile(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	id := mp["id"].(uint)
+	id := utils.InterfaceToUint(mp["id"])
 	user := services.GetPegawai(id)
 	mp["user"] = user
 	return c.Render("profile", mp)
@@ -259,7 +259,7 @@ func LoggedMiddleware(c *fiber.Ctx) error {
 	}
 
 	// Check verification status for all other roles
-	pegawai := services.GetPegawai(id.(uint))
+	pegawai := services.GetPegawai(utils.InterfaceToUint(id))
 	if pegawai.ID == 0 {
 		return Forbiden(c)
 	}
@@ -302,6 +302,17 @@ func currentMap(c *fiber.Ctx) fiber.Map {
 		mp["isAdminAgency"] = sess.Get("group") == models.ADM_AGENCY
 		mp["isPegawai"] = sess.Get("group") == models.PEGAWAI
 		mp["isArsiparis"] = sess.Get("group") == models.ARSIPARIS
+		
+		// Real-time approval check from database
+		idVal := sess.Get("id")
+		if idVal != nil {
+			pegawai := services.GetPegawai(utils.InterfaceToUint(idVal))
+			mp["isApproved"] = pegawai.IsApprove()
+		} else {
+			mp["isApproved"] = false
+		}
+	} else {
+		mp["isApproved"] = false
 	}
 	mp["path"] = string(c.Request().URI().Path())
 
@@ -336,7 +347,7 @@ func getUserSession(c *fiber.Ctx) models.UserSession {
 	var result models.UserSession
 	if sess != nil {
 		result = models.UserSession{
-			Id: sess.Get("id").(uint),
+			Id: utils.InterfaceToUint(sess.Get("id")),
 			Name: sess.Get("name").(string),
 			Role: sess.Get("group").(string),
 		}
@@ -424,7 +435,7 @@ func UploadAdminDocument(c *fiber.Ctx) error {
 	if !mp["isAdmin"].(bool) {
 		return Forbiden(c)
 	}
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	_, err := models.SaveDocument(c, userid, models.ADMIN_DOK, "file")
 	if err != nil {
 		log.Error(err)

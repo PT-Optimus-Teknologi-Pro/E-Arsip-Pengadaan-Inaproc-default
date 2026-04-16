@@ -16,17 +16,33 @@ import (
 func CreateManualPaketForm(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	usersession := getUserSession(c)
-	if !usersession.IsArsiparis() {
+	pegawai := services.GetPegawai(usersession.Id)
+	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() {
+		return Forbiden(c)
+	}
+	if !pegawai.IsApprove() {
 		return Forbiden(c)
 	}
 	mp["satkers"] = services.GetAllSatker()
 	mp["tahuns"] = services.GetTahunRupList()
+	// Pass caller role context so the view can render correct back button
+	if usersession.IsPpk() {
+		mp["callerRole"] = "ppk"
+	} else if usersession.IsArsiparis() {
+		mp["callerRole"] = "arsiparis"
+	} else {
+		mp["callerRole"] = "admin"
+	}
 	return c.Render("paket/form-manual", mp)
 }
 
 func SaveManualPaket(c *fiber.Ctx) error {
 	usersession := getUserSession(c)
-	if !usersession.IsArsiparis() {
+	pegawai := services.GetPegawai(usersession.Id)
+	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() {
+		return Forbiden(c)
+	}
+	if !pegawai.IsApprove() {
 		return Forbiden(c)
 	}
 	
@@ -39,19 +55,33 @@ func SaveManualPaket(c *fiber.Ctx) error {
 	satkerId, _ := strconv.Atoi(c.FormValue("satker_id"))
 	keterangan := c.FormValue("keterangan")
 
-	paketId, err := services.CreateManualPaket(c, usersession.Id, nama, tahun, pagu, hps, 0, metodeStr, jenis, uint(satkerId), keterangan)
+	// Auto-assign ppkId: if creator is PPK, use their own ID
+	var ppkId uint
+	if usersession.IsPpk() {
+		ppkId = usersession.Id
+	}
+
+	paketId, err := services.CreateManualPaket(c, usersession.Id, ppkId, nama, tahun, pagu, hps, 0, metodeStr, jenis, uint(satkerId), keterangan)
 	if err != nil {
 		log.Error(err)
 		return flashError(c, "Gagal simpan paket manual: "+err.Error(), "/paket/create-manual")
 	}
 
+	// Redirect back to where they came from based on role
+	if usersession.IsPpk() {
+		return flashSuccess(c, "Paket manual berhasil dibuat", "/ppk/dokumen-privat")
+	}
 	return flashSuccess(c, "Paket manual berhasil dibuat", "/paket/"+utils.UintToString(paketId))
 }
 
 func EditManualPaketForm(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	usersession := getUserSession(c)
-	if !usersession.IsArsiparis() {
+	pegawai := services.GetPegawai(usersession.Id)
+	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() {
+		return Forbiden(c)
+	}
+	if !pegawai.IsApprove() {
 		return Forbiden(c)
 	}
 	id := utils.StringToUint(c.Params("id"))
@@ -59,19 +89,36 @@ func EditManualPaketForm(c *fiber.Ctx) error {
 	if paket.ID == 0 {
 		return c.SendStatus(404)
 	}
+	// PPK can only edit their own manual packages
+	if usersession.IsPpk() && paket.PpkId != usersession.Id {
+		return Forbiden(c)
+	}
 
 	mp["paket"] = paket
 	mp["satkers"] = services.GetAllSatker()
+	if usersession.IsPpk() {
+		mp["callerRole"] = "ppk"
+	} else {
+		mp["callerRole"] = "arsiparis"
+	}
 	return c.Render("paket/form-manual-edit", mp)
 }
 
 func UpdateManualPaket(c *fiber.Ctx) error {
 	usersession := getUserSession(c)
-	if !usersession.IsArsiparis() {
+	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() {
 		return Forbiden(c)
 	}
 
 	id := utils.StringToUint(c.Params("id"))
+	// PPK can only edit their own manual packages
+	if usersession.IsPpk() {
+		paket := services.GetPaket(id)
+		if paket.PpkId != usersession.Id {
+			return Forbiden(c)
+		}
+	}
+
 	nama := c.FormValue("nama")
 	tahun, _ := strconv.Atoi(c.FormValue("tahun"))
 	pagu, _ := strconv.ParseFloat(strings.ReplaceAll(c.FormValue("pagu"), ".", ""), 64)
@@ -87,6 +134,9 @@ func UpdateManualPaket(c *fiber.Ctx) error {
 		return flashError(c, "Gagal update paket manual: "+err.Error(), "/paket/edit-manual/"+utils.UintToString(id))
 	}
 
+	if usersession.IsPpk() {
+		return flashSuccess(c, "Paket manual berhasil diperbarui", "/ppk/dokumen-privat")
+	}
 	return flashSuccess(c, "Paket manual berhasil diperbarui", "/paket/"+utils.UintToString(id))
 }
 
@@ -121,8 +171,8 @@ func CreatePaket(c *fiber.Ctx) error {
 	rupid := utils.StringToUint(c.FormValue("id"))
 	log.Info("create paket from rup ", rupid)
 	mp := currentMap(c)
-	id := mp["id"].(uint)
-	paketId, err := services.CreatePaket(rupid, id)
+	userid := utils.InterfaceToUint(mp["id"])
+	paketId, err := services.CreatePaket(rupid, userid)
 	if err != nil {
 		log.Error(err)
 		return flashError(c, "Tambah Paket Gagal: "+err.Error(), "/paket/edit")
@@ -135,7 +185,7 @@ func GetAllPaket(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	usersession := getUserSession(c)
 	user := usersession.Pegawai()
-	mp["allowBuatPaket"] = user.IsApprove() && (usersession.IsPpk() || usersession.IsArsiparis()) && user.IsAktif()
+	mp["allowBuatPaket"] = user.IsApprove() && (usersession.IsPpk() || usersession.IsArsiparis() || usersession.IsAdmin()) && user.IsAktif()
 	return c.Render("paket/paket", mp)
 }
 
@@ -204,13 +254,13 @@ func DeletePaket(c *fiber.Ctx) error {
 
 func GetJsonPaket(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	id := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	isPPk := mp["isPPK"].(bool)
 	isUkpbj := mp["isUkpbj"].(bool)
 	isPp  := mp["isPP"].(bool)
 	isPokja := mp["isPokja"].(bool)
 	isArsiparis := mp["isArsiparis"].(bool)
-	return services.GetDataTablePaket(c, id, isPPk, isUkpbj, isPokja, isPp, isArsiparis)
+	return services.GetDataTablePaket(c, userid, isPPk, isUkpbj, isPokja, isPp, isArsiparis)
 }
 
 func GetJsonTenderArsiparis(c *fiber.Ctx) error {
@@ -318,7 +368,7 @@ func UpdateHpsPaket(c *fiber.Ctx) error {
 func SimpanPersyaratanPaket(c *fiber.Ctx) error {
 	log.Info("SimpanPersyaratanPaket....")
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	id := utils.StringToUint(c.Params("id"))
 	err := services.SimpanPersyaratanPaket(c, id, userid)
 	if err != nil {
@@ -434,7 +484,7 @@ func DokPersiapanPaket(c *fiber.Ctx) error {
 func SimpanDokumenPersiapanPaket(c *fiber.Ctx) error {
 	log.Info("SimpanDokumenPersiapanPaket....")
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	id := utils.StringToUint(c.Params("id"))
 	err := services.SimpanDokPersiapanPaket(c, id, userid)
 	if err != nil {
@@ -466,7 +516,7 @@ func SimpanDokumenPersiapanPaketPersetujuan(c *fiber.Ctx) error {
 		log.Error("Dok final tidak ditemukan")
 		return flashError(c, "Simpan Dokumen Persiapan gagal", "/dok-final/" + c.Params("id"))
 	}
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	err := dokPersiapan.SavePersetujuanPegawai(userid, setuju)
 	if err != nil {
 		log.Error(err)
@@ -544,7 +594,7 @@ func SimpanHasilPengadanPaket(c *fiber.Ctx) error {
 
 func SimpanDokHasilPengadaan(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	id := utils.StringToUint(c.Params("id"))
 	err := services.SimpanDokHasilPengadaan(c, id, userid)
 	if err != nil {
@@ -557,7 +607,7 @@ func SimpanDokHasilPengadaan(c *fiber.Ctx) error {
 
 func SimpanDokPendukungPengadaan(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	id := utils.StringToUint(c.Params("id"))
 	err := services.SimpanDokPendukungPengadaan(c, id, userid)
 	if err != nil {
@@ -581,7 +631,7 @@ func HapusDokPaket(c *fiber.Ctx) error {
 
 func GantiPPK(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	id := utils.StringToUint(c.Params("id"))
 	ppkId := utils.StringToUint(c.FormValue("ppk_id"))
 	err := services.AssignPaketPpk(id, ppkId, userid)
@@ -666,7 +716,7 @@ func SimpanDokTambahan(c *fiber.Ctx) error {
 	if !services.AuthorisasiPaket(paket, mp) {
 		return Forbiden(c)
 	}
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	err := services.SimpanDokTambahan(c, id, userid)
 	if err != nil {
 		log.Error(err)

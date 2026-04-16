@@ -8,21 +8,35 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 )
 
-// GetPrivateDocumentPage renders the private document management page for any authorized role
+// GetPrivateDocumentPage renders the private document management page for any authenticated role
 func GetPrivateDocumentPage(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	if !mp["isPPK"].(bool) && !mp["isPokja"].(bool) && !mp["isPP"].(bool) {
-		return Forbiden(c)
-	}
+	// All authenticated users can access private docs
 
-	roleLabel := "PPK"
-	rolePath := "/ppk"
-	if mp["isPokja"].(bool) {
+	roleLabel := "Pengguna"
+	rolePath := "/ppk" // default fallback
+
+	if mp["isPPK"].(bool) {
+		roleLabel = "PPK"
+		rolePath = "/ppk"
+	} else if mp["isPokja"].(bool) {
 		roleLabel = "Pokja"
 		rolePath = "/pokja"
 	} else if mp["isPP"].(bool) {
 		roleLabel = "Pejabat Pengadaan"
 		rolePath = "/pp"
+	} else if mp["isUkpbj"].(bool) {
+		roleLabel = "UKPBJ"
+		rolePath = "/ukpbj"
+	} else if mp["isAdmin"].(bool) {
+		roleLabel = "Admin"
+		rolePath = "/admin"
+	} else if mp["isArsiparis"].(bool) {
+		roleLabel = "Arsiparis"
+		rolePath = "/ukpbj"
+	} else if mp["isPegawai"].(bool) {
+		roleLabel = "Pegawai"
+		rolePath = "/pegawai"
 	}
 	mp["roleLabel"] = roleLabel
 	mp["rolePath"] = rolePath
@@ -33,7 +47,7 @@ func GetPrivateDocumentPage(c *fiber.Ctx) error {
 // GetJsonPaketPrivate returns JSON data of packages owned/assigned to the logged-in user (PPK/Pokja/PP)
 func GetJsonPaketPrivate(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	
 	if mp["isPPK"].(bool) {
 		return models.GetDataTablePaketPPK(c, userid)
@@ -46,16 +60,35 @@ func GetJsonPaketPrivate(c *fiber.Ctx) error {
 	return Forbiden(c)
 }
 
+// GetJsonPaketPrivateSirup returns only SiRUP-sourced packages for the PPK (rup_id > 0)
+func GetJsonPaketPrivateSirup(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	userid := utils.InterfaceToUint(mp["id"])
+	if !mp["isPPK"].(bool) {
+		return Forbiden(c)
+	}
+	return models.GetDataTablePaketPPKSirup(c, userid)
+}
+
+// GetJsonPaketPrivateMandiri returns manually-entered packages - filters by ppk_id for PPK, created_by for all other roles
+func GetJsonPaketPrivateMandiri(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	userid := utils.InterfaceToUint(mp["id"])
+	if mp["isPPK"].(bool) {
+		return models.GetDataTablePaketPPKMandiri(c, userid)
+	}
+	// For all other roles (Pokja, PP, UKPBJ, Admin, Arsiparis, Pegawai) filter by created_by
+	return models.GetDataTablePaketMandiriByCreator(c, userid)
+}
+
 // SimpanPrivateDocument handles the upload of private documents
 func SimpanPrivateDocument(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	if !mp["isPPK"].(bool) && !mp["isPokja"].(bool) && !mp["isPP"].(bool) {
-		return Forbiden(c)
-	}
+	// All authenticated users may upload private documents
 	
 	pktId := utils.StringToUint(c.Params("id"))
 	paket := services.GetPaket(pktId)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 
 	// Authorization Check: Check if user is associated with the package
 	isAuthorized := false
@@ -90,7 +123,7 @@ func GetJsonPrivateDocuments(c *fiber.Ctx) error {
 	}
 	
 	pktId := utils.StringToUint(c.Params("id"))
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 
 	// Authorization is strictly checked in the query: users only see their OWN private docs
 	docs := models.GetDokTambahanPrivateListByUser(pktId, userid)
@@ -112,7 +145,7 @@ func GetJsonPrivateDocuments(c *fiber.Ctx) error {
 // DeletePrivateDocument handles deletion of private documents (strictly for the owner)
 func DeletePrivateDocument(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 
 	id := utils.StringToUint(c.Params("id"))
 	dokPaket := models.GetDokPaket(id)

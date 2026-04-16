@@ -45,6 +45,25 @@ func IntToString(s int) string  {
 	return fmt.Sprintf("%d", s)
 }
 
+func InterfaceToUint(i interface{}) uint {
+	if i == nil {
+		return 0
+	}
+	switch v := i.(type) {
+	case uint:
+		return v
+	case uint64:
+		return uint(v)
+	case int:
+		return uint(v)
+	case float64:
+		return uint(v)
+	case string:
+		return StringToUint(v)
+	}
+	return 0
+}
+
 func StartWith(word string, prefix string) bool {
 	return strings.HasPrefix(word, prefix)
 }

@@ -3,6 +3,7 @@ package handlers
 import (
 
 	"arsip/services"
+	"arsip/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -25,6 +26,6 @@ func GetInbox(c *fiber.Ctx) error {
 
 func GetJsonInbox(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	id := mp["id"].(uint)
+	id := utils.InterfaceToUint(mp["id"])
 	return services.GetDataTableInbox(c, id)
 }

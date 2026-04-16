@@ -5,85 +5,80 @@ Daftar Rencana Paket
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
+<div class="row align-items-center mb-4">
     <div class="col">
-        <h2 class="page-title">Daftar Rencana Paket</h2>
+        <h2 class="page-title" style="font-weight: 700; color: #11215D;">Daftar Rencana Paket</h2>
+        <div class="text-muted small mt-1">Pilih paket dari database SiRUP untuk dijadikan paket pengadaan baru</div>
     </div>
-    {% if isArsiparis %}
     <div class="col-auto">
-        <div class="btn-list">
-            <a href="/paket/create-manual" class="btn btn-orange shadow-sm">
-                <span style="width: 16px; height: 16px;" data-feather="edit-3"></span>
-                Input Data Manual
-            </a>
-        </div>
-    </div>
-    {% endif %}
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item"><a href="/paket">Daftar Paket</a></li>
-            <li class="breadcrumb-item active">Daftar Rencana Paket</li>
-        </ol>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb m-0" style="background: transparent;">
+                <li class="breadcrumb-item"><a href="/home" style="text-decoration: none;">Home</a></li>
+                <li class="breadcrumb-item"><a href="/paket" style="text-decoration: none;">Daftar Paket</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Pilih Rencana Paket</li>
+            </ol>
+        </nav>
     </div>
 </div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            <div class="card-body">
-                {% include "alert.html" %}
-                <div class="basic-form">
-                    <form>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2 text-end control-label col-form-label">Tahun Anggaran {{ tahun }}</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" name="tahun" onchange="this.form.submit()">
-                                {% for obj in tahunlist %}
-                                <option value="{{ obj }}" {%if obj == tahun  %} selected {% endif %}>{{ obj }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+
+<div class="col-12 pt-2">
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-light">
+            <h3 class="card-title"><span data-feather="filter" style="width: 16px;"></span>&nbsp;Filter Pencarian</h3>
+        </div>
+        <div class="card-body">
+            {% include "alert.html" %}
+            <form id="filter-form">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label small font-weight-bold">Tahun Anggaran</label>
+                        <select class="form-select form-select-sm select2" name="tahun" onchange="this.form.submit()">
+                            {% for obj in tahunlist %}
+                            <option value="{{ obj }}" {%if obj == tahun %} selected {% endif %}>{{ obj }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2 text-end control-label col-form-label">Satuan Kerja</label>
-                        <div class="col-sm-9">
-                            <select name="satker" id="satker" class="form-control" onchange="this.form.submit()">
-                            </select>
-                        </div>
+                    <div class="col-md-3">
+                        <label class="form-label small font-weight-bold">Satuan Kerja</label>
+                        <select name="satker" id="satker" class="form-select form-select-sm select2" onchange="this.form.submit()">
+                        </select>
                     </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2 text-end control-label col-form-label">Jenis Pengadaan</label>
-                        <div class="col-sm-9">
-                            <select name="jenis" id="jenis" class="form-control" onchange="this.form.submit()">
-                                <option value=""></option>
-                                {% for obj in jenislist %}
-                                <option value="{{ obj }}" {%if obj == jenis  %} selected {% endif %}>{{ obj }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                    <div class="col-md-3">
+                        <label class="form-label small font-weight-bold">Jenis Pengadaan</label>
+                        <select name="jenis" id="jenis" class="form-select form-select-sm select2" onchange="this.form.submit()">
+                            <option value=""></option>
+                            {% for obj in jenislist %}
+                            <option value="{{ obj }}" {%if obj == jenis %} selected {% endif %}>{{ obj }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2 text-end control-label col-form-label">Metode</label>
-                        <div class="col-sm-9">
-                            <select name="metode" id="metode" class="form-control" onchange="this.form.submit()">
-                                <option value=""></option>
-                                {% for obj in metodelist %}
-                                <option value="{{ obj }}" {%if obj == metode  %} selected {% endif %}>{{ obj }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                    <div class="col-md-3">
+                        <label class="form-label small font-weight-bold">Metode</label>
+                        <select name="metode" id="metode" class="form-select form-select-sm select2" onchange="this.form.submit()">
+                            <option value=""></option>
+                            {% for obj in metodelist %}
+                            <option value="{{ obj }}" {%if obj == metode %} selected {% endif %}>{{ obj }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    </form>
                 </div>
-                <table class="table table-bordered table-striped" id="table-data">
-                    <thead>
-                    <tr>
-                        <th width="10%">Kode RUP</th>
-                        <th>Nama</th>
-                        <th width="15%">Pagu</th>
-                        <th width="15%">Metode</th>
-                        <th width="10%">Tahun</th>
-                        <th width="10%">action</th>
-                    </tr>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-vcenter card-table table-bordered table-striped" id="table-data" style="width: 100%;">
+                    <thead class="bg-light text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">
+                        <tr>
+                            <th width="10%">Kode RUP</th>
+                            <th>Nama Paket</th>
+                            <th width="15%">Pagu</th>
+                            <th width="15%">Metode</th>
+                            <th width="10%">Tahun</th>
+                            <th width="10%" class="text-center">Action</th>
+                        </tr>
                     </thead>
                     <tbody>
                     </tbody>
@@ -91,63 +86,94 @@ Daftar Rencana Paket
             </div>
         </div>
     </div>
+    
+    {% if isArsiparis and isApproved %}
+    <div class="mt-4">
+        <a href="/paket/create-manual" class="btn btn-blue d-inline-flex align-items-center px-4">
+            <span style="width: 18px; height: 18px;" data-feather="edit-3"></span>&nbsp;Input Data Manual
+        </a>
+        <div class="text-muted small mt-2 italic">Gunakan input manual jika paket tidak ditemukan di database SiRUP.</div>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}
 
 {% block css %}
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
-.select2-container--default .select2-selection--single {
-    border-color: var(--tblr-border-color); /* Using Tabler's border color variable */
- }
-
- .select2-dropdown {
-   border-radius: var(--tblr-border-radius); /* Using Tabler's border radius variable */
- }
- </style>
+    .select2-container--default .select2-selection--single {
+        border-color: #e6e7e9;
+        height: 34px;
+        display: flex;
+        align-items: center;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 32px;
+    }
+    .page-title { font-size: 1.5rem; }
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+</style>
 {% endblock %}
 
 {% block script %}
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-$('#satker').select2();
-$('#metode').select2();
+    feather.replace();
+    $('.select2').select2({ width: '100%' });
 
-fetch('/satker/json?tahun={{tahun}}')
-  .then(response => response.json())
-  .then(data => {
-        var options = '<option value=""></option>';
-        for (var i = 0; i < data.length; i++) {
-            options += '<option value="' + data[i].ID + '">' + data[i].Nama + '</option>';
-         }
-         $('#satker').html(options);
-         $('#satker').val({{ satker }});
-  });
+    function getMetodeLabel(id) {
+        const met = ["Pencatatan", "Tender", "Seleksi", "Tender Cepat", "Penunjukan Langsung", "E-Purchasing", "Pengadaan Langsung"];
+        return met[id] || id || "Tender";
+    }
+    window.metode = getMetodeLabel;
 
-  new DataTable("#table-data", {
+    fetch('/satker/json?tahun={{tahun}}')
+      .then(response => response.json())
+      .then(data => {
+            var options = '<option value=""></option>';
+            for (var i = 0; i < data.length; i++) {
+                options += '<option value="' + data[i].ID + '">' + data[i].Nama + '</option>';
+             }
+             $('#satker').html(options);
+             $('#satker').val({{ satker }}).trigger('change.select2');
+      });
+
+    new DataTable("#table-data", {
         ajax: '/rencana/json?tahun={{ tahun }}&satker={{ satker }}&metode={{ metode }}&jenis={{ jenis }}',
         processing: true,
         serverSide: true,
+        language: {
+            search: "Search:",
+            lengthMenu: "_MENU_ entries per page"
+        },
         columns: [
             {data: "id"},
             {data : "nama", render : function(data, type, row){
-                    return '<a href="/rencana/'+row["id"]+'">'+data+'</a>'
+                    return `<a href="/rencana/${row["id"]}" class="fw-bold text-primary" style="text-decoration: none;">${data}</a>`
                 }
             },
-            {data : "pagu", render : function(data, type, row){
-                    return `Rp ${data.toLocaleString("id-ID")}`;
+            {data : "pagu", render : function(data){
+                    return data ? `Rp ${data.toLocaleString("id-ID")}` : "Rp 0";
                 }
             },
-            {data : 'metode_pengadaan', render : function(data, type, row){
-                    return metode(data);
+            {data : 'metode_pengadaan', render : function(data){
+                    return getMetodeLabel(data);
                 }
             },
             {data : "tahun"},
-            {data : "kode_kldi", render: function(data, type, row){
-                    return '<a href="/rencana/'+row["id"]+'" class="btn btn-success btn-sm">pilih paket</a>&nbsp;'
+            {data : "id", className: "text-center", render: function(data, type, row){
+                    {% if isArsiparis and not isApproved %}
+                    return '<span class="badge bg-warning-lt">Pending Verifikasi</span>';
+                    {% else %}
+                    return `<a href="/rencana/${data}" class="btn btn-success btn-sm px-3" style="border-radius: 4px;">Pilih Paket</a>`
+                    {% endif %}
                 }
             },
         ],
-        aaSorting: [[0, 'desc']]
+        aaSorting: [[0, 'desc']],
+        drawCallback: function() { feather.replace(); }
     });
 </script>
 {% endblock %}

@@ -44,7 +44,7 @@ func CreatePerubahanData(c *fiber.Ctx) error {
 // Get All Users from db
 func GetAllPerubahanData(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	user := models.GetPegawai(userid)
 	mp["allow"] = user.IsApprove() && user.IsAktif()
 	return c.Render("perubahan-data/perubahan-data", mp)

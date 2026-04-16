@@ -142,9 +142,9 @@ func DeletePejabatPengadaanPegawai(ppId uint) error {
 }
 
 type PejabatPengadaanDTO struct {
-	ID 				uint 		`json:"id"`
-	Groups			string 		`json:"groups"`
-	Tahun			int 		`json:"tahun"`
+	ID 				uint 		`json:"id" form:"ID"`
+	Groups			string 		`json:"groups" form:"groups"`
+	Tahun			int 		`json:"tahun" form:"tahun"`
 	NoSk			string 		`json:"no_sk" form:"no_sk"`
 	TglSk			time.Time	`json:"tgl_sk" form:"tgl_sk"`
 	TempatSk		string 		`json:"tempat_sk" form:"tempat_sk"`

@@ -15,7 +15,7 @@ func GetPaket(id uint) models.Paket {
 	return models.GetPaket(id)
 }
 
-func CreateManualPaket(c *fiber.Ctx, userId uint, nama string, tahun int, pagu float64, hps float64, metode int, metodeStr string, jenis string, satkerId uint, keterangan string) (uint, error) {
+func CreateManualPaket(c *fiber.Ctx, userId uint, ppkId uint, nama string, tahun int, pagu float64, hps float64, metode int, metodeStr string, jenis string, satkerId uint, keterangan string) (uint, error) {
 	paket := models.Paket{
 		Nama:        nama,
 		Tahun:       tahun,
@@ -28,6 +28,7 @@ func CreateManualPaket(c *fiber.Ctx, userId uint, nama string, tahun int, pagu f
 		Status:      0, // Draft
 		Keterangan:  keterangan,
 		CreatedBy:   userId,
+		PpkId:       ppkId, // Auto-assigned when created by PPK
 	}
 
 	err := models.SavePaket(&paket)

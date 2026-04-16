@@ -19,7 +19,7 @@ func CreateDocTemplate(c *fiber.Ctx) error {
 	doktemplate.PeriodeAwal, _ = time.Parse("2006-01-02", c.FormValue("periode_awal"))
 	doktemplate.PeriodeAkhir, _ = time.Parse("2006-01-02", c.FormValue("periode_akhir"))
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	err = services.SaveDocTemplate(c, *doktemplate, userid)
 	if err != nil {
 		log.Error(err)
@@ -62,7 +62,7 @@ func UpdateDocTemplate(c *fiber.Ctx) error {
 	template.PeriodeAwal, _ = time.Parse("2006-01-02", c.FormValue("periode_awal"))
 	template.PeriodeAkhir, _ = time.Parse("2006-01-02", c.FormValue("periode_akhir"))
 	mp := currentMap(c)
-	userid := mp["id"].(uint)
+	userid := utils.InterfaceToUint(mp["id"])
 	err = services.SaveDocTemplate(c, template, userid)
 	// Return the updated user
 	return flashSuccess(c, "Edit Dokumen Template Sukses","/doc-template")
