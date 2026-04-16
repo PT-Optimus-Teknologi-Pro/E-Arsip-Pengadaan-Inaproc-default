@@ -200,6 +200,18 @@ func (obj Paket) DokTambahanList() []DokPaket {
 	return res
 }
 
+func (obj Paket) DokTambahanPrivateList() []DokPaket {
+	var res []DokPaket
+	db.Find(&res, "pkt_id=? AND jenis=?",obj.ID, TAMBAHAN_PRIVATE)
+	return res
+}
+
+func GetDokTambahanPrivateListByUser(pktId uint, userid uint) []DokPaket {
+	var res []DokPaket
+	db.Find(&res, "pkt_id=? AND peg_id=? AND jenis=?", pktId, userid, TAMBAHAN_PRIVATE)
+	return res
+}
+
 func (obj Paket) DokPaketList() []DokPaket {
 	var res []DokPaket
 	db.Find(&res, "pkt_id=?", obj.ID)
@@ -312,7 +324,7 @@ func (obj Paket) GetAllDocument(isPPK bool) []Document {
 		// For manual packages, we definitely want "Bukti Manual".
 		if v.Jenis == "Bukti Manual" || v.Jenis == HASIL_PENGADAAN || v.Jenis == TAMBAHAN {
 			documents = append(documents, v.Document())
-		} else if isPPK && (v.Jenis == PENDUKUNG || v.Jenis == KONTRAK || v.Jenis == HASIL_PEKERJAAN) {
+		} else if isPPK && (v.Jenis == PENDUKUNG || v.Jenis == KONTRAK || v.Jenis == HASIL_PEKERJAAN || v.Jenis == TAMBAHAN_PRIVATE) {
 			documents = append(documents, v.Document())
 		}
 	}

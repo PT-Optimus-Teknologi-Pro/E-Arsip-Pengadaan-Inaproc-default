@@ -1,0 +1,170 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}
+Dokumen Privat PPK
+{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-3">
+    <div class="col">
+        <h2 class="page-title">Manajemen Dokumen Privat</h2>
+        <div class="text-muted small mt-1">Hanya Anda yang dapat melihat dan mengelola dokumen-dokumen di bawah ini.</div>
+    </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Dokumen Privat</li>
+        </ol>
+    </div>
+</div>
+
+<div class="col-12 pt-2">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark-lt text-dark border-bottom">
+            <h3 class="card-title">
+                <span style="width: 18px; height: 18px;" data-feather="lock" class="me-2 text-danger"></span> 
+                Daftar Paket Anda
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-vcenter card-table" id="table-paket-ppk">
+                    <thead>
+                        <tr>
+                            <th width="5%">ID</th>
+                            <th>Nama Paket</th>
+                            <th width="15%">Pagu</th>
+                            <th width="10%">Tahun</th>
+                            <th width="15%">Metode</th>
+                            <th width="10%">Status</th>
+                            <th width="5%">Aksi</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Manage Documents -->
+<div class="modal modal-blur fade" id="modal-manage-docs" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bold">
+                    <span style="width: 18px; height: 18px;" data-feather="shield" class="me-2 text-primary"></span>
+                    Kelola Dokumen Privat: <span id="paket-name-label" class="text-primary text-decoration-underline"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-upload-private" action="" method="POST" enctype="multipart/form-data" class="mb-4 p-3 bg-light rounded shadow-sm border">
+                    <div class="form-label font-weight-bold mb-3">Unggah Dokumen Privat Baru</div>
+                    <div class="input-group">
+                        <input type="file" name="file" class="form-control" accept=".pdf,.xlsx,.xls,.docx,.doc,.png,.jpg,.jpeg,.zip" required>
+                        <button class="btn btn-primary" type="submit">
+                            <span style="width: 16px;" data-feather="upload" class="me-1"></span> Upload
+                        </button>
+                    </div>
+                    <div class="mt-2 text-muted small">
+                        <span data-feather="info" style="width:14px;"></span> Format: PDF, Word, Excel, JPG, PNG, ZIP. Max 10MB.
+                    </div>
+                </form>
+
+                <div class="font-weight-bold mb-2 border-bottom pb-1">Daftar Dokumen Privat Terunggah</div>
+                <div id="private-docs-list" class="list-group list-group-flush border rounded overflow-hidden">
+                    <div class="p-4 text-center text-muted italic">Memuat data...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    feather.replace();
+
+    var tablePaket = new DataTable("#table-paket-ppk", {
+        ajax: '/ppk/dokumen-privat/data',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data : "ID"},
+            {data : "nama", render : function(data, type, row){
+                    return '<b>' + data + '</b>';
+                }
+            },
+            {data : "pagu", render : function(data, type, row){
+                  return `Rp ${data.toLocaleString("id-ID")}`;
+              }
+            },
+            {data : "tahun"},
+            {data : "metode", render : function(data, type, row){
+                  return row["metode_arsip"] || metode(data);
+              }
+            },
+            {data : "status", render: function(data, type, row){
+                let badges = ['secondary', 'warning', 'success', 'danger', 'info', 'primary', 'dark'];
+                let lbl = ['Draft', 'Pengajuan', 'Disetujui', 'Tolak', 'Reviu', 'Proses', 'Selesai'];
+                return `<span class="badge bg-${badges[data]}-lt">${lbl[data]}</span>`;
+            }},
+            {data : "ID", render: function(data, type, row){
+                return `<button class="btn btn-sm btn-outline-primary btn-manage" data-id="${data}" data-name="${row.nama}">
+                            <span style="width:14px; height:14px;" data-feather="shield"></span> Kelola Dokumen
+                        </button>`;
+            }},
+        ],
+        drawCallback: function() { feather.replace(); }
+    });
+
+    $(document).on('click', '.btn-manage', function() {
+        let id = $(this).data('id');
+        let name = $(this).data('name');
+        
+        $('#paket-name-label').text(name);
+        $('#form-upload-private').attr('action', '/ppk/dokumen-privat/' + id);
+        
+        loadPrivateDocs(id);
+        $('#modal-manage-docs').modal('show');
+    });
+
+    function loadPrivateDocs(paketId) {
+        $('#private-docs-list').html('<div class="p-4 text-center text-muted">Memuat data...</div>');
+        fetchList(paketId);
+    }
+
+    function fetchList(id) {
+         $.get('/ppk/dokumen-privat/list/' + id, function(docs) {
+            let html = '';
+            if(!docs || docs.length === 0) {
+                html = '<div class="p-4 text-center text-muted">Belum ada dokumen privat</div>';
+            } else {
+                docs.forEach(function(d) {
+                    html += `
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="font-weight-bold">${d.filename}</div>
+                            <div class="text-muted small">${(d.filesize/1024).toFixed(2)} KB - ${moment(d.CreatedAt).format('DD/MM/YYYY HH:mm')}</div>
+                        </div>
+                        <div class="btn-list">
+                            <a href="/download/${d.dok_id}" class="btn btn-sm btn-icon btn-white text-info" title="Download"><span style="width:14px;" data-feather="download"></span></a>
+                            <a href="/ppk/dokumen-privat/hapus/${d.id}" class="btn btn-sm btn-icon btn-white text-danger" title="Hapus" onclick="return confirm('Hapus dokumen ini?')"><span style="width:14px;" data-feather="trash-2"></span></a>
+                        </div>
+                    </div>`;
+                });
+            }
+            $('#private-docs-list').html(html);
+            feather.replace();
+        });
+    }
+
+    function metode(id) {
+        const met = ["Pencatatan", "Tender", "Seleksi", "Tender Cepat", "Penunjukan Langsung", "E-Purchasing", "Pengadaan Langsung"];
+        return met[id] || "Unknown";
+    }
+</script>
+{% endblock %}

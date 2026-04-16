@@ -1,175 +1,186 @@
-{% extends "border.html" %}
-
-{% block pagetitle %}
-Daftar Paket
-{% endblock %}
+{% extends "header.html" %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">{% if isArsiparis %}Repositori Arsip Digital{% else %}Daftar Paket{% endif %}</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item active">Daftar Paket</li>
-        </ol>
+<div class="page-header d-print-none">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="page-title">
+                {% if isArsiparis %}Arsip Digital{% else %}Daftar Paket{% endif %}
+            </h2>
+        </div>
+        {% if isPPK or isPokja or isPP %}
+        <div class="col-auto ms-auto d-print-none">
+            <div class="btn-list">
+                <a href="#" class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal" data-bs-target="#modal-tambah-paket">
+                    <span style="width: 16px; height: 16px;" data-feather="plus"></span>
+                    Buat Paket Baru
+                </a>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 
-<div class="col-12 pt-2">
-    <div class="card shadow-sm border-0">
-        <div class="card-header border-bottom-0">
-            <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
-                {% if isArsiparis %}
-                <li class="nav-item">
-                    <a href="#tabs-tender" class="nav-link active" data-bs-toggle="tab">
-                        <span style="width: 16px; height: 16px;" data-feather="database" class="me-2"></span>
-                        Data SPSE Tender
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#tabs-nontender" class="nav-link" data-bs-toggle="tab">
-                        <span style="width: 16px; height: 16px;" data-feather="file-text" class="me-2"></span>
-                        Data SPSE Non-Tender
-                    </a>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                    <a href="#tabs-sirup" class="nav-link active" data-bs-toggle="tab">
-                        <span style="width: 16px; height: 16px;" data-feather="refresh-cw" class="me-2"></span>
-                        Data SIRUP
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#tabs-manual" class="nav-link" data-bs-toggle="tab">
-                        <span style="width: 16px; height: 16px;" data-feather="edit-3" class="me-2"></span>
-                        Data Manual (Historis)
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
-        <div class="card-body">
-            {% include "alert.html" %}
-            <div class="tab-content">
-                {% if isArsiparis %}
-                <div class="tab-pane fade active show" id="tabs-tender">
-                    <div class="row mb-3 align-items-center">
-                        <div class="col-md-12">
-                            <label class="form-label small font-weight-bold mb-2">Filter Metode</label>
-                            <div id="filter_metode_tender" class="d-flex flex-wrap gap-2">
-                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="Tender"><span class="pill-label">Tender</span></label>
-                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="Seleksi"><span class="pill-label">Seleksi</span></label>
-                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="Tender Cepat"><span class="pill-label">Tender Cepat</span></label>
-                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="Penunjukan Langsung"><span class="pill-label">Penunjukan Langsung</span></label>
-                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="E-Purchasing"><span class="pill-label">E-Purchasing</span></label>
-                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-tender" type="checkbox" value="Pengadaan Langsung"><span class="pill-label">Pengadaan Langsung</span></label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-vcenter card-table" id="table-tender">
-                            <thead>
-                                <tr>
-                                    <th width="10%">Kode RUP</th>
-                                    <th width="10%">Kode Tender</th>
-                                    <th>Nama Tender</th>
-                                    <th width="12%">Metode Pengadaan</th>
-                                    <th width="12%">Jenis Pengadaan</th>
-                                    <th width="12%">Pagu Anggaran</th>
-                                    <th width="5%">Aksi</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                <div class="tab-pane fade" id="tabs-nontender">
-                    <div class="row mb-3 align-items-center">
-                        <div class="col-md-12">
-                            <label class="form-label small font-weight-bold mb-2">Filter Metode (Non-Tender)</label>
-                            <div id="filter_metode_nontender" class="d-flex flex-wrap gap-2">
-                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-nontender" type="checkbox" value="Pengadaan Langsung"><span class="pill-label">Pengadaan Langsung</span></label>
-                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-nontender" type="checkbox" value="Penunjukan Langsung"><span class="pill-label">Penunjukan Langsung</span></label>
-                                <label class="custom-pill-checkbox m-0"><input class="filter-metode-cb-nontender" type="checkbox" value="E-Purchasing"><span class="pill-label">E-Purchasing</span></label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-vcenter card-table" id="table-nontender">
-                            <thead>
-                                <tr>
-                                    <th width="10%">Kode RUP</th>
-                                    <th width="10%">Kode Paket</th>
-                                    <th>Nama Paket</th>
-                                    <th width="12%">Metode Pengadaan</th>
-                                    <th width="12%">Jenis Pengadaan</th>
-                                    <th width="12%">Pagu Anggaran</th>
-                                    <th width="5%">Aksi</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
+<div class="page-body">
+    <div class="row row-cards">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
+                        {% if isArsiparis %}
+                        <li class="nav-item">
+                            <a href="#tabs-tender" class="nav-link active" data-bs-toggle="tab">Tender (SPSE)</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#tabs-nontender" class="nav-link" data-bs-toggle="tab">Non Tender (SPSE)</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#tabs-manual" class="nav-link" data-bs-toggle="tab">Pencatatan Manual</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a href="#tabs-manual" class="nav-link active" data-bs-toggle="tab">Paket Saya</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#tabs-sirup" class="nav-link" data-bs-toggle="tab">Data SiRUP</a>
+                        </li>
+                        {% endif %}
+                    </ul>
                 </div>
-                {% endif %}
+                <div class="card-body">
+                    <div class="tab-content">
+                        {% if isArsiparis %}
+                        <div class="tab-pane active" id="tabs-tender">
+                            <div class="mb-3">
+                                <label class="form-label">Filter Metode Pengadaan:</label>
+                                <div id="filter_metode_tender" class="d-flex flex-wrap gap-2">
+                                    <label class="custom-pill-checkbox m-0">
+                                        <input class="filter-metode-cb-tender" type="checkbox" value="tender">
+                                        <span class="pill-label">Tender</span>
+                                    </label>
+                                    <label class="custom-pill-checkbox m-0">
+                                        <input class="filter-metode-cb-tender" type="checkbox" value="seleksi">
+                                        <span class="pill-label">Seleksi</span>
+                                    </label>
+                                    <label class="custom-pill-checkbox m-0">
+                                        <input class="filter-metode-cb-tender" type="checkbox" value="tender_cepat">
+                                        <span class="pill-label">Tender Cepat</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-vcenter card-table" id="table-tender">
+                                    <thead>
+                                        <tr>
+                                            <th>Kode RUP</th>
+                                            <th>Kode Tender</th>
+                                            <th>Nama Tender</th>
+                                            <th>Metode Pemilihan</th>
+                                            <th>Jenis Pengadaan</th>
+                                            <th>Pagu</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tabs-nontender">
+                             <div class="mb-3">
+                                <label class="form-label">Filter Metode Pengadaan:</label>
+                                <div id="filter_metode_nontender" class="d-flex flex-wrap gap-2">
+                                    <label class="custom-pill-checkbox m-0">
+                                        <input class="filter-metode-cb-nontender" type="checkbox" value="pengadaan_langsung">
+                                        <span class="pill-label">Pengadaan Langsung</span>
+                                    </label>
+                                    <label class="custom-pill-checkbox m-0">
+                                        <input class="filter-metode-cb-nontender" type="checkbox" value="penunjukan_langsung">
+                                        <span class="pill-label">Penunjukan Langsung</span>
+                                    </label>
+                                    <label class="custom-pill-checkbox m-0">
+                                        <input class="filter-metode-cb-nontender" type="checkbox" value="e_purchasing">
+                                        <span class="pill-label">E-Purchasing</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-vcenter card-table" id="table-nontender" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Kode RUP</th>
+                                            <th>Kode Non Tender</th>
+                                            <th>Nama Paket</th>
+                                            <th>Metode Pemilihan</th>
+                                            <th>Jenis Pengadaan</th>
+                                            <th>Pagu</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="tab-pane {% if not isArsiparis %}active{% endif %}" id="tabs-manual">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-vcenter card-table" id="table-manual" data-is-arsiparis="{% if isArsiparis %}true{% else %}false{% endif %}">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nama Paket</th>
+                                            <th>Pagu</th>
+                                            <th>Tahun</th>
+                                            <th>Metode</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
 
-                <!-- Tab Manual -->
-                <div class="tab-pane fade" id="tabs-manual">
-                    <div class="alert alert-warning border-start border-4 border-warning mb-3 shadow-sm">
-                        <div class="d-flex">
-                            <div class="me-2">
-                                <span style="width: 20px; height: 20px;" data-feather="info"></span>
+                        {% if not isArsiparis %}
+                        <div class="tab-pane" id="tabs-sirup">
+                            <div class="mb-3">
+                                <label class="form-label">Filter Metode Pengadaan:</label>
+                                <div id="filter_metode_sirup" class="d-flex flex-wrap gap-2">
+                                    <!-- Populated by JS -->
+                                </div>
                             </div>
-                            <div>
-                                Daftar paket pengarsipan data historis (tahun lama) yang diinput manual.
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-vcenter card-table" id="table-sirup" data-can-delete="{% if isPPK %}true{% else %}false{% endif %}" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nama Paket</th>
+                                            <th>Pagu</th>
+                                            <th>HPS</th>
+                                            <th>Metode</th>
+                                            <th>Tanggal</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
                         </div>
+                        {% endif %}
                     </div>
-                    {% if !isArsiparis %}
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-vcenter card-table" id="table-manual" data-is-arsiparis="false">
-                            <thead>
-                                <tr>
-                                    <th width="5%">ID</th>
-                                    <th>Nama Paket</th>
-                                    <th width="12%">Pagu</th>
-                                    <th width="10%">Tahun</th>
-                                    <th width="15%">Metode</th>
-                                    <th width="5%">Aksi</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="p-4 text-center">
-                        <p class="text-muted">Gunakan tab <b>SPSE Tender</b> atau <b>SPSE Non-Tender</b> untuk mengarsipkan data dari SPSE.</p>
-                    </div>
-                    {% endif %}
                 </div>
-            </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block script %}
 <style>
-    .custom-pill-checkbox input[type="checkbox"] {
-        display: none;
-    }
-    .custom-pill-checkbox .pill-label {
-        background-color: #ffffff;
-        color: #495057;
-        border: 1px solid #ced4da;
-        padding: 6px 16px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 0.85rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        user-select: none;
+    .pill-label {
         display: inline-block;
-        margin: 0;
+        padding: 0.35rem 0.75rem;
+        background-color: #ffffff;
+        border: 1px solid #e6e7e9;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #495057;
+        cursor: pointer;
+        transition: all 0.2s ease;
         box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     .custom-pill-checkbox:hover .pill-label {
@@ -184,10 +195,13 @@ Daftar Paket
         transform: translateY(-1px);
     }
 </style>
+
 <script>
     feather.replace();
+</script>
 
-    {% if !isArsiparis %}
+{% if not isArsiparis %}
+<script>
     // Table Manual initialization
     var tableManual = new DataTable("#table-manual", {
         ajax: '/paket/data?source=manual',
@@ -225,9 +239,11 @@ Daftar Paket
         aaSorting: [[0, 'desc']],
         drawCallback: function() { feather.replace(); }
     });
-    {% endif %}
+</script>
+{% endif %}
 
-    {% if isArsiparis %}
+{% if isArsiparis %}
+<script>
     // Table Arsiparis Tender initialization
     var tableTender = new DataTable("#table-tender", {
         ajax: '/paket/data-tender',
@@ -295,8 +311,9 @@ Daftar Paket
         let val = selected.length > 0 ? selected.join(',') : 'all';
         tableNontender.ajax.url('/paket/data-nontender?metode=' + val).load();
     });
-
-    {% else %}
+</script>
+{% else %}
+<script>
     // Table SIRUP initialization
     var tableSirup = new DataTable("#table-sirup", {
         ajax: '/paket/data?source=sirup',
@@ -362,8 +379,10 @@ Daftar Paket
             tableSirup.ajax.url('/paket/data?source=sirup&metode=' + val).load();
         });
     });
-    {% endif %}
+</script>
+{% endif %}
 
+<script>
     // Fix header alignment when switching tabs
     $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
         $($.fn.dataTable.tables(true)).DataTable().columns.adjust();

@@ -206,6 +206,38 @@ func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp, isA
 	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode", "paket.metode_arsip", "paket.tahun", "paket.created_at", "paket.status")
 }
 
+func GetDataTablePaketPPK(c *fiber.Ctx, ppkId uint) error {
+	orm := db.Model(&Paket{}).Where("ppk_id = ?", ppkId)
+	
+	// Join with sirup
+	orm = orm.Select("paket.*, COALESCE(NULLIF(paket.tahun, 0), paket_sirup.tahun) as tahun").
+		Joins("LEFT JOIN paket_sirup ON paket.rup_id = paket_sirup.id")
+
+	var datas []Paket
+	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode", "paket.metode_arsip", "paket.tahun", "paket.created_at", "paket.status")
+}
+
+func GetDataTablePaketPokja(c *fiber.Ctx, pegId uint) error {
+	orm := db.Model(&Paket{}).
+		Where("pnt_id IN (SELECT pnt_id FROM anggota_panitia WHERE peg_id=? AND deleted_at IS NULL)", pegId)
+	
+	orm = orm.Select("paket.*, COALESCE(NULLIF(paket.tahun, 0), paket_sirup.tahun) as tahun").
+		Joins("LEFT JOIN paket_sirup ON paket.rup_id = paket_sirup.id")
+
+	var datas []Paket
+	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode", "paket.metode_arsip", "paket.tahun", "paket.created_at", "paket.status")
+}
+
+func GetDataTablePaketPP(c *fiber.Ctx, ppId uint) error {
+	orm := db.Model(&Paket{}).Where("pp_id = ?", ppId)
+	
+	orm = orm.Select("paket.*, COALESCE(NULLIF(paket.tahun, 0), paket_sirup.tahun) as tahun").
+		Joins("LEFT JOIN paket_sirup ON paket.rup_id = paket_sirup.id")
+
+	var datas []Paket
+	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode", "paket.metode_arsip", "paket.tahun", "paket.created_at", "paket.status")
+}
+
 type TenderArsiparis struct {
 	KdTender       uint    `json:"kd_tender" gorm:"column:kd_tender"`
 	KdRup          string  `json:"kd_rup" gorm:"column:kd_rup"`

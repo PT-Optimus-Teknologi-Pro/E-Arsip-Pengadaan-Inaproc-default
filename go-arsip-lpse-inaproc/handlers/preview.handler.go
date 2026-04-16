@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	qrcode "github.com/skip2/go-qrcode"
 
@@ -362,14 +363,105 @@ func PreviewBAKajiUlang(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	paket := services.GetPaket(uint(id))
 	mp["paket"] = paket
-	if mp["isPP"].(bool) {
-		mp["pp"] = paket.Pp()
+	
+	// Data Signers (TTE)
+	type Signer struct {
+		Nama     string
+		Jabatan  string
+		IsSigned bool
+		QrCode   string
+		Nip      string
 	}
-	if mp["isPokja"].(bool) {
-		mp["pokja"] = paket.Pokja()
+
+	var signersPPK []Signer
+	var signersProses []Signer
+
+	// 1. Ambil Data PPK
+	ppk := paket.Ppk()
+	if ppk.ID > 0 {
+		isSigned := false
+		// Cek apakah PPK sudah menyetujui dokumen persiapan
+		dokPersiapans := paket.DokPersiapan()
+		if len(dokPersiapans) > 0 {
+			// Jika ada setidaknya satu dokumen dan sudah disetujui PPK
+			p := dokPersiapans[0].PersetujuanPegawai(ppk.ID)
+			isSigned = p.Status
+		}
+
+		s := Signer{
+			Nama:     ppk.PegNama,
+			Jabatan:  "Pejabat Pembuat Komitmen",
+			IsSigned: isSigned,
+			Nip:      ppk.PegNip,
+		}
+		if isSigned {
+			fullUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%d/verify/%d", c.Protocol(), c.Hostname(), id, ppk.ID)
+			s.QrCode = generateQrBase64(fullUrl)
+		}
+		signersPPK = append(signersPPK, s)
 	}
+
+	// 2. Ambil Data Pelaksana (PP atau Pokja)
+	if paket.PpId > 0 {
+		pp := paket.Pp()
+		isSigned := false
+		dokPersiapans := paket.DokPersiapan()
+		if len(dokPersiapans) > 0 {
+			p := dokPersiapans[0].PersetujuanPegawai(pp.ID)
+			isSigned = p.Status
+		}
+
+		s := Signer{
+			Nama:     pp.PegNama,
+			Jabatan:  "Pejabat Pengadaan",
+			IsSigned: isSigned,
+			Nip:      pp.PegNip,
+		}
+		if isSigned {
+			fullUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%d/verify/%d", c.Protocol(), c.Hostname(), id, pp.ID)
+			s.QrCode = generateQrBase64(fullUrl)
+		}
+		signersProses = append(signersProses, s)
+	} else if paket.PntId > 0 {
+		panitia := paket.Pokja()
+		anggota := panitia.AnggotaList()
+		dokPersiapans := paket.DokPersiapan()
+		
+		for _, a := range anggota {
+			isSigned := false
+			if len(dokPersiapans) > 0 {
+				p := dokPersiapans[0].PersetujuanPegawai(a.ID)
+				isSigned = p.Status
+			}
+			s := Signer{
+				Nama:     a.PegNama,
+				Jabatan:  "Anggota Pokja",
+				IsSigned: isSigned,
+				Nip:      a.PegNip,
+			}
+			if isSigned {
+				fullUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%d/verify/%d", c.Protocol(), c.Hostname(), id, a.ID)
+				s.QrCode = generateQrBase64(fullUrl)
+			}
+			signersProses = append(signersProses, s)
+		}
+	}
+
+	mp["signersPPK"] = signersPPK
+	mp["signersProses"] = signersProses
+
 	return c.Render("preview/ba-kajiulang", mp)
 }
+
+func generateQrBase64(content string) string {
+	qrPng, qrErr := qrcode.Encode(content, qrcode.Medium, 128)
+	if qrErr != nil {
+		log.Error("Generate QR Code failed: ", qrErr)
+		return ""
+	}
+	return base64.StdEncoding.EncodeToString(qrPng)
+}
+
 
 func CetakBAKajiUlang(c *fiber.Ctx) error {
 	log.Info("cetak BA Reviu Dokumen")
@@ -406,6 +498,37 @@ func CetakBAPenetapan(c *fiber.Ctx) error {
 	log.Info("cetak BA Penetapan")
 	url := fmt.Sprintf("http://localhost:%s/preview/ba-penetapan/%s", config.Port(), c.Params("id"))
 	return print(c, url, "BA-Penetapan-Pemenang.pdf")
+}
+
+func VerifyTte(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	pegId := utils.StringToUint(c.Params("pegId"))
+	mp := currentMap(c)
+
+	paket := services.GetPaket(id)
+	if paket.ID == 0 {
+		return c.Status(404).SendString("Paket tidak ditemukan")
+	}
+
+	pegawai := services.GetPegawai(pegId)
+	if pegawai.ID == 0 {
+		return c.Status(404).SendString("Pegawai tidak ditemukan")
+	}
+
+	// Cek status persetujuan
+	isSigned := false
+	dokPersiapans := paket.DokPersiapan()
+	if len(dokPersiapans) > 0 {
+		p := dokPersiapans[0].PersetujuanPegawai(pegId)
+		isSigned = p.Status
+	}
+
+	mp["paket"] = paket
+	mp["pegawai"] = pegawai
+	mp["isSigned"] = isSigned
+	mp["tglVerifikasi"] = time.Now().Format("02-01-2006 15:04:05")
+
+	return c.Render("preview/verify-tte", mp)
 }
 
 func print(c *fiber.Ctx, url string, filename string) error {

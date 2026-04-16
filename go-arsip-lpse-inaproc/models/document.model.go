@@ -31,6 +31,7 @@ const (
 	KONTRAK			string = "KONTRAK"
 	ADMIN_DOK		string = "ADMIN_DOK"
 	TAMBAHAN		string = "TAMBAHAN"
+	TAMBAHAN_PRIVATE string = "TAMBAHAN_PRIVATE"
 	FOTO_RAPAT      string = "FOTO_RAPAT"
 )
 
@@ -71,6 +72,8 @@ func (c Document) Label() string {
 		return "Dokumen Tambahan Lainnya"
 	case TAMBAHAN:
 		return "Dokumen Tambahan Paket"
+	case TAMBAHAN_PRIVATE:
+		return "Dokumen Privat PPK"
 	case FOTO_RAPAT:
 		return "Foto Rapat"
 	}

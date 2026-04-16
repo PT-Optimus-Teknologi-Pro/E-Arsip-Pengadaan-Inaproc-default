@@ -113,6 +113,12 @@ func DeleteAnggotaPokja(pntId uint) error {
 	return db.Delete(&AnggotaPanitia{}, "pnt_id=?", pntId).Error
 }
 
+func IsPegawaiInPanitia(pegId uint, pntId uint) bool {
+	var count int64
+	db.Model(&AnggotaPanitia{}).Where("pnt_id=? AND peg_id=? and deleted_at IS NULL", pntId, pegId).Count(&count)
+	return count > 0
+}
+
 type PanitiaDTO struct {
 	ID      uint   `form:"id" json:"id"`
 	Nama    string `form:"nama" json:"nama"`

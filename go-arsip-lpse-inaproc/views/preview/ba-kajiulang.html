@@ -256,36 +256,69 @@ SUB KEGIATAN : PEMELIHARAAN/REHABILITASI GEDUNG KANTOR DAN BANGUNAN LAINNYA <br 
 </table>
 <h3>Catatan Khusus</h3>
 <p>analisa pasar sudah dilakukan pada tanggal 16 oktober 2025</p>
-<div class="row">
+<div class="row mt-4">
     <div class="col">
-        Tim Pengelola Kegiatan
-        <table class="table">
-            <tr>
-               <th>Nama </th>
-               <th>Jabatan</th>
-               <th>TTD</th>
-            </tr>
-            <tr>
-               <td>Budi</td>
-               <td>PPK</td>
-               <td></td>
-            </tr>
+        <div class="fw-bold mb-2">Tim Pengelola Kegiatan / PPK</div>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th width="5%">No</th>
+                    <th>Nama / NIP</th>
+                    <th class="text-center" width="30%">Tanda Tangan Elektronik</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in signersPPK %}
+                <tr>
+                    <td>{{ loop.Index }}</td>
+                    <td>
+                        <div class="fw-bold">{{ s.Nama }}</div>
+                        <div class="small">NIP. {{ s.Nip }}</div>
+                    </td>
+                    <td class="text-center">
+                        {% if s.IsSigned %}
+                            <img src="data:image/png;base64,{{ s.QrCode }}" style="width: 80px;" /><br/>
+                            <small class="text-muted" style="font-size: 0.6rem; display: block;">Ditandatangani secara elektronik</small>
+                        {% else %}
+                            <div class="text-muted small italic">Belum disetujui</div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
-     <div class="col">
-         Pejabat Pengadaan
-         <table class="table">
-             <tr>
-                <th>Nama </th>
-                <th>Jabatan</th>
-                <th>TTD</th>
-             </tr>
-             <tr>
-                <td>Anang</td>
-                <td>Pejebat Pengadaan</td>
-                <td></td>
-             </tr>
-         </table>
-     </div>
+    <div class="col">
+        <div class="fw-bold mb-2">Pejabat Pengadaan / Pokja Pemilihan</div>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th width="5%">No</th>
+                    <th>Nama / NIP</th>
+                    <th class="text-center" width="30%">Tanda Tangan Elektronik</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in signersProses %}
+                <tr>
+                    <td>{{ loop.Index }}</td>
+                    <td>
+                        <div class="fw-bold">{{ s.Nama }}</div>
+                        <div class="small">NIP. {{ s.Nip }}</div>
+                    </td>
+                    <td class="text-center">
+                        {% if s.IsSigned %}
+                            <img src="data:image/png;base64,{{ s.QrCode }}" style="width: 80px;" /><br/>
+                            <small class="text-muted" style="font-size: 0.6rem; display: block;">Ditandatangani secara elektronik</small>
+                        {% else %}
+                            <div class="text-muted small italic">Belum disetujui</div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+
 {% endblock %}

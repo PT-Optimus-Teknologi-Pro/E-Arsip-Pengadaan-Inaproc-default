@@ -97,13 +97,21 @@
         </li>
         {% endif %}
 
-        {% if isPPK or isPokja or isPP or isPegawai or isArsiparis %}
+        {% if isPPK or group == "PPK" or isPokja or isPP or isPegawai or isArsiparis %}
         <li class="app-nav-item {% if path == '/paket' %} active {% endif %}">
           <a class="app-nav-link" href="/paket">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/></svg>
             <span>{% if isArsiparis %}Arsip Digital{% else %}Paket{% endif %}</span>
           </a>
         </li>
+        {% if isPPK or group == "PPK" or isPokja or isPP %}
+        <li class="app-nav-item {% if path == '/ppk/dokumen-privat' or path == '/pokja/dokumen-privat' or path == '/pp/dokumen-privat' %} active {% endif %}">
+          <a class="app-nav-link" href="{% if isPPK or group == 'PPK' %}/ppk/dokumen-privat{% elif isPokja %}/pokja/dokumen-privat{% else %}/pp/dokumen-privat{% endif %}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3" /><path d="M12 11m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 12l0 2.5" /></svg>
+            <span>Dokumen Privat</span>
+          </a>
+        </li>
+        {% endif %}
         {% if not isArsiparis %}
         <li class="app-nav-item {% if path == '/perubahan-data' %} active {% endif %}">
           <a class="app-nav-link" href="/perubahan-data"><span>Perubahan Data</span></a>
