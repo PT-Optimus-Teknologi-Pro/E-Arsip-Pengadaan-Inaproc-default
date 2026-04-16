@@ -83,7 +83,7 @@ func GetKdKldi() string {
 		kd = os.Getenv("KODE_KLPD")
 	}
 	if kd == "" {
-		return "D415"
+		return "D494"
 	}
 	return kd
 }
