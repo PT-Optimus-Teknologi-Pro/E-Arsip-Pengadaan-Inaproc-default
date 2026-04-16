@@ -387,5 +387,10 @@
     $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
         $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
     });
+
+    function metode(id) {
+        const met = ["Pencatatan", "Tender", "Seleksi", "Tender Cepat", "Penunjukan Langsung", "E-Purchasing", "Pengadaan Langsung"];
+        return met[id] || "Unknown";
+    }
 </script>
 {% endblock %}

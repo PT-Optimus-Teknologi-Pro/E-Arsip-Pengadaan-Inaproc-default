@@ -14,6 +14,19 @@ func GetPrivateDocumentPage(c *fiber.Ctx) error {
 	if !mp["isPPK"].(bool) && !mp["isPokja"].(bool) && !mp["isPP"].(bool) {
 		return Forbiden(c)
 	}
+
+	roleLabel := "PPK"
+	rolePath := "/ppk"
+	if mp["isPokja"].(bool) {
+		roleLabel = "Pokja"
+		rolePath = "/pokja"
+	} else if mp["isPP"].(bool) {
+		roleLabel = "Pejabat Pengadaan"
+		rolePath = "/pp"
+	}
+	mp["roleLabel"] = roleLabel
+	mp["rolePath"] = rolePath
+
 	return c.Render("ppk/dokumen-privat", mp)
 }
 

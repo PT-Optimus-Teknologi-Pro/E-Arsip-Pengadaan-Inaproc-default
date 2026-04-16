@@ -412,7 +412,7 @@ func GetTahunRupList() []int {
 	var result []int
 	start := config.TahunStart()
 	now := time.Now().Year()
-	for i := start; i <= now + 1; i++ {
+	for i := start; i <= now; i++ {
 		result = append(result, i)
 	}
 	return result
