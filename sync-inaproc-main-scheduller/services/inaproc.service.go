@@ -25,7 +25,7 @@ const (
 	KATALOG_PURCHASING_V5 ="/api/v1/ekatalog-archive/paket-e-purchasing" // v5 katalog
 	KATALOG_INSTANSI_SATKER = "/api/v1/ekatalog-archive/instansi-satker"
 	KATALOG_KOMODITAS = "/api/v1/ekatalog-archive/komoditas-detail"
-	KATALOG_DISRIBUTOR = " /api/v1/ekatalog-archive/penyedia-distributor-detail"
+	KATALOG_DISRIBUTOR = "/api/v1/ekatalog-archive/penyedia-distributor-detail"
 	KATALOG_PENYEDIA_v5 = "/api/v1/ekatalog-archive/penyedia-detail"
 	KATALOG_PENYEDIA = "/api/v1/ekatalog/penyedia-detail"
 )

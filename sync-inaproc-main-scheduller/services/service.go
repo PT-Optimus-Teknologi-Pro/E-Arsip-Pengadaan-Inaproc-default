@@ -59,6 +59,13 @@ func fetch(url string, api_response any) error {
 		return err
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		slog.Error("HTTP Error", "status", response.Status, "url", url)
+		if response.StatusCode == http.StatusNotFound {
+			return fmt.Errorf("URL not found (404): %s", url)
+		}
+	}
 	var buf bytes.Buffer
 	_, err = io.Copy(&buf, response.Body)
 	//

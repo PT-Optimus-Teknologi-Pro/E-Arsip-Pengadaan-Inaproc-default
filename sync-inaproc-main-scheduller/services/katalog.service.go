@@ -64,7 +64,7 @@ func syncPenyediaKatalog() {
 		// slog.Info("penyedia katalog :", "kode", obj)
 		url := fmt.Sprintf("%s?kode_penyedia=%s", KATALOG_PENYEDIA, obj)
 		var response ApiResponsePenyediaKatalog
-		err := fetch(url, &response)
+		err := fetchApi(url, &response)
 		if err != nil {
 			slog.Error(err.Error())
 		} else if response.Success && len(response.Data) > 0 {

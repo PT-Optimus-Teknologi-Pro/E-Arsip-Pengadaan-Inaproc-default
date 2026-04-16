@@ -59,7 +59,7 @@ func syncPenyediaArchive() {
 	for _, obj := range list {
 		url := fmt.Sprintf("%s?kode_penyedia=%s", KATALOG_PENYEDIA_v5, obj)
 		var response ApiResponsePenyediaArchive
-		err := fetch(url, &response)
+		err := fetchApi(url, &response)
 		if err != nil {
 			slog.Error(err.Error())
 		} else if response.Success && len(response.Data) > 0 {
