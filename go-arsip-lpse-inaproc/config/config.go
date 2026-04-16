@@ -82,8 +82,13 @@ func GetKdKldi() string {
 	if kd == "" {
 		kd = os.Getenv("KODE_KLPD")
 	}
-	if kd == "" {
-		return "D231"
-	}
 	return kd
+}
+
+func GetToken() string {
+	return os.Getenv("TOKEN")
+}
+
+func GetLpseId() string {
+	return os.Getenv("LPSE_ID")
 }
