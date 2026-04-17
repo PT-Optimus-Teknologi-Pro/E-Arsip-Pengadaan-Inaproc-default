@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block css %}
 <style>
@@ -192,7 +192,7 @@ Login
       <div class="mb-3">
         <div class="security-header">
           <label class="form-label">Security Check</label>
-          <a href="/login" class="btn-refresh-captcha">
+          <button type="button" class="btn-refresh-captcha" onclick="refreshCaptcha()">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="23 4 23 10 17 10"></polyline>
@@ -200,13 +200,20 @@ Login
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
             Refresh Captcha
-          </a>
+          </button>
         </div>
-        <div class="captcha-box">
-          <img src="{{base64Image}}" alt="captcha" />
+        <div class="captcha-puzzles-wrap" style="border: 1px solid #dde3f0; border-radius: 8px; padding: 10px; background: #f8f9fe; margin-bottom: 0.6rem; text-align: center;">
+          <div style="background:#fff; border-radius: 6px; padding: 6px; margin-bottom: 12px; display:inline-block; border: 1px solid #dde3f0;">
+             <img id="thumbVisual" src="{{thumbImage}}" alt="Pola Huruf..." style="max-height:45px; display:block;" />
+          </div>
+          <p style="margin-bottom: 8px; font-size: 0.85rem; color: #6c757d; font-weight:500;">Susunlah kode dengan mengklik gambar di bawah sesuai urutan pola di atas.</p>
+          <div style="position: relative; display: inline-block; cursor: crosshair; user-select: none;" id="masterVisualWrap">
+            <img id="masterVisual" src="{{masterImage}}" alt="Master Captcha" style="border-radius:4px; max-width: 100%; border:1px solid #dde3f0;" />
+            <div id="clickMarkers"></div>
+          </div>
         </div>
-        <input type="hidden" name="token" value="{{token}}" />
-        <input type="text" class="form-control" placeholder="Masukan Captcha..." name="captchaText" required autocomplete="off">
+        <input type="hidden" name="token" id="captchaToken" value="{{token}}" />
+        <input type="hidden" name="captchaData" id="captchaData" value="" />
       </div>
 
       
@@ -231,5 +238,66 @@ Login
       icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
     }
   });
+
+  // Visual Captcha Logic
+  let clickCoords = [];
+  const masterImg = document.getElementById('masterVisual');
+  const markersContainer = document.getElementById('clickMarkers');
+  const captchaDataInput = document.getElementById('captchaData');
+
+  if(masterImg) {
+    masterImg.addEventListener('click', function(e) {
+        // Master image intrinsic size is 320x160 as configured in builder
+        const rect = masterImg.getBoundingClientRect();
+        const scaleX = 320 / rect.width;
+        const scaleY = 160 / rect.height;
+
+        const clickX = (e.clientX - rect.left) * scaleX;
+        const clickY = (e.clientY - rect.top) * scaleY;
+
+        clickCoords.push(Math.round(clickX), Math.round(clickY));
+        captchaDataInput.value = clickCoords.join(',');
+
+        // Draw marker
+        const marker = document.createElement('div');
+        marker.style.position = 'absolute';
+        marker.style.width = '24px';
+        marker.style.height = '24px';
+        marker.style.background = 'rgba(0,38,180,0.85)';
+        marker.style.color = '#fff';
+        marker.style.borderRadius = '50%';
+        marker.style.display = 'flex';
+        marker.style.alignItems = 'center';
+        marker.style.justifyContent = 'center';
+        marker.style.fontSize = '12px';
+        marker.style.fontWeight = 'bold';
+        marker.style.pointerEvents = 'none';
+        
+        marker.style.left = `calc(${(e.clientX - rect.left)}px - 12px)`;
+        marker.style.top = `calc(${(e.clientY - rect.top)}px - 12px)`;
+        marker.innerText = clickCoords.length / 2;
+        markersContainer.appendChild(marker);
+    });
+  }
+
+  function refreshCaptcha() {
+    fetch('/captcha/refresh')
+      .then(res => res.json())
+      .then(data => {
+        if(data.error) {
+          alert("Gagal memuat captcha baru!");
+          return;
+        }
+        document.getElementById('captchaToken').value = data.token;
+        document.getElementById('masterVisual').src = data.masterBase64;
+        document.getElementById('thumbVisual').src = data.thumbBase64;
+        // reset clicks
+        clickCoords = [];
+        captchaDataInput.value = "";
+        markersContainer.innerHTML = "";
+      }).catch(err => {
+         console.error(err);
+      });
+  }
 </script>
 {% endblock %}

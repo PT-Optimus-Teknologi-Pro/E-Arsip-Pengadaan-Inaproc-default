@@ -12,7 +12,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/session"
-	"github.com/kal72/go-captcha"
 	"github.com/sujit-baniya/flash"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
@@ -26,29 +25,23 @@ func Design(c *fiber.Ctx) error {
 
 func Register(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	cap := captcha.New("qwertyasdfzxcv1234")
-	base64Image, text, token, err := cap.Generate()
+	master, thumb, token, err := services.GenerateCaptchaV2()
 	if err != nil {
 		log.Error(err)
 	}
-	key := "capthca"+token
-	cache.Set(key, text)
 	mp["token"] = token
-	mp["base64Image"] = base64Image
+	mp["masterImage"] = master
+	mp["thumbImage"] = thumb
 	return c.Render("publik/register", mp)
 }
 
 func SubmitRegister(c *fiber.Ctx) error {
 	// Validate Captcha
 	token := c.FormValue("token")
-	captchaText := c.FormValue("captchaText")
-	key := "capthca"+token
-	text, found := cache.Get(key)
-	if found {
-		cache.Delete(key)
-	}
-	if text != captchaText {
-		return flashError(c,  "invalid Captcha","/register")
+	captchaData := c.FormValue("captchaData")
+
+	if err := services.VerifyCaptchaV2(token, captchaData); err != nil {
+		return flashError(c, err.Error(), "/register")
 	}
 
 	user := new(models.Pegawai)
@@ -86,18 +79,26 @@ func RegisterKonfirmasi(c *fiber.Ctx) error {
 
 func Login(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	cap := captcha.New("qwertyasdfzxcv1234")
-	base64Image, text, token, err := cap.Generate()
+	master, thumb, token, err := services.GenerateCaptchaV2()
 	if err != nil {
 		log.Error(err)
 	}
-	// log.Info("text ", text)
-	// log.Info("token ", token)
-	key := "capthca"+token
-	cache.Set(key, text)
 	mp["token"] = token
-	mp["base64Image"] = base64Image
+	mp["masterImage"] = master
+	mp["thumbImage"] = thumb
 	return c.Render("publik/login", mp)
+}
+
+func RefreshCaptcha(c *fiber.Ctx) error {
+	master, thumb, token, err := services.GenerateCaptchaV2()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.JSON(fiber.Map{
+		"token": token,
+		"masterBase64": master,
+		"thumbBase64": thumb,
+	})
 }
 
 
@@ -139,16 +140,10 @@ func DownloadAll(c *fiber.Ctx) error {
 
 func SubmitLogin(c *fiber.Ctx) error {
 	token := c.FormValue("token")
-	captchaText := c.FormValue("captchaText")
-	key := "capthca"+token
-	text, found := cache.Get(key)
-	if found {
-		cache.Delete(key)
-	}
-	log.Info("text ", text)
-	log.Info("captchaText ", captchaText)
-	if text != captchaText {
-		return flashError(c,  "invalid Captcha","/login")
+	captchaData := c.FormValue("captchaData")
+
+	if err := services.VerifyCaptchaV2(token, captchaData); err != nil {
+		return flashError(c, err.Error(), "/login")
 	}
 	userid := c.FormValue("userid")
 	password := c.FormValue("password")

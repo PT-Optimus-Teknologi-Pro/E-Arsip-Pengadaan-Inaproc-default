@@ -60,7 +60,7 @@ Form Pejabat Pengadaan
         border: 1px solid var(--border);
         box-shadow: 0 4px 24px rgba(17,33,93,0.08);
         overflow: hidden;
-        margin-bottom: 2rem;
+        margin-bottom: 3rem;
     }
     .reg-card-header {
         background: var(--navy);
@@ -120,14 +120,23 @@ Form Pejabat Pengadaan
         overflow-y: auto;
     }
     .form-check-custom {
-        padding: .5rem .75rem;
-        border-radius: 6px;
+        padding: .65rem .85rem;
+        border-radius: 8px;
         transition: .15s;
         cursor: pointer;
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 2px;
     }
     .form-check-custom:hover { background: var(--navy-light); }
-    .form-check-input { width: 1.1rem; height: 1.1rem; cursor: pointer; }
+    .form-check-input-custom { 
+        width: 1.25rem; 
+        height: 1.25rem; 
+        cursor: pointer;
+        margin: 0;
+        flex-shrink: 0;
+    }
 
     /* Buttons */
     .btn-action {
@@ -156,7 +165,8 @@ Form Pejabat Pengadaan
     </nav>
 </div>
 
-<div class="col-12 pt-2">
+<div class="row">
+    <div class="col-12 pt-2">
     <div class="reg-card">
         <div class="reg-card-header">
             <p class="reg-card-header-title">
@@ -233,9 +243,9 @@ Form Pejabat Pengadaan
                         <div class="section-title-sm">Daftar SKPD</div>
                         <div class="check-container">
                             {% for obj in satkers %}
-                            <label class="form-check form-check-custom">
-                                <input type="checkbox" class="form-check-input me-2" name="satker" value="{{ obj.ID }}" {% if pp.IsSatkerInGroup(obj.ID) %} checked {% endif %}>
-                                <span style="font-size: .85rem;">{{ obj.Nama }}</span>
+                            <label class="form-check-custom">
+                                <input type="checkbox" class="form-check-input-custom" name="satker" value="{{ obj.ID }}" {% if pp.IsSatkerInGroup(obj.ID) %} checked {% endif %}>
+                                <span style="font-size: .88rem; color: var(--navy);">{{ obj.Nama }}</span>
                             </label>
                             {% endfor %}
                         </div>
@@ -244,9 +254,9 @@ Form Pejabat Pengadaan
                         <div class="section-title-sm">Pejabat Pengadaan</div>
                         <div class="check-container">
                             {% for obj in anggotas %}
-                            <label class="form-check form-check-custom">
-                                <input type="checkbox" class="form-check-input me-2" name="pegawai" value="{{ obj.ID }}" {% if pp.IsPegawaiInGroup(obj.ID) %} checked {% endif %}>
-                                <span style="font-size: .85rem; font-weight: 600;">{{ obj.PegNama }}</span>
+                            <label class="form-check-custom">
+                                <input type="checkbox" class="form-check-input-custom" name="pegawai" value="{{ obj.ID }}" {% if pp.IsPegawaiInGroup(obj.ID) %} checked {% endif %}>
+                                <span style="font-size: .88rem; font-weight: 600; color: var(--navy);">{{ obj.PegNama }}</span>
                             </label>
                             {% endfor %}
                         </div>
@@ -266,6 +276,7 @@ Form Pejabat Pengadaan
             </div>
         </form>
     </div>
+</div>
 </div>
 {% endblock %}
 

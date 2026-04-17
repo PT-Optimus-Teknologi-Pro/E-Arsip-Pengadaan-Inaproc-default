@@ -4,32 +4,191 @@
 Daftar Pegawai
 {% endblock %}
 
+{% block css %}
+<style>
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #111827;
+        margin: 0;
+        letter-spacing: -0.02em;
+    }
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin: 0;
+    }
+    .breadcrumb-item a {
+        color: #6b7280;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .breadcrumb-item.active {
+        color: #111827;
+        font-weight: 600;
+    }
+    .modern-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+    .modern-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .modern-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #374151;
+        margin: 0;
+    }
+    .btn-add-modern {
+        background: #0026B4;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+    .btn-add-modern:hover {
+        background: #11215D;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,38,180,0.2);
+    }
+    
+    /* Modern DataTable Overrides */
+    div.dataTables_wrapper div.dataTables_filter input {
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        padding: 0.4rem 0.8rem;
+        outline: none;
+    }
+    div.dataTables_wrapper div.dataTables_filter input:focus {
+        border-color: #0026B4;
+        box-shadow: 0 0 0 3px rgba(0,38,180,0.1);
+    }
+    div.dataTables_wrapper div.dataTables_length select {
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        padding: 0.3rem 0.6rem;
+    }
+    table.dataTable.table-modern {
+        border-collapse: separate !important;
+        border-spacing: 0;
+        width: 100% !important;
+        margin-top: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+    table.dataTable.table-modern thead th {
+        background-color: #f9fafb;
+        color: #4b5563;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        border-top: none;
+    }
+    table.dataTable.table-modern tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f3f4f6;
+        color: #1f2937;
+        font-size: 0.875rem;
+    }
+    table.dataTable.table-modern tbody tr:hover {
+        background-color: #f9fafb;
+    }
+    .action-icons a {
+        color: #6b7280;
+        padding: 0.25rem;
+        border-radius: 4px;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .action-icons a:hover {
+        color: #0026B4;
+        background: #f3f4f6;
+    }
+    .action-icons a.text-danger:hover {
+        color: #dc2626 !important;
+        background: #fee2e2;
+    }
+    
+    .role-badge {
+        display: inline-block;
+        padding: 0.25rem 0.6rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: #eef2ff;
+        color: #4f46e5;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row align-items-center">
+<div class="row align-items-center mb-4">
     <div class="col">
-        <h2 class="page-title">Daftar Pegawai</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
+        <ol class="breadcrumb mb-1">
             <li class="breadcrumb-item"><a href="/home">Home</a></li>
             <li class="breadcrumb-item active">Daftar Pegawai</li>
         </ol>
+        <h2 class="page-title">Manajemen Pegawai</h2>
     </div>
+    {%if isAdmin %}
+    <div class="col-auto">
+        <a href="/pegawai/edit" class="btn-add-modern">
+            <span style="width: 16px; height: 16px;" data-feather="plus"></span>
+            Tambah Pegawai
+        </a>
+    </div>
+    {%endif %}
 </div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            <div class="card-body">
+
+<div class="row">
+    <div class="col-12">
+        <div class="modern-card mb-5">
+            <div class="modern-card-header">
+                <h3 class="modern-card-title">Direktori Pegawai</h3>
+            </div>
+            <div class="card-body p-4">
                 {% include "alert.html" %}
-                <table class="table table-bordered table-striped" id="table-data"
-                    data-is-admin="{% if isAdmin %}1{% else %}0{% endif %}"
-                    data-is-ukpbj="{% if isUkpbj %}1{% else %}0{% endif %}">
-                </table>
-                {%if isAdmin %}
-                <a href="/pegawai/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
-                {%endif %}
+                <div class="table-responsive">
+                    <table class="table table-modern" id="table-data"
+                        data-is-admin="{% if isAdmin %}1{% else %}0{% endif %}"
+                        data-is-ukpbj="{% if isUkpbj %}1{% else %}0{% endif %}">
+                        <thead>
+                            <tr>
+                                <th>Nama Pegawai</th>
+                                <th>NIP / NRP</th>
+                                <th>Alamat Email</th>
+                                <th>User ID</th>
+                                <th>Role</th>
+                                {% if isAdmin || isUkpbj %}
+                                <th class="text-center">Aksi</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block script %}
@@ -39,25 +198,29 @@ Daftar Pegawai
         var isUkpbj = tbl.getAttribute('data-is-ukpbj') === '1';
 
         var columns = [
-            {data : "peg_nama", title: 'Nama', width : '15%', render : function(data, type, row){
-                return '<a href="/pegawai/'+row["ID"]+'">'+data+'</a>';
+            {data : "peg_nama", render : function(data, type, row){
+                return '<a href="/pegawai/'+row["ID"]+'" style="color: #0026B4; font-weight: 600; text-decoration: none;">'+data+'</a>';
             }},
-            {data : "peg_nip", title: 'NIP', width : '15%'},
-            {data : "peg_email", title: 'Email', width : '15%'},
-            {data : "peg_namauser", title: 'User ID', width : '15%'},
-            {data : "usrgroup", title: 'Role', width : '15%'}
+            {data : "peg_nip", render: function(data){ return '<span style="color:#6b7280;">'+(data || '-')+'</span>'; }},
+            {data : "peg_email"},
+            {data : "peg_namauser"},
+            {data : "usrgroup", render: function(data){
+                var badgeClass = 'role-badge';
+                return '<span class="' + badgeClass + '">' + (data || '-') + '</span>';
+            }}
         ];
 
         if (isAdmin || isUkpbj) {
             columns.push({
-                data : "ID", title: "Action", width : '5%',
+                data : "ID", className: "text-center",
                 render: function(data, type, row){
+                    var actions = '<div class="action-icons">';
+                    actions += '<a href="/pegawai/edit/'+data+'" title="Edit"><span style="width: 18px; height: 18px;" data-feather="edit-2"></span></a>';
                     if (isAdmin) {
-                        return '<a href="/pegawai/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>&nbsp;' +
-                            '<a href="/pegawai/hapus/'+data+'"><span style="width: 16px;" data-feather="trash"></span></a>';
-                    } else {
-                        return '<a href="/pegawai/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>';
+                        actions += '<a href="/pegawai/hapus/'+data+'" class="text-danger" title="Hapus"><span style="width: 18px; height: 18px;" data-feather="trash-2"></span></a>';
                     }
+                    actions += '</div>';
+                    return actions;
                 }
             });
         }
@@ -67,7 +230,11 @@ Daftar Pegawai
             processing: true,
             serverSide: true,
             columns: columns,
-            aaSorting: [[0, 'desc']],
+            order: [[0, 'asc']],
+            language: {
+                search: "",
+                searchPlaceholder: "Cari pegawai..."
+            },
             drawCallback: function( settings ) {
                 feather.replace();
             }

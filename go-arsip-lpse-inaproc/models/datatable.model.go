@@ -152,7 +152,7 @@ func GetDataTablePegawai(c *fiber.Ctx, usrgroup string) error {
 		orm.Where("peg_status IN (1, 2) AND usrgroup IN ('PPK', 'POKJA', 'PP', 'ARSIPARIS')")
 	}
 	var datas []Pegawai
-	return populate(orm, c, &datas,  "id", "peg_nama", "peg_nip", "peg_namauser")
+	return populate(orm, c, &datas, "peg_nama", "peg_nip", "peg_email", "peg_namauser", "usrgroup", "id")
 }
 
 func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp, isArsiparis bool) error {

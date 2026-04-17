@@ -1,135 +1,283 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Detil Pegawai
 {% endblock %}
 
-{% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Daftar Pegawai</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item"><a href="/pegawai">Daftar Pegawai</a></li>
-            <li class="breadcrumb-item active">Detil</li>
-        </ol>
-    </div>
-</div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            {% include "alert.html" %}
-            <form class="form-horizontal" action="/pegawai" method="post">
-                <div class="card-body row">
-                    <div class="col-7">
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3 text-end control-label col-form-label">Pengangkatan Menjadi</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.RoleLabel }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Nama Pegawai</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.PegNama }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">NIK</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.PegNik }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">NIP/NRP</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.PegNip }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">User ID</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.PegNamauser }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Alamat</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.PegAlamat }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Telepon</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.PegTelepon }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Email</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.PegEmail }}</p>
-                        </div>
-                    </div>
-                    </div>
-                    <div class="col">
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Pangkat</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.PegPangkat }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Jabatan</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.PegJabatan }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Golongan</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.PegGolongan }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Status</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{%if pegawai.PegIsactive == 1 %} Aktif {% else %} Non Aktif {% endif %}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Nomor SK</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.PegNoSk }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Masa Berlaku SK</label>
-                        <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ pegawai.GetMasaBerlaku }}</p>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                <div class="border-top">
-                    <div class="card-body">
-                        {%if isAdmin or isUkpbj %}
-                        <a href="/pegawai/edit/{{pegawai.ID}}" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span> Edit</a>
-                        {% endif %}
-                        <a href="/pegawai" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
+{% block css %}
+<style>
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #111827;
+        margin: 0;
+        letter-spacing: -0.02em;
+    }
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin: 0;
+    }
+    .breadcrumb-item a {
+        color: #6b7280;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .breadcrumb-item.active {
+        color: #111827;
+        font-weight: 600;
+    }
+    .profile-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+    }
+    .profile-header {
+        background: linear-gradient(135deg, #0026B4 0%, #1a3cb8 100%);
+        padding: 2.5rem 2rem 1.5rem 2rem;
+        color: #fff;
+        position: relative;
+    }
+    .profile-avatar-wrap {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #ffffff;
+        color: #0026B4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .profile-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+    }
+    .profile-role-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(4px);
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    .profile-body {
+        padding: 2rem;
+    }
+    .info-group {
+        margin-bottom: 1.5rem;
+    }
+    .info-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6b7280;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+        display: block;
+    }
+    .info-value {
+        font-size: 0.95rem;
+        color: #111827;
+        font-weight: 500;
+        background: #f8f9fa;
+        padding: 0.7rem 1rem;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
+    .card-footer-actions {
+        padding: 1.25rem 2rem;
+        background: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        gap: 10px;
+    }
+    .btn-modern {
+        border-radius: 8px;
+        padding: 0.5rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+    .btn-modern-primary {
+        background: #0026B4;
+        color: #fff;
+        border: none;
+    }
+    .btn-modern-primary:hover {
+        background: #11215D;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(0,38,180,0.2);
+    }
+    .btn-modern-secondary {
+        background: #fff;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+    .btn-modern-secondary:hover {
+        background: #f3f4f6;
+        color: #111827;
+    }
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .status-active {
+        background: #def7ec;
+        color: #03543f;
+    }
+    .status-inactive {
+        background: #fde8e8;
+        color: #9b1c1c;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        color: #111827;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e5e7eb;
+        display: inline-block;
+    }
+</style>
 {% endblock %}
 
-{% block script %}
-<script>
-    $(".datepicker").flatpickr({
-        enableTime: true,
-        dateFormat: "Y-m-d",
-    });
-</script>
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col">
+        <ol class="breadcrumb mb-1">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/pegawai">Daftar Pegawai</a></li>
+            <li class="breadcrumb-item active">Detil Pegawai</li>
+        </ol>
+        <h2 class="page-title">Informasi Pegawai</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+            <div class="profile-card mb-5">
+                <div class="profile-header">
+                    <div class="profile-avatar-wrap">
+                        {{ pegawai.PegNama|slice:":1"|default:"P" }}
+                    </div>
+                    <h3 class="profile-name">{{ pegawai.PegNama }}</h3>
+                    <div class="profile-role-badge">
+                        <span style="width: 14px; height: 14px; margin-right:4px;" data-feather="briefcase"></span>
+                        {{ pegawai.RoleLabel }}
+                    </div>
+                </div>
+
+                <div class="profile-body">
+                    <div class="row">
+                        <!-- Kolom Kiri: Info Dasar & Kontak -->
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <h4 class="section-title">Informasi Pribadi & Kontak</h4>
+                            
+                            <div class="info-group">
+                                <span class="info-label">User ID (Username)</span>
+                                <div class="info-value">{{ pegawai.PegNamauser }}</div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <span class="info-label">NIP / NRP</span>
+                                <div class="info-value">{{ pegawai.PegNip }}</div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <span class="info-label">NIK (Nomor Induk Kependudukan)</span>
+                                <div class="info-value">{{ pegawai.PegNik }}</div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <span class="info-label">Alamat Email</span>
+                                <div class="info-value">{{ pegawai.PegEmail }}</div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <span class="info-label">Nomor Telepon</span>
+                                <div class="info-value">{{ pegawai.PegTelepon }}</div>
+                            </div>
+                            
+                            <div class="info-group mb-0">
+                                <span class="info-label">Alamat Domisili</span>
+                                <div class="info-value">{{ pegawai.PegAlamat }}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Kolom Kanan: Jabatan & SK -->
+                        <div class="col-md-6">
+                            <h4 class="section-title">Jabatan & SK Penunjukan</h4>
+                            
+                            <div class="info-group">
+                                <span class="info-label">Status Akun</span>
+                                <div class="mt-1">
+                                    {%if pegawai.PegIsactive == 1 %}
+                                    <span class="status-badge status-active">
+                                        <span style="width: 12px; height: 12px;" data-feather="check-circle"></span> Aktif
+                                    </span>
+                                    {% else %}
+                                    <span class="status-badge status-inactive">
+                                        <span style="width: 12px; height: 12px;" data-feather="x-circle"></span> Non-Aktif
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <span class="info-label">Pangkat & Golongan</span>
+                                <div class="info-value">{{ pegawai.PegPangkat }} - {{ pegawai.PegGolongan }}</div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <span class="info-label">Jabatan Struktural</span>
+                                <div class="info-value">{{ pegawai.PegJabatan }}</div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <span class="info-label">Nomor SK Penunjukan</span>
+                                <div class="info-value">{{ pegawai.PegNoSk }}</div>
+                            </div>
+                            
+                            <div class="info-group mb-0">
+                                <span class="info-label">Masa Berlaku SK</span>
+                                <div class="info-value">
+                                    <span style="width: 16px; height: 16px; margin-right:4px; color:#6b7280;" data-feather="calendar"></span>
+                                    {{ pegawai.GetMasaBerlaku }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer-actions">
+                    {%if isAdmin or isUkpbj %}
+                    <a href="/pegawai/edit/{{pegawai.ID}}" class="btn-modern btn-modern-primary">
+                        <span style="width: 16px;" data-feather="edit"></span> Edit Pegawai
+                    </a>
+                    {% endif %}
+                    <a href="/pegawai" class="btn-modern btn-modern-secondary">
+                        <span style="width: 16px;" data-feather="corner-up-left"></span> Batal / Kembali
+                    </a>
+                </div>
+            </div>
+    </div>
+</div>
 {% endblock %}

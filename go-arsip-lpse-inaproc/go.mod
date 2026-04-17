@@ -45,6 +45,8 @@ require (
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.68.0 // indirect
+	github.com/wenlng/go-captcha-assets v1.0.7 // indirect
+	github.com/wenlng/go-captcha/v2 v2.0.5 // indirect
 	golang.org/x/crypto v0.45.0 // indirect
 	golang.org/x/image v0.23.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
