@@ -90,9 +90,11 @@ func SimpanPrivateDocument(c *fiber.Ctx) error {
 	paket := services.GetPaket(pktId)
 	userid := utils.InterfaceToUint(mp["id"])
 
-	// Authorization Check: Check if user is associated with the package
+	// Authorization Check: Check if user is associated with the package or created it
 	isAuthorized := false
-	if mp["isPPK"].(bool) && paket.PpkId == userid {
+	if paket.CreatedBy == userid {
+		isAuthorized = true
+	} else if mp["isPPK"].(bool) && paket.PpkId == userid {
 		isAuthorized = true
 	} else if mp["isPP"].(bool) && paket.PpId == userid {
 		isAuthorized = true
@@ -101,6 +103,8 @@ func SimpanPrivateDocument(c *fiber.Ctx) error {
 		if models.IsPegawaiInPanitia(userid, paket.PntId) {
 			isAuthorized = true
 		}
+	} else if mp["isAdmin"].(bool) {
+		isAuthorized = true
 	}
 
 	if !isAuthorized {
@@ -118,9 +122,6 @@ func SimpanPrivateDocument(c *fiber.Ctx) error {
 // GetJsonPrivateDocuments returns a list of private documents for a package (strictly isolated for the uploader)
 func GetJsonPrivateDocuments(c *fiber.Ctx) error {
 	mp := currentMap(c)
-	if !mp["isPPK"].(bool) && !mp["isPokja"].(bool) && !mp["isPP"].(bool) {
-		return Forbiden(c)
-	}
 	
 	pktId := utils.StringToUint(c.Params("id"))
 	userid := utils.InterfaceToUint(mp["id"])

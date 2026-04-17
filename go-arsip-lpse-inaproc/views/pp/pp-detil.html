@@ -1,81 +1,251 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
-{% block pagetitle %}
-Detil Pokja
+{% block page_tab_title %}
+Detil Pejabat Pengadaan
+{% endblock %}
+
+{% block css %}
+<style>
+    :root {
+        --navy:       #11215D;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    .reg-card-header {
+        background: var(--navy);
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-header-title {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-body { padding: 1.75rem; }
+
+    .detail-section-title {
+        font-size: .75rem;
+        font-weight: 800;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.8;
+    }
+
+    .info-group { margin-bottom: 1.25rem; }
+    .info-label {
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin-bottom: .15rem;
+    }
+    .info-value {
+        font-size: .95rem;
+        font-weight: 600;
+        color: var(--navy);
+        padding: .2rem 0;
+    }
+
+    .list-item-clean {
+        padding: .5rem .85rem;
+        background: #f8fafc;
+        border: 1px solid var(--navy-light);
+        border-radius: 8px;
+        margin-bottom: .5rem;
+        font-size: .88rem;
+        color: var(--navy);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Buttons */
+    .btn-action {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: .6rem 1.25rem; border-radius: 8px; border: none;
+        font-size: .85rem; font-weight: 700; cursor: pointer;
+        transition: all .2s; text-decoration: none;
+    }
+    .btn-navy { background: var(--navy); color: #fff; }
+    .btn-navy:hover { background: #0c1940; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(17,33,93,0.2); }
+    
+    .btn-success-custom { background: #10b981; color: #fff; }
+    .btn-success-custom:hover { background: #059669; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
+
+    .btn-secondary-custom { background: #f1f5f9; color: var(--text-muted); border: 1px solid #e2e8f0; }
+    .btn-secondary-custom:hover { background: #e2e8f0; color: var(--navy); }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Daftar Pejabat Pengadaan</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item"><a href="/pp">Daftar Pejabat Pengadaan</a></li>
-            <li class="breadcrumb-item active">Detil</li>
+<div class="reg-header">
+    <h2 class="reg-page-title">Detil Pejabat Pengadaan</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li><a href="/pp">Daftar Pejabat Pengadaan</a></li>
+            <li aria-current="page" style="color:#94a3b8;">Detil</li>
         </ol>
-    </div>
+    </nav>
 </div>
-    <div class="col-lg-12 pt-2">
-        <div class="card">
-                {% include "alert.html" %}
-                <div class="card-body">
-                    <div class="basic-form">
-                      <form>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Group</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ pp.Group }}</p>
+
+<div class="col-12 pt-2">
+    <div class="reg-card">
+        <div class="reg-card-header">
+            <p class="reg-card-header-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                </svg>
+                Informasi SK Pejabat Pengadaan
+            </p>
+        </div>
+
+        <div class="reg-card-body">
+            {% include "alert.html" %}
+            
+            <div class="row">
+                <div class="col-md-5 border-end" style="border-color: var(--navy-light) !important;">
+                    <div class="detail-section-title">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        Data SK & Group
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label">Group / Nama SK</div>
+                        <div class="info-value">{{ pp.Groups }}</div>
+                    </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label">Tahun Anggaran</div>
+                        <div class="info-value">{{ pp.Tahun }}</div>
+                    </div>
+
+                    <div class="info-group">
+                        <div class="info-label">Nomor SK</div>
+                        <div class="info-value">{{ pp.NoSk }}</div>
+                    </div>
+
+                    <div class="info-group">
+                        <div class="info-label">Masa Berlaku / Periode</div>
+                        <div class="info-value">
+                            {%if !pp.PeriodeAwal.IsZero %} 
+                                <span style="color:var(--accent);">{{ formatDate(pp.PeriodeAwal) }}</span>
+                                <span style="margin:0 8px; opacity:0.5;">sampai</span>
+                                <span style="color:var(--accent);">{{ formatDate(pp.PeriodeAkhir) }}</span>
+                            {% else %}
+                                <span class="text-muted">Tidak diatur</span>
+                            {% endif %}
                         </div>
                     </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Tahun</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ pp.Tahun }}</p>
+                </div>
+
+                <div class="col-md-7 ps-md-4">
+                    <div class="mb-4">
+                        <div class="detail-section-title">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            SKPD Terkait
                         </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Nomor SK</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ pp.NoSk }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Periode</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{%if !pp.PeriodeAwal.IsZero %} {{ formatDate(pp.PeriodeAwal) }} s/d {{ formatDate(pp.PeriodeAkhir) }} {% endif %}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">SKPD</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">
-                            {% for obj in pp.Satker%}
-                            {{ obj.Nama }} <br />
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for obj in pp.Satker %}
+                                <div class="list-item-clean">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                    {{ obj.Nama }}
+                                </div>
                             {% endfor %}
-                            </p>
                         </div>
                     </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Pegawai</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">
-                            {% for obj in pp.Pegawai%}
-                            {{ obj.PegNama }} <br />
+
+                    <div class="mt-4">
+                        <div class="detail-section-title">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                            Pejabat Pengadaan Terdaftar
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for obj in pp.Pegawai %}
+                                <div class="list-item-clean" style="background:#fff; border-color:var(--accent);">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3"><circle cx="12" cy="12" r="10"/></svg>
+                                    <span style="font-weight:700;">{{ obj.PegNama }}</span>
+                                </div>
                             {% endfor %}
-                            </p>
                         </div>
                     </div>
-                    <div class="form-group mb-3 row">
-                        <div class="col-sm-9">
-                        <a href="/pp/edit/{{pp.ID}}" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span>&nbsp;Edit</a>&nbsp;&nbsp;
-                        <a href="/pp" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
-                        </div>
-                    </div>
-                      </form>
-                    </div>
-               </div>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-top d-flex gap-2" style="border-color: var(--navy-light) !important;">
+                <a href="/pp/edit/{{pp.ID}}" class="btn-action btn-success-custom">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Edit Pejabat
+                </a>
+                <a href="/pp" class="btn-action btn-secondary-custom">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Kembali
+                </a>
+            </div>
         </div>
     </div>
+</div>
 {% endblock %}

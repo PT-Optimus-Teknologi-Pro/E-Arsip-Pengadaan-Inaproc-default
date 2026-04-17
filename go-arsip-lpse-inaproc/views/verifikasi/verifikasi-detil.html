@@ -1,285 +1,432 @@
 {% extends "border.html" %}
 
-{% block pagetitle %}
+{% block page_tab_title %}
 Detil Verifikasi
 {% endblock %}
 
 {% block css %}
 <style>
-    .form-group label {
-        font-weight: 700;
-        color: #11215D;
-    }
-    /* Role highlight for already-set roles */
-    .role-highlight {
-        background-color: #11215D !important;
-        color: #ffffff !important;
-        border: 2px solid #0c1940 !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.03em;
-        border-radius: 6px;
-        padding: 0.5rem 0.75rem;
-        display: block;
+    :root {
+        --navy:       #11215D;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
     }
 
-    /* ── Custom Select Monev Style ── */
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    .reg-card-header {
+        background: var(--navy);
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-header-title {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-body { padding: 1.75rem; }
+
+    .detail-section-title {
+        font-size: .75rem;
+        font-weight: 800;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.8;
+    }
+
+    .info-group { margin-bottom: 1rem; }
+    .info-label {
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin-bottom: .15rem;
+    }
+    .info-value {
+        font-size: .9rem;
+        font-weight: 600;
+        color: var(--navy);
+        padding: .4rem 0;
+    }
+    .info-value.role-highlight {
+        background: var(--navy);
+        color: #fff;
+        padding: .5rem .9rem;
+        border-radius: 8px;
+        display: inline-block;
+        font-size: .85rem;
+    }
+
+    /* ── Custom Select ── */
     .cs-wrap { position: relative; width: 100%; user-select: none; }
     .cs-trigger {
         display: flex; align-items: center; gap: 10px;
-        border: 2.5px solid #0D6EFD; border-radius: 12px; /* Blue border */
-        padding: 10px 14px; background: #ffffff;
+        border: 1.5px solid var(--border); border-radius: 10px;
+        padding: .6rem 1rem; background: #f8faff;
         cursor: pointer; transition: all 0.2s;
-        font-weight: 600; color: #4b5563; font-size: 14px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        font-weight: 600; color: var(--navy); font-size: .85rem;
     }
-    .cs-trigger:hover { border-color: #0a58ca; box-shadow: 0 4px 6px -1px rgba(13,110,253,0.1); }
-    .cs-trigger.open { border-color: #0D6EFD; box-shadow: 0 0 0 4px rgba(13,110,253,0.12); }
+    .cs-trigger:hover { border-color: var(--accent); background: #fff; }
+    .cs-trigger.open { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
     .cs-icon {
-        width: 32px; height: 32px; border-radius: 8px;
-        background: rgba(13,110,253,0.08); display:flex; align-items:center; justify-content:center; flex-shrink:0;
+        width: 30px; height: 30px; border-radius: 6px;
+        background: var(--navy-light); display:flex; align-items:center; justify-content:center; flex-shrink:0;
     }
-    .cs-icon svg { color: #0D6EFD; }
-    .cs-label { flex: 1; color: #6b7280; }
-    .cs-label.has-val { color: #1f2937; }
-    .cs-arrow { margin-left: auto; color: #0D6EFD; transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+    .cs-icon svg { color: var(--navy); }
+    .cs-label { flex: 1; color: var(--text-muted); }
+    .cs-label.has-val { color: var(--navy); }
+    .cs-arrow { margin-left: auto; color: var(--accent); transition: transform 0.25s; }
     .cs-trigger.open .cs-arrow { transform: rotate(180deg); }
     .cs-dropdown {
         display: none; position: absolute; top: calc(100% + 8px); left: 0; right: 0;
-        background: #fff; border-radius: 16px; z-index: 999;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
-        overflow: hidden; border: 1px solid #f1f5f9;
-        animation: csSlideDown 0.2s cubic-bezier(0, 0, 0.2, 1);
+        background: #fff; border-radius: 12px; z-index: 999;
+        box-shadow: 0 10px 25px rgba(17,33,93,0.15);
+        overflow: hidden; border: 1px solid var(--border);
     }
     .cs-dropdown.open { display: block; }
-    @keyframes csSlideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
-    .cs-search {
-        padding: 12px 14px; border-bottom: 1px solid #f8fafc;
-        display: flex; align-items: center; gap: 8px; background: #fff;
-    }
-    .cs-search input {
-        border: none; outline: none; flex: 1; font-size: 14px; color: #374151; background: transparent;
-    }
-    .cs-search svg { color: #0D6EFD; flex-shrink:0; opacity: 0.7; }
-    .cs-options { max-height: 240px; overflow-y: auto; padding: 4px; }
+    .cs-search { padding: 10px; border-bottom: 1px solid var(--navy-light); display: flex; align-items: center; gap: 8px; }
+    .cs-search input { border: none; outline: none; flex: 1; font-size: .85rem; color: var(--navy); }
+    .cs-options { max-height: 200px; overflow-y: auto; padding: 4px; }
     .cs-option {
-        padding: 12px 14px; cursor: pointer; font-size: 14px; font-weight: 500; color: #4b5563;
-        transition: all 0.15s; display: flex; align-items: center; gap: 8px; border-radius: 8px;
+        padding: 10px 12px; cursor: pointer; font-size: .82rem; font-weight: 500; color: var(--navy);
+        transition: all 0.15s; border-radius: 6px;
     }
-    .cs-option:hover { background: #f0f7ff; color: #0D6EFD; }
-    .cs-option.selected { background: #f0f7ff; color: #0D6EFD; font-weight: 600; }
-    .cs-empty { padding: 32px 16px; text-align: center; color: #94a3b8; font-size: 13px; }
-    .cs-empty svg { display:block; margin: 0 auto 12px; opacity:0.3; }
+    .cs-option:hover { background: var(--navy-light); color: var(--accent); }
+    .cs-option.selected { background: var(--navy); color: #fff; }
+
+    /* Buttons */
+    .btn-action {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: .6rem 1.25rem; border-radius: 8px; border: none;
+        font-size: .85rem; font-weight: 700; cursor: pointer;
+        transition: all .2s; text-decoration: none;
+    }
+    .btn-navy { background: var(--navy); color: #fff; }
+    .btn-navy:hover { background: #0c1940; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(17,33,93,0.2); }
+    
+    .btn-warning-custom { background: #f59e0b; color: #fff; }
+    .btn-warning-custom:hover { background: #d97706; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(245,158,11,0.2); }
+
+    .btn-danger-custom { background: #dc2626; color: #fff; }
+    .btn-danger-custom:hover { background: #b91c1c; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,0.2); }
+
+    .btn-secondary-custom { background: #f1f5f9; color: var(--text-muted); border: 1px solid #e2e8f0; }
+    .btn-secondary-custom:hover { background: #e2e8f0; color: var(--navy); }
+
+    .doc-link {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: .5rem 1rem; background: #f8fafc; border: 1px solid var(--border);
+        border-radius: 8px; color: var(--accent); font-weight: 600; font-size: .82rem;
+        text-decoration: none; transition: .15s;
+    }
+    .doc-link:hover { background: #fff; border-color: var(--accent); box-shadow: 0 2px 8px rgba(37,99,235,0.1); }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Verifikasi</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item"><a href="/verifikasi">Verifikasi</a></li>
-            <li class="breadcrumb-item active">Detil</li>
+<div class="reg-header">
+    <h2 class="reg-page-title">Detil Verifikasi</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li><a href="/verifikasi">Verifikasi</a></li>
+            <li aria-current="page" style="color:#94a3b8;">Detil</li>
         </ol>
-    </div>
+    </nav>
 </div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            {% include "alert.html" %}
-            <form class="form-horizontal" action="/verifikasi/{{ pegawai.ID }}" method="post">
-                <div class="card-body row">
-                    <div class="col-7">
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3 text-end control-label col-form-label">Pengangkatan Menjadi</label>
-                            <div class="col-sm-4">
-                                {%if isAdmin %}
-                                {%if pegawai.IsPPK || pegawai.PegStatus != 0 %}
-                                <p class="form-control-plaintext role-highlight">{{ pegawai.RoleLabel }}</p>
-                                <input type="hidden" name="usrgroup" value="{{ pegawai.Usrgroup }}"/>
+
+<div class="col-12 pt-2">
+    <div class="reg-card">
+        <div class="reg-card-header">
+            <p class="reg-card-header-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                Profil Calon Pegawai
+            </p>
+        </div>
+
+        <form action="/verifikasi/{{ pegawai.ID }}" method="post">
+            <div class="reg-card-body">
+                {% include "alert.html" %}
+                
+                <div class="row">
+                    <!-- Column 1 -->
+                    <div class="col-md-6 border-end" style="border-color: var(--navy-light) !important;">
+                        <div class="detail-section-title">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+                            Informasi Akun & Personal
+                        </div>
+
+                        <div class="info-group">
+                            <div class="info-label">Pengangkatan Menjadi</div>
+                            <div class="mt-1">
+                                {% if isAdmin %}
+                                    {% if pegawai.IsPPK or pegawai.PegStatus != 0 %}
+                                        <div class="info-value role-highlight">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            {{ pegawai.RoleLabel }}
+                                        </div>
+                                        <input type="hidden" name="usrgroup" value="{{ pegawai.Usrgroup }}"/>
+                                    {% else %}
+                                        <input type="hidden" name="usrgroup" id="usrgroup-val" required
+                                            oninvalid="this.setCustomValidity('PEMBERITAHUAN: Anda harus memilih Pengangkatan Menjadi terlebih dahulu!')"
+                                            oninput="this.setCustomValidity('')"/>
+                                        
+                                        <div class="cs-wrap" id="cs-pengangkatan">
+                                            <div class="cs-trigger" id="cs-trigger" onclick="toggleCS()">
+                                                <div class="cs-icon">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                                                </div>
+                                                <span class="cs-label" id="cs-label">-- Pilih Pengangkatan --</span>
+                                                <svg class="cs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                                            </div>
+                                            <div class="cs-dropdown" id="cs-dropdown">
+                                                <div class="cs-search">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                                    <input type="text" id="cs-search-input" placeholder="Cari..." oninput="filterCS(this.value)" autocomplete="off"/>
+                                                </div>
+                                                <div class="cs-options" id="cs-options">
+                                                    <div class="cs-option" data-value="PP" onclick="selectCS('PP','Pejabat Pengadaan (PP)')">Pejabat Pengadaan (PP)</div>
+                                                    <div class="cs-option" data-value="POKJA" onclick="selectCS('POKJA','Pokja')">Pokja</div>
+                                                    <div class="cs-option" data-value="ARSIPARIS" onclick="selectCS('ARSIPARIS','Arsiparis')">Arsiparis</div>
+                                                </div>
+                                                <div class="cs-empty" id="cs-empty" style="display:none">Tidak ada hasil</div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 {% else %}
+                                    <div class="info-value role-highlight">{{ pegawai.RoleLabel }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
 
-                                <!-- Hidden real input for form submit -->
-                                <input type="hidden" name="usrgroup" id="usrgroup-val" required
-                                    oninvalid="this.setCustomValidity('PEMBERITAHUAN: Anda harus memilih Pengangkatan Menjadi terlebih dahulu!')"
-                                    oninput="this.setCustomValidity('')"/>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <div class="info-label">Nama Pegawai</div>
+                                    <div class="info-value">{{ pegawai.PegNama }}</div>
+                                </div>
+                                <div class="info-group">
+                                    <div class="info-label">NIK</div>
+                                    <div class="info-value">{{ pegawai.PegNik }}</div>
+                                </div>
+                                <div class="info-group">
+                                    <div class="info-label">NIP/NRP</div>
+                                    <div class="info-value">{{ pegawai.PegNip }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <div class="info-label">User ID</div>
+                                    <div class="info-value">{{ pegawai.PegNamauser }}</div>
+                                </div>
+                                <div class="info-group">
+                                    <div class="info-label">Telepon</div>
+                                    <div class="info-value">{{ pegawai.PegTelepon }}</div>
+                                </div>
+                                <div class="info-group">
+                                    <div class="info-label">Email</div>
+                                    <div class="info-value">{{ pegawai.PegEmail }}</div>
+                                </div>
+                            </div>
+                        </div>
 
-                                <!-- Custom Select -->
-                                <div class="cs-wrap" id="cs-pengangkatan">
-                                    <div class="cs-trigger" id="cs-trigger" onclick="toggleCS()">
-                                        <div class="cs-icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                                        </div>
-                                        <span class="cs-label" id="cs-label">-- Pilih Pengangkatan --</span>
-                                        <svg class="cs-arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </div>
-                                    <div class="cs-dropdown" id="cs-dropdown">
-                                        <div class="cs-search">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                                            <input type="text" id="cs-search-input" placeholder="Cari..." oninput="filterCS(this.value)" autocomplete="off"/>
-                                        </div>
-                                        <div class="cs-options" id="cs-options">
-                                            <div class="cs-option" data-value="PP" onclick="selectCS('PP','Pejabat Pengadaan (PP)')">
-                                                Pejabat Pengadaan (PP)
-                                            </div>
-                                            <div class="cs-option" data-value="POKJA" onclick="selectCS('POKJA','Pokja')">
-                                                Pokja
-                                            </div>
-                                            <div class="cs-option" data-value="ARSIPARIS" onclick="selectCS('ARSIPARIS','Arsiparis (Arsip Paris)')">
-                                                Arsiparis (Arsip Paris)
-                                            </div>
-                                        </div>
-                                        <div class="cs-empty" id="cs-empty" style="display:none">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                                            Tidak ada hasil
-                                        </div>
+                        <div class="info-group">
+                            <div class="info-label">Alamat</div>
+                            <div class="info-value">{{ pegawai.PegAlamat }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2 -->
+                    <div class="col-md-6 ps-md-4">
+                        <div class="detail-section-title">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            Kredensial & Jabatan
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <div class="info-label">Pangkat</div>
+                                    <div class="info-value">{{ pegawai.PegPangkat }}</div>
+                                </div>
+                                <div class="info-group">
+                                    <div class="info-label">Golongan</div>
+                                    <div class="info-value">{{ pegawai.PegGolongan }}</div>
+                                </div>
+                                <div class="info-group">
+                                    <div class="info-label">Nomor SK</div>
+                                    <div class="info-value">{{ pegawai.PegNoSk|default:"—" }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <div class="info-label">Jabatan</div>
+                                    <div class="info-value">{{ pegawai.PegJabatan }}</div>
+                                </div>
+                                <div class="info-group">
+                                    <div class="info-label">Status Verifikasi</div>
+                                    <div class="info-value">
+                                        {% if pegawai.PegStatus == 0 %}
+                                            <span class="reg-badge badge-warning">● Menunggu</span>
+                                        {% elif pegawai.PegStatus == 1 or pegawai.PegStatus == 2 %}
+                                            <span class="reg-badge badge-success">● Disetujui</span>
+                                        {% else %}
+                                            <span class="reg-badge badge-danger">● Ditolak</span>
+                                        {% endif %}
                                     </div>
                                 </div>
+                                <div class="info-group">
+                                    <div class="info-label">Masa Berlaku SK</div>
+                                    <div class="info-value">{{ pegawai.GetMasaBerlaku }}</div>
+                                </div>
+                            </div>
+                        </div>
 
-                                {% endif %}
-                                {% else %}
-                                <p class="form-control-plaintext role-highlight">{{ pegawai.RoleLabel }}</p>
-                                {% endif %}
+                        <div class="row border-top mt-2 pt-3" style="border-color: var(--navy-light) !important;">
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <div class="info-label">Dibuat Tanggal</div>
+                                    <div class="info-value">{{ pegawai.GetTglBuat }}</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">Nama Pegawai</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegNama }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">NIK</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegNik }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">NIP/NRP</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegNip }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">User ID</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegNamauser }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">Alamat</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegAlamat }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">Telepon</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegTelepon }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">Email</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegEmail }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">Pangkat</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegPangkat }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">Jabatan</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegJabatan }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">Golongan</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegGolongan }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">Status</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{%if pegawai.PegIsActive == 1 %} Aktif {% else %} Non Aktif {% endif %}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3 text-end control-label col-form-label">Nomor SK</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegNoSk }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">Masa Berlaku SK</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.GetMasaBerlaku }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">Status Verifikasi</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.GetStatusVerifikasi }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-3  text-end control-label col-form-label">Dibuat Tanggal</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.GetTglBuat }}</p>
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <div class="info-label">Status Login</div>
+                                    <div class="info-value">{% if pegawai.PegIsActive == 1 %} Aktif {% else %} Non-Aktif {% endif %}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                 {% if isAdmin %}
-                <div class="border-top">
-                    {% for obj in documents %}
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">{{ obj.Label }}</label>
-                        <div class="col-sm-9">
-                            {% if obj.Jenis == "TTD" %}
-                            <p class="form-control-plaintext"><img src="/preview/image/{{ obj.ID }}" width="200"/></p>
-                            {% else %}
-                            <p class="form-control-plaintext"><a href="/download/{{ obj.ID }}"> <span style="width: 16px;" data-feather="download"></span> {{ obj.Filename }}</a></p>
-                            {% endif %}
-                        </div>
+
+                {% if isAdmin and documents %}
+                <div class="mt-4 pt-3 border-top" style="border-color: var(--navy-light) !important;">
+                    <div class="detail-section-title">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        Lampiran Dokumen
                     </div>
-                    {% endfor %}
+                    <div class="row">
+                        {% for obj in documents %}
+                        <div class="col-md-6 mb-3">
+                            <div class="info-label">{{ obj.Label }}</div>
+                            <div class="mt-1">
+                                {% if obj.Jenis == "TTD" %}
+                                    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:10px; display:inline-block;">
+                                        <img src="/preview/image/{{ obj.ID }}" style="max-width:240px; border-radius:6px;"/>
+                                    </div>
+                                {% else %}
+                                    <a href="/download/{{ obj.ID }}" class="doc-link">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                        {{ obj.Filename }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
                 {% endif %}
-                <div class="border-top">
-                    <div class="card-body">
-                        {% if isAdmin and pegawai.IsVerifikasi %}
-                        <button type="submit" class="btn btn-primary" name="action" value="approve">
-                            <span style="width: 16px;" data-feather="save"></span> Approve
-                        </button>
-                        <button type="submit" class="btn btn-warning" name="action" value="reject" formnovalidate>
-                            <span style="width: 16px;" data-feather="x-circle"></span> Rejected
-                        </button>
-                        <button type="submit" class="btn btn-danger" name="action" value="block" formnovalidate>
-                            <span style="width: 16px;" data-feather="slash"></span> Block / Banned
-                        </button>
-                        <button type="submit" class="btn btn-dark" name="action" value="delete" formnovalidate onclick="return confirm('Anda yakin ingin menghapus tuntas pendaftar mencurigakan ini? Data yang terhapus tidak bisa dikembalikan.');">
-                            <span style="width: 16px;" data-feather="trash-2"></span> Hapus Permanen
-                        </button>
-                        {% elif isAdminAgency %}
-                        <button type="submit" class="btn btn-primary" name="action" value="approve">
-                            <span style="width: 16px;" data-feather="save"></span> Approve & Akun SPSE sudah dibuatkan
+            </div>
+
+            <div class="reg-card-body border-top" style="background:#fcfdfe; border-color: var(--navy-light) !important;">
+                <div class="d-flex align-items-center gap-2">
+                    {% if isAdmin and (pegawai.PegStatus == 0 or pegawai.PegStatus == 3) %}
+                        {% if pegawai.PegStatus == 0 or pegawai.PegStatus == 3 %}
+                        <button type="submit" class="btn-action btn-navy" name="action" value="approve">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                            Update & Approve
                         </button>
                         {% endif %}
-                        <a href="/verifikasi" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+                        
+                        {% if pegawai.PegStatus == 0 %}
+                        <button type="submit" class="btn-action btn-warning-custom" name="action" value="reject" formnovalidate>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                            Reject
+                        </button>
+                        {% endif %}
 
+                        <button type="submit" class="btn-action btn-danger-custom" name="action" value="delete" formnovalidate onclick="return confirm('Anda yakin ingin menghapus tuntas pendaftar ini? Data yang terhapus tidak bisa dikembalikan.');">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                            Hapus Permanen
+                        </button>
+                    {% elif isAdminAgency %}
+                        <button type="submit" class="btn-action btn-navy" name="action" value="approve">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            Konfirmasi Akun SPSE Siap
+                        </button>
+                    {% endif %}
+                    
+                    <a href="/verifikasi" class="btn-action btn-secondary-custom">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                        Kembali
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block script %}

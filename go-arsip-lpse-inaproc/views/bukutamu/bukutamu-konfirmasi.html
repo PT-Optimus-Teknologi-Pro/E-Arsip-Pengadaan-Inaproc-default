@@ -1,29 +1,135 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
-{% block pagetitle %}
-Buku Tamu
-{% endblock %}
+{% block page_tab_title %}Konfirmasi Buku Tamu{% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
+<style>
+    .konfirmasi-wrapper {
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+    }
+    .konfirmasi-card {
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 12px 36px rgba(17, 33, 93, 0.08);
+        padding: 3.5rem 2.5rem;
+        max-width: 550px;
+        width: 100%;
+        text-align: center;
+        border: 1px solid #e8ecf7;
+    }
+    .konfirmasi-icon {
+        width: 90px;
+        height: 90px;
+        background: #f0fdf4;
+        color: #15803d;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 0 0 8px #dcfce7;
+    }
+    .konfirmasi-title {
+        color: #11215D;
+        font-weight: 800;
+        font-size: 1.6rem;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.02em;
+    }
+    .konfirmasi-desc {
+        color: #64748b;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+    .antrian-box {
+        background: #f8fafc;
+        border: 2px dashed #c7d0e8;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .antrian-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+    }
+    .antrian-number {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #2563eb;
+        margin: 0;
+        letter-spacing: 2px;
+    }
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px 32px;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .btn-login {
+        background: #11215D;
+        color: #ffffff;
+        box-shadow: 0 6px 20px rgba(17, 33, 93, 0.15);
+    }
+    .btn-login:hover {
+        background: #0c1940;
+        color: #ffffff;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(17, 33, 93, 0.25);
+    }
+</style>
+
+<div class="row align-items-center mb-3">
     <div class="col">
-        <h2 class="page-title">Daftar Buku Tamu</h2>
+        <h2 class="page-title" style="color: #11215D; font-weight: 800; font-size: 1.5rem; letter-spacing: -0.02em;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+            Buku Tamu
+        </h2>
     </div>
     <div class="col-auto">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item active">Buku Tamu</li>
+            <li class="breadcrumb-item"><a href="/home" class="text-muted">Home</a></li>
+            <li class="breadcrumb-item active" style="color: #11215D; font-weight: 600;">Konfirmasi Buku Tamu</li>
         </ol>
     </div>
 </div>
- <div class="col-12 pt-2">
-        <div class="card">
-            <div class="card-body">
-            {% include "alert.html" %}
-            <p>Terima kasih atas data yang sudah anda input. ID Antrian Anda <h2>{{ data }}</h2></p>
-            <p>Anda sudah menyelesaikan Tahapan pendaftaran buku tamu. Harap Menunggu sampai pegawai kami melayani Anda</p>
-            <p>Untuk Login silahkan <a href="/login" class="btn-success ">klik disini</a></p>
-            </div>
+
+<div class="konfirmasi-wrapper">
+    <div class="konfirmasi-card">
+        {% include "alert.html" %}
+        
+        <div class="konfirmasi-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
         </div>
+        
+        <h2 class="konfirmasi-title">Registrasi Berhasil!</h2>
+        <p class="konfirmasi-desc">
+            Terima kasih atas data yang telah Anda input. Anda telah menyelesaikan tahapan pendaftaran buku tamu. Harap menunggu hingga layanan kami tersedia untuk Anda.
+        </p>
+
+        <div class="antrian-box">
+            <div class="antrian-label">ID Antrian Anda</div>
+            <h1 class="antrian-number">{{ data }}</h1>
+        </div>
+
+        <a href="/login" class="btn-action btn-login">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+            Lanjut ke Login
+        </a>
+    </div>
 </div>
 {% endblock %}

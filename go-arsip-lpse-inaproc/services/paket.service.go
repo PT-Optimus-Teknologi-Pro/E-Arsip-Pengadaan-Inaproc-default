@@ -76,13 +76,13 @@ func UpdateManualPaket(c *fiber.Ctx, id uint, userId uint, nama string, tahun in
 func HandleManualEvidence(c *fiber.Ctx, paket *models.Paket, userId uint) {
 	file, _ := c.FormFile("bukti")
 	if file != nil {
-		dokId, err := models.SaveDocument(c, userId, models.TAMBAHAN, "bukti")
+		dokId, err := models.SaveDocument(c, userId, models.TAMBAHAN_PRIVATE, "bukti")
 		if err == nil {
 			dokPaket := models.DokPaket{
 				PktId: paket.ID,
 				PegId: userId,
 				DokId: dokId,
-				Jenis: "Bukti Manual",
+				Jenis: models.TAMBAHAN_PRIVATE,
 			}
 			models.SaveDokPaket(&dokPaket)
 		}

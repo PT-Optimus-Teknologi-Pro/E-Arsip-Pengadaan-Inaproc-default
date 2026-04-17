@@ -1,188 +1,309 @@
 {% extends "border.html" %}
 
-{% block pagetitle %}
+{% block page_tab_title %}
 Detil Verifikasi
 {% endblock %}
 
 {% block css %}
 <style>
-    .form-group label {
+    :root {
+        --navy:       #11215D;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
         font-weight: 700;
-        color: #11215D;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
     }
-    /* Khusus field Pengangkatan Menjadi */
-    .role-highlight {
-        background-color: #11215D !important;
-        color: #ffffff !important;
-        border: 2px solid #0c1940 !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.03em;
-        border-radius: 6px;
-        padding: 0.5rem 0.75rem;
-        display: block;
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
     }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    .reg-card-header {
+        background: var(--navy);
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-header-title {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-body { padding: 1.75rem; }
+
+    .detail-section-title {
+        font-size: .75rem;
+        font-weight: 800;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.8;
+    }
+
+    .info-group { margin-bottom: 1rem; }
+    .info-label {
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin-bottom: .15rem;
+    }
+    .info-value {
+        font-size: .9rem;
+        font-weight: 600;
+        color: var(--navy);
+        padding: .4rem 0;
+    }
+    .info-value.role-highlight {
+        background: var(--navy);
+        color: #fff;
+        padding: .5rem .9rem;
+        border-radius: 8px;
+        display: inline-block;
+        font-size: .85rem;
+    }
+
+    /* Buttons */
+    .btn-action {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: .6rem 1.25rem; border-radius: 8px; border: none;
+        font-size: .85rem; font-weight: 700; cursor: pointer;
+        transition: all .2s; text-decoration: none;
+    }
+    .btn-navy { background: var(--navy); color: #fff; }
+    .btn-navy:hover { background: #0c1940; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(17,33,93,0.2); }
+    
+    .btn-danger-custom { background: #dc2626; color: #fff; }
+    .btn-danger-custom:hover { background: #b91c1c; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,0.2); }
+
+    .btn-secondary-custom { background: #f1f5f9; color: var(--text-muted); border: 1px solid #e2e8f0; }
+    .btn-secondary-custom:hover { background: #e2e8f0; color: var(--navy); }
+
+    .doc-link {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: .5rem 1rem; background: #f8fafc; border: 1px solid var(--border);
+        border-radius: 8px; color: var(--accent); font-weight: 600; font-size: .82rem;
+        text-decoration: none; transition: .15s;
+    }
+    .doc-link:hover { background: #fff; border-color: var(--accent); box-shadow: 0 2px 8px rgba(37,99,235,0.1); }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Verifikasi</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item"><a href="/verifikasi">Verifikasi</a></li>
-            <li class="breadcrumb-item active">Detil</li>
+<div class="reg-header">
+    <h2 class="reg-page-title">Detil Verifikasi</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li><a href="/verifikasi">Verifikasi</a></li>
+            <li aria-current="page" style="color:#94a3b8;">Detil</li>
         </ol>
-    </div>
+    </nav>
 </div>
-<div class="row">
-    <div class="col-12 pt-2">
-        <div class="card">
-            {% include "alert.html" %}
-            <form class="form-horizontal" action="/verifikasi/{{ pegawai.ID }}" method="post">
-                <div class="card-body">
-                    <div class="col">
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2 text-end control-label col-form-label">Pengangkatan Menjadi</label>
-                            <div class="col-sm-5">
-                                <p class="form-control-plaintext role-highlight">{{ pegawai.RoleLabel }}</p>
+
+<div class="col-12 pt-2">
+    <div class="reg-card">
+        <div class="reg-card-header">
+            <p class="reg-card-header-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                Informasi Registrasi Pegawai
+            </p>
+        </div>
+
+        <form action="/verifikasi/{{ pegawai.ID }}" method="post">
+            <div class="reg-card-body">
+                {% include "alert.html" %}
+                
+                <div class="row">
+                    <!-- Column 1 -->
+                    <div class="col-md-6 border-end" style="border-color: var(--navy-light) !important;">
+                        <div class="detail-section-title">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+                            Informasi Akun
+                        </div>
+
+                        <div class="info-group">
+                            <div class="info-label">Pengangkatan Menjadi</div>
+                            <div class="mt-1">
+                                <div class="info-value role-highlight">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    {{ pegawai.RoleLabel }}
+                                </div>
                             </div>
                         </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Nama Pegawai</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.PegNama }}</p>
-                            </div>
+
+                        <div class="info-group">
+                            <div class="info-label">Nama Pegawai</div>
+                            <div class="info-value">{{ pegawai.PegNama }}</div>
                         </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">NIK</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.PegNik }}</p>
-                            </div>
+                        <div class="info-group">
+                            <div class="info-label">NIK</div>
+                            <div class="info-value">{{ pegawai.PegNik }}</div>
                         </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">NIP/NRP</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.PegNip }}</p>
-                            </div>
+                        <div class="info-group">
+                            <div class="info-label">NIP/NRP</div>
+                            <div class="info-value">{{ pegawai.PegNip }}</div>
                         </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">User ID</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.PegNamauser }}</p>
-                            </div>
+                        <div class="info-group">
+                            <div class="info-label">User ID</div>
+                            <div class="info-value">{{ pegawai.PegNamauser }}</div>
                         </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Alamat</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.PegAlamat }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Telepon</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.PegTelepon }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Email</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.PegEmail }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Pangkat</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.PegPangkat }}</p>
-                            </div>
+                        <div class="info-group">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">{{ pegawai.PegEmail }}</div>
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Jabatan</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-plaintext">{{ pegawai.PegJabatan }}</p>
-                            </div>
+
+                    <!-- Column 2 -->
+                    <div class="col-md-6 ps-md-4">
+                        <div class="detail-section-title">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            Jabatan & Status
                         </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Golongan</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.PegGolongan }}</p>
-                            </div>
+
+                        <div class="info-group">
+                            <div class="info-label">Pangkat</div>
+                            <div class="info-value">{{ pegawai.PegPangkat }}</div>
                         </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Status</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{%if pegawai.PegIsActive == 1 %} Aktif {% else %} Non Aktif {% endif %}</p>
-                            </div>
+                        <div class="info-group">
+                            <div class="info-label">Jabatan</div>
+                            <div class="info-value">{{ pegawai.PegJabatan }}</div>
                         </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Nomor SK</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.PegNoSk }}</p>
-                            </div>
+                        <div class="info-group">
+                            <div class="info-label">Golongan</div>
+                            <div class="info-value">{{ pegawai.PegGolongan }}</div>
                         </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Masa Berlaku SK</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.GetMasaBerlaku }}</p>
-                            </div>
+                        <div class="info-group">
+                            <div class="info-label">Masa Berlaku SK</div>
+                            <div class="info-value">{{ pegawai.GetMasaBerlaku }}</div>
                         </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Status Verifikasi</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.GetStatusVerifikasi }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group mb-3 row">
-                            <label class="col-sm-2  text-end control-label col-form-label">Dibuat Tanggal</label>
-                            <div class="col-sm-9">
-                                <p class="form-control-plaintext">{{ pegawai.GetTglBuat }}</p>
+                        <div class="info-group">
+                            <div class="info-label">Status Verifikasi</div>
+                            <div class="info-value">
+                                {% if pegawai.PegStatus == 0 %}
+                                    <span class="reg-badge badge-warning">● Menunggu</span>
+                                {% elif pegawai.PegStatus == 1 or pegawai.PegStatus == 2 %}
+                                    <span class="reg-badge badge-success">● Disetujui</span>
+                                {% else %}
+                                    <span class="reg-badge badge-danger">● Ditolak</span>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
-                {% if isAdmin %}
-                <div class="border-top">
-                    {% for obj in documents %}
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">{{ obj.Label }}</label>
-                        <div class="col-sm-9">
-                            {% if obj.Jenis == "TTD" %}
-                            <p class="form-control-plaintext"><img src="/preview/image/{{ obj.ID }}" width="200"/></p>
-                            {% else %}
-                            <p class="form-control-plaintext"><a href="/download/{{ obj.ID }}"> <span style="width: 16px;" data-feather="download"></span> {{ obj.Filename }}</a></p>
-                            {% endif %}
-                        </div>
+
+                {% if isAdmin and documents %}
+                <div class="mt-4 pt-3 border-top" style="border-color: var(--navy-light) !important;">
+                    <div class="detail-section-title">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        Lampiran Dokumen
                     </div>
-                    {% endfor %}
+                    <div class="row">
+                        {% for obj in documents %}
+                        <div class="col-md-6 mb-3">
+                            <div class="info-label">{{ obj.Label }}</div>
+                            <div class="mt-1">
+                                {% if obj.Jenis == "TTD" %}
+                                    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:10px; display:inline-block;">
+                                        <img src="/preview/image/{{ obj.ID }}" style="max-width:240px; border-radius:6px;"/>
+                                    </div>
+                                {% else %}
+                                    <a href="/download/{{ obj.ID }}" class="doc-link">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                        {{ obj.Filename }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
                 {% endif %}
-                <div class="border-top">
-                    <div class="card-body">
-                        {% if group == "UKPBJ" %}
-                        <button type="submit" class="btn btn-primary " name="action" value="approve">
-                            <span style="width: 16px;" data-feather="save"></span> Approve
-                        </button>
-                        <button type="submit" class="btn btn-danger " name="action" value="reject">
-                            <span style="width: 16px;" data-feather="save"></span> Rejected
-                        </button>
-                        {% elif isAdminAgency %}
-                        <button type="submit" class="btn btn-primary " name="action" value="approve">
-                            <span style="width: 16px;" data-feather="save"></span> Approve & Akun SPSE sudah dibuatkan
-                        </button>
-                        {% endif %}
+            </div>
 
-                        <a href="/verifikasi" class="btn btn-secondary  text-white"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
-                    </div>
+            <div class="reg-card-body border-top" style="background:#fcfdfe; border-color: var(--navy-light) !important;">
+                <div class="d-flex align-items-center gap-2">
+                    {% if group == "UKPBJ" %}
+                        <button type="submit" class="btn-action btn-navy" name="action" value="approve">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            Approve
+                        </button>
+                        <button type="submit" class="btn-action btn-danger-custom" name="action" value="reject">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                            Rejected
+                        </button>
+                    {% elif isAdminAgency %}
+                        <button type="submit" class="btn-action btn-navy" name="action" value="approve">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            Approve & Akun SPSE Siap
+                        </button>
+                    {% endif %}
+
+                    <a href="/verifikasi" class="btn-action btn-secondary-custom">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                        Kembali
+                    </a>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
-
 {% endblock %}
 
 {% block script %}

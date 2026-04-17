@@ -1,41 +1,175 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
-{% block pagetitle %}
-Daftar Pokja
+{% block page_tab_title %}
+Daftar Pejabat Pengadaan
+{% endblock %}
+
+{% block css %}
+<style>
+    :root {
+        --navy:       #11215D;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+    }
+    .reg-card-header {
+        background: var(--navy);
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-header-title {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-body { padding: 1.5rem 1.75rem; }
+
+    .reg-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .85rem;
+        color: var(--navy);
+        table-layout: fixed;
+    }
+    .reg-table thead tr { background: var(--navy-light); }
+    .reg-table thead th {
+        padding: .65rem 1rem;
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--navy);
+        border-bottom: 2px solid var(--border);
+        white-space: nowrap;
+    }
+    .reg-table tbody tr {
+        border-bottom: 1px solid var(--navy-light);
+        transition: background .12s;
+    }
+    .reg-table tbody tr:last-child { border-bottom: none; }
+    .reg-table tbody tr:hover { background: #f0f4fd; }
+    .reg-table td { padding: .7rem 1rem; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .reg-link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: .85rem; }
+    .reg-link:hover { text-decoration: underline; }
+
+    .btn-action {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: .6rem 1.25rem; border-radius: 8px; border: none;
+        font-size: .85rem; font-weight: 700; cursor: pointer;
+        transition: all .2s; text-decoration: none;
+    }
+    .btn-navy { background: var(--navy); color: #fff; }
+    .btn-navy:hover { background: #0c1940; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(17,33,93,0.2); }
+
+    .icon-action {
+        color: var(--text-muted); padding: 4px; border-radius: 4px; transition: .15s;
+    }
+    .icon-action:hover { background: var(--navy-light); color: var(--accent); }
+    .icon-danger:hover { background: #fee2e2; color: #dc2626; }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Daftar Pejabat Pengadaan</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item active">Daftar Pejabat Pengadaan</li>
+<div class="reg-header">
+    <h2 class="reg-page-title">Pejabat Pengadaan</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li aria-current="page" style="color:#94a3b8;">Daftar Pejabat Pengadaan</li>
         </ol>
-    </div>
+    </nav>
 </div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            <div class="card-body">
-                {% include "alert.html" %}
-                <table class="table table-bordered table-striped" id="table-data">
-                    <thead>
-                    <tr>
-                        <th>Group</th>
-                        <th>Tahun</th>
-                        <th>Nomor SK</th>
-                        <th width="5%">action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <a href="/pp/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
+
+<div class="col-12 pt-2">
+    <div class="reg-card">
+        <div class="reg-card-header">
+            <p class="reg-card-header-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                </svg>
+                Daftar Pejabat Pengadaan
+            </p>
+        </div>
+
+        <div class="reg-card-body">
+            {% include "alert.html" %}
+            <div class="mb-4">
+                <a href="/pp/edit" class="btn-action btn-navy">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                    Tambah Pejabat Pengadaan
+                </a>
             </div>
+
+            <table class="reg-table" id="table-data">
+                <thead>
+                    <tr>
+                        <th style="width:40%">Nama Group / SK</th>
+                        <th style="width:15%">Tahun</th>
+                        <th style="width:30%">Nomor SK</th>
+                        <th style="width:15%">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block script %}
@@ -46,21 +180,20 @@ Daftar Pokja
         serverSide: true,
         columns: [
             {data : "groups", render : function(data, type, row){
-                    return '<a href="/pp/'+row["ID"]+'">'+data+'</a>'
+                    return '<a href="/pp/'+row["ID"]+'" class="reg-link">'+data+'</a>'
                 }
             },
             {data : "tahun"},
             {data : "no_sk"},
-            {data : "ID", render: function(data, type, row){
-                    return '<a href="/pp/edit/'+data+'"><span style="width: 16px;" data-feather="edit"></span></a>&nbsp;' +
-                        '<a href="/pp/hapus/'+data+'"><span style="width: 16px;" data-feather="trash"></span></a>'
+            {data : "ID", orderable: false, searchable: false, render: function(data, type, row){
+                    return '<div class="d-flex gap-2">' +
+                        '<a href="/pp/edit/'+data+'" class="icon-action" title="Edit"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></a>' +
+                        '<a href="/pp/hapus/'+data+'" class="icon-action icon-danger" title="Hapus" onclick="return confirm(\'Hapus Pejabat Pengadaan ini?\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></a>' +
+                        '</div>';
                 }
             },
         ],
-        aaSorting: [[0, 'desc']],
-        drawCallback: function( settings ) {
-            feather.replace();
-        }
+        aaSorting: [[0, 'desc']]
     });
 </script>
 {% endblock %}

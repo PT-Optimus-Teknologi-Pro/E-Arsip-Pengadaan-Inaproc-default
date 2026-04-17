@@ -17,7 +17,7 @@ func CreateManualPaketForm(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	usersession := getUserSession(c)
 	pegawai := services.GetPegawai(usersession.Id)
-	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() {
+	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() && !usersession.IsUkpbj() && !usersession.IsPokja() && !usersession.IsPp() {
 		return Forbiden(c)
 	}
 	if !pegawai.IsApprove() {
@@ -30,6 +30,12 @@ func CreateManualPaketForm(c *fiber.Ctx) error {
 		mp["callerRole"] = "ppk"
 	} else if usersession.IsArsiparis() {
 		mp["callerRole"] = "arsiparis"
+	} else if usersession.IsUkpbj() {
+		mp["callerRole"] = "ukpbj"
+	} else if usersession.IsPokja() {
+		mp["callerRole"] = "pokja"
+	} else if usersession.IsPp() {
+		mp["callerRole"] = "pp"
 	} else {
 		mp["callerRole"] = "admin"
 	}
@@ -39,7 +45,7 @@ func CreateManualPaketForm(c *fiber.Ctx) error {
 func SaveManualPaket(c *fiber.Ctx) error {
 	usersession := getUserSession(c)
 	pegawai := services.GetPegawai(usersession.Id)
-	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() {
+	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() && !usersession.IsUkpbj() && !usersession.IsPokja() && !usersession.IsPp() {
 		return Forbiden(c)
 	}
 	if !pegawai.IsApprove() {
@@ -67,9 +73,9 @@ func SaveManualPaket(c *fiber.Ctx) error {
 		return flashError(c, "Gagal simpan paket manual: "+err.Error(), "/paket/create-manual")
 	}
 
-	// Redirect back to where they came from based on role
-	if usersession.IsPpk() {
-		return flashSuccess(c, "Paket manual berhasil dibuat", "/ppk/dokumen-privat")
+	// Redirect back to Dokumen Privat for all relevant roles
+	if usersession.IsPpk() || usersession.IsUkpbj() || usersession.IsPokja() || usersession.IsPp() {
+		return flashSuccess(c, "Paket manual berhasil dibuat", "/"+strings.ToLower(usersession.Role)+"/dokumen-privat")
 	}
 	return flashSuccess(c, "Paket manual berhasil dibuat", "/paket/"+utils.UintToString(paketId))
 }
@@ -78,7 +84,7 @@ func EditManualPaketForm(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	usersession := getUserSession(c)
 	pegawai := services.GetPegawai(usersession.Id)
-	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() {
+	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() && !usersession.IsUkpbj() && !usersession.IsPokja() && !usersession.IsPp() {
 		return Forbiden(c)
 	}
 	if !pegawai.IsApprove() {
@@ -98,15 +104,23 @@ func EditManualPaketForm(c *fiber.Ctx) error {
 	mp["satkers"] = services.GetAllSatker()
 	if usersession.IsPpk() {
 		mp["callerRole"] = "ppk"
-	} else {
+	} else if usersession.IsArsiparis() {
 		mp["callerRole"] = "arsiparis"
+	} else if usersession.IsUkpbj() {
+		mp["callerRole"] = "ukpbj"
+	} else if usersession.IsPokja() {
+		mp["callerRole"] = "pokja"
+	} else if usersession.IsPp() {
+		mp["callerRole"] = "pp"
+	} else {
+		mp["callerRole"] = "admin"
 	}
 	return c.Render("paket/form-manual-edit", mp)
 }
 
 func UpdateManualPaket(c *fiber.Ctx) error {
 	usersession := getUserSession(c)
-	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() {
+	if !usersession.IsArsiparis() && !usersession.IsPpk() && !usersession.IsAdmin() && !usersession.IsUkpbj() && !usersession.IsPokja() && !usersession.IsPp() {
 		return Forbiden(c)
 	}
 
@@ -134,8 +148,8 @@ func UpdateManualPaket(c *fiber.Ctx) error {
 		return flashError(c, "Gagal update paket manual: "+err.Error(), "/paket/edit-manual/"+utils.UintToString(id))
 	}
 
-	if usersession.IsPpk() {
-		return flashSuccess(c, "Paket manual berhasil diperbarui", "/ppk/dokumen-privat")
+	if usersession.IsPpk() || usersession.IsUkpbj() || usersession.IsPokja() || usersession.IsPp() {
+		return flashSuccess(c, "Paket manual berhasil diperbarui", "/"+strings.ToLower(usersession.Role)+"/dokumen-privat")
 	}
 	return flashSuccess(c, "Paket manual berhasil diperbarui", "/paket/"+utils.UintToString(id))
 }
@@ -212,6 +226,19 @@ func GetPaket(c *fiber.Ctx) error {
 	mp["ppks"] = services.GetPPKs()
 	mp["prosesOnlyPpk"] = paket.IsOnlyPpk()
 	mp["bukti"] = models.GetDokPaketJenis(paket.ID, "Bukti Manual")
+	
+	// Dynamic back URL for manual packages
+	backUrl := "/paket"
+	if paket.RupId == 0 {
+		group := ""
+		if mp["group"] != nil {
+			group = strings.ToLower(utils.InterfaceToString(mp["group"]))
+		}
+		if group == "ukpbj" || group == "ppk" || group == "pokja" || group == "pp" || group == "arsiparis" {
+			backUrl = "/" + group + "/dokumen-privat"
+		}
+	}
+	mp["backUrl"] = backUrl
 	return c.Render("paket/paket-detil", mp)
 }
 

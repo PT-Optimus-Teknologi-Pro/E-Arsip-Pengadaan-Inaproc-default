@@ -31,8 +31,6 @@ func CreateVerifikasi(c *fiber.Ctx) error {
 		message = "Verifikasi Akun " + user.PegNama + " Sukses! Data sekarang dapat dilihat di menu Pegawai."
 	case "reject":
 		message = "Penolakan Akun " + user.PegNama + " berhasil. Data tetap terekam sebagai Ditolak."
-	case "block":
-		message = "Akun " + user.PegNama + " berhasil di-Banned/Block. Akses login dikunci permanen."
 	case "delete":
 		message = "Data pendaftar " + user.PegNama + " telah Dihapus Permanen dari sistem."
 	}
@@ -77,10 +75,20 @@ func GetVerifikasiView(c *fiber.Ctx) error {
 
 func DeleteVerifikasi(c *fiber.Ctx) error {
 	id, _ := c.ParamsInt("id")
+	user := services.GetPegawai(uint(id))
+	if user.ID == 0 {
+		return c.SendStatus(404)
+	}
+	
+	// Restriction: Only WAIT (0) or REJECT (3) accounts can be deleted
+	if user.PegStatus != 0 && user.PegStatus != 3 {
+		return flashError(c, "Hanya akun yang belum diverifikasi atau ditolak yang dapat dihapus.", "/verifikasi")
+	}
+
 	err := services.DeletePegawai(uint(id))
 	if err != nil {
 		log.Error(err)
 		return flashError(c, "Hapus Akun Pendaftar Gagal", "/verifikasi")
 	}
-	return flashSuccess(c, "Data pendaftar telah berhasil dibumihanguskan.", "/verifikasi")
+	return flashSuccess(c, "Data pendaftar telah berhasil dihapus.", "/verifikasi")
 }

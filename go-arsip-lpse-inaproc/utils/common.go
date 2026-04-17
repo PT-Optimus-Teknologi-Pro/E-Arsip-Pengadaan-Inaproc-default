@@ -64,6 +64,13 @@ func InterfaceToUint(i interface{}) uint {
 	return 0
 }
 
+func InterfaceToString(i interface{}) string {
+	if i == nil {
+		return ""
+	}
+	return fmt.Sprintf("%v", i)
+}
+
 func StartWith(word string, prefix string) bool {
 	return strings.HasPrefix(word, prefix)
 }

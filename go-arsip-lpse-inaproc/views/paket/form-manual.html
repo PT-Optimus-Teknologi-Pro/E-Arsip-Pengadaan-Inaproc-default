@@ -8,10 +8,10 @@ Input Data Manual - Arsip Digital
 <div class="row align-items-center mb-4">
     <div class="col">
         <h2 class="page-title text-primary">
-            {% if callerRole == "ppk" %}Tambah Paket Mandiri{% else %}Input Pengarsipan Manual{% endif %}
+            {% if callerRole == "ppk" or callerRole == "ukpbj" or callerRole == "pokja" or callerRole == "pp" %}Tambah Paket Mandiri{% else %}Input Pengarsipan Manual{% endif %}
         </h2>
         <div class="text-muted">
-            {% if callerRole == "ppk" %}
+            {% if callerRole == "ppk" or callerRole == "ukpbj" or callerRole == "pokja" or callerRole == "pp" %}
             Tambahkan data paket pengadaan yang tidak tersedia di SiRUP untuk Dokumen Privat Anda.
             {% else %}
             Gunakan form ini untuk mengarsipkan data lama yang tidak ada di SIRUP.
@@ -19,8 +19,8 @@ Input Data Manual - Arsip Digital
         </div>
     </div>
     <div class="col-auto">
-        {% if callerRole == "ppk" %}
-        <a href="/ppk/dokumen-privat" class="btn btn-secondary">
+        {% if callerRole == "ppk" or callerRole == "ukpbj" or callerRole == "pokja" or callerRole == "pp" %}
+        <a href="/{{ callerRole }}/dokumen-privat" class="btn btn-secondary">
             <span style="width: 16px; height: 16px;" data-feather="arrow-left"></span>
             Kembali ke Dokumen Privat
         </a>

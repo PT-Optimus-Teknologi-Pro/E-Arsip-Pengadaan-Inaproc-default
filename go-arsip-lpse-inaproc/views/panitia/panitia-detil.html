@@ -1,69 +1,233 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
-{% block pagetitle %}
+{% block page_tab_title %}
 Detil Pokja
 {% endblock %}
 
+{% block css %}
+<style>
+    :root {
+        --navy:       #11215D;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    .reg-card-header {
+        background: var(--navy);
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-header-title {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-body { padding: 1.75rem; }
+
+    .detail-section-title {
+        font-size: .75rem;
+        font-weight: 800;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.8;
+    }
+
+    .info-group { margin-bottom: 1.25rem; }
+    .info-label {
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin-bottom: .15rem;
+    }
+    .info-value {
+        font-size: .95rem;
+        font-weight: 600;
+        color: var(--navy);
+        padding: .2rem 0;
+    }
+
+    .reg-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .85rem;
+        color: var(--navy);
+    }
+    .reg-table thead tr { background: var(--navy-light); }
+    .reg-table thead th {
+        padding: .65rem 1rem;
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--navy);
+        border-bottom: 2px solid var(--border);
+    }
+    .reg-table tbody tr { border-bottom: 1px solid var(--navy-light); }
+    .reg-table td { padding: .7rem 1rem; vertical-align: middle; }
+
+    /* Buttons */
+    .btn-action {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: .6rem 1.25rem; border-radius: 8px; border: none;
+        font-size: .85rem; font-weight: 700; cursor: pointer;
+        transition: all .2s; text-decoration: none;
+    }
+    .btn-navy { background: var(--navy); color: #fff; }
+    .btn-navy:hover { background: #0c1940; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(17,33,93,0.2); }
+    
+    .btn-success-custom { background: #10b981; color: #fff; }
+    .btn-success-custom:hover { background: #059669; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
+
+    .btn-secondary-custom { background: #f1f5f9; color: var(--text-muted); border: 1px solid #e2e8f0; }
+    .btn-secondary-custom:hover { background: #e2e8f0; color: var(--navy); }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Daftar Pokja</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item"><a href="/pokja">Daftar Pokja</a></li>
-            <li class="breadcrumb-item active">Detil</li>
+<div class="reg-header">
+    <h2 class="reg-page-title">Detil Pokja</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li><a href="/pokja">Daftar Pokja</a></li>
+            <li aria-current="page" style="color:#94a3b8;">Detil</li>
         </ol>
-    </div>
+    </nav>
 </div>
-    <div class="col-lg-12 pt-2">
-        <div class="card">
-                {% include "alert.html" %}
-                <div class="card-body">
-                    <div class="basic-form">
-                      <form>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Nama Pokja</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ panitia.Nama }}</p>
-                        </div>
+
+<div class="col-12 pt-2">
+    <div class="reg-card">
+        <div class="reg-card-header">
+            <p class="reg-card-header-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                </svg>
+                Informasi Kepanitiaan Pokja
+            </p>
+        </div>
+
+        <div class="reg-card-body">
+            {% include "alert.html" %}
+            
+            <div class="row">
+                <div class="col-md-4 border-end" style="border-color: var(--navy-light) !important;">
+                    <div class="detail-section-title">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+                        Data Pokja
                     </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Tahun</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ panitia.Tahun }}</p>
-                        </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label">Nama Pokja</div>
+                        <div class="info-value">{{ panitia.Nama }}</div>
                     </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Anggota</label>
-                        <div class="col-sm-9">
-                            <table class="table">
-                                <tr>
-                                    <th>Nama</th>
-                                    <th>NIP</th>
-                                    <th>User ID</th>
-                                </tr>
-                                {% for obj in anggotas %}
-                                <tr>
-                                    <td>{{ obj.Pegawai.PegNama }}</td>
-                                    <td>{{ obj.Pegawai.PegNip }}</td>
-                                    <td>{{ obj.Pegawai.PegNamauser }}</td>
-                                </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
+                    
+                    <div class="info-group">
+                        <div class="info-label">Tahun Anggaran</div>
+                        <div class="info-value">{{ panitia.Tahun }}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-8 ps-md-4">
+                    <div class="detail-section-title">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Daftar Anggota Pokja
                     </div>
 
-                    <div class="form-group mb-3 row">
-                        <div class="col-sm-9">
-                        <a href="/pokja/edit/{{panitia.ID}}" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span>&nbsp;Edit</a>&nbsp;&nbsp;
-                        <a href="/pokja" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
-                        </div>
-                    </div>
-                      </form>
-                    </div>
-               </div>
+                    <table class="reg-table">
+                        <thead>
+                            <tr>
+                                <th>Nama Lengkap</th>
+                                <th>NIP</th>
+                                <th>User ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for obj in anggotas %}
+                            <tr>
+                                <td style="font-weight:600;">{{ obj.Pegawai.PegNama }}</td>
+                                <td>{{ obj.Pegawai.PegNip }}</td>
+                                <td style="color:var(--text-muted);">{{ obj.Pegawai.PegNamauser }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-top d-flex gap-2" style="border-color: var(--navy-light) !important;">
+                <a href="/pokja/edit/{{panitia.ID}}" class="btn-action btn-success-custom">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Edit Pokja
+                </a>
+                <a href="/pokja" class="btn-action btn-secondary-custom">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Kembali
+                </a>
+            </div>
         </div>
     </div>
+</div>
 {% endblock %}

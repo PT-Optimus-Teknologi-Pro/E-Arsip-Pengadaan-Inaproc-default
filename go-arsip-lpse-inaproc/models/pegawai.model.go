@@ -206,8 +206,26 @@ func DeletePegawai(user *Pegawai) error {
 	db.Where("peg_id = ?", user.ID).Delete(&ReviuPaket{})
 	db.Where("peg_id = ?", user.ID).Delete(&DokPaket{})
 	db.Where("peg_id = ?", user.ID).Delete(&BukuTamu{})
+	db.Where("peg_id = ?", user.ID).Delete(&KajiUlang{})
+	db.Where("ppk_id = ?", user.ID).Delete(&KajiUlang{})
+	db.Where("pp_id = ?", user.ID).Delete(&KajiUlang{})
+	db.Where("pnt_id IN (SELECT id FROM panitia WHERE created_by = ?)", user.ID).Delete(&KajiUlang{})
+	
 	db.Where("ppk_id = ?", user.ID).Delete(&PaketPPk{})
 	db.Where("peg_id = ?", user.ID).Delete(&PaketPPk{})
+
+	// Nullify assignments in active packages instead of deleting packages
+	db.Model(&Paket{}).Where("ppk_id = ?", user.ID).Update("ppk_id", 0)
+	db.Model(&Paket{}).Where("pp_id = ?", user.ID).Update("pp_id", 0)
+	db.Model(&Paket{}).Where("created_by = ?", user.ID).Update("created_by", 0)
+	
+	// Handle audit trail / checklists
+	db.Where("created_by = ?", user.ID).Delete(&ChecklistPaket{})
+	db.Where("created_by = ?", user.ID).Delete(&ChecklistPaketHistory{})
+	db.Where("created_by = ?", user.ID).Delete(&DokPersiapan{})
+	
+	// Handle UKPBJ admin link
+	db.Model(&Ukpbj{}).Where("peg_id = ?", user.ID).Update("peg_id", 0)
 	
 	return db.Delete(user).Error
 }

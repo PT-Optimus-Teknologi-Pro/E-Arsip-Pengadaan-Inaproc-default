@@ -89,10 +89,6 @@ func VerifikasiAkun(pegawai models.Pegawai, action string, usrgroup string) erro
 		pegawai.PegStatus = models.REJECT
 		pegawai.TglReject = time.Now()
 		pegawai.PegIsactive = 0
-	case "block":
-		pegawai.PegStatus = models.REJECT
-		pegawai.PegIsactive = 0
-		pegawai.PegCatatan = "Akun telah di-Banned/Blokir"
 	}
 	return models.SavePegawai(&pegawai)
 }

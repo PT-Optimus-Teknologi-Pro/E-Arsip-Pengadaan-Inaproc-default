@@ -1,88 +1,255 @@
 {% extends "border.html" %}
 
-{% block pagetitle %}
+{% block page_tab_title %}
 Daftar Pengajuan
 {% endblock %}
 
+{% block css %}
+<style>
+    :root {
+        --navy:       #11215D;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+    }
+    .reg-card-header {
+        background: var(--navy);
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-header-title {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-body { padding: 1.5rem 1.75rem; }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: .35rem;
+        margin-bottom: 1.25rem;
+    }
+    .filter-label {
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+    }
+    .filter-select {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: .45rem .85rem;
+        font-size: .83rem;
+        color: var(--navy);
+        background: #f8faff;
+        outline: none;
+        transition: border .15s;
+        min-width: 200px;
+        max-width: 260px;
+    }
+    .filter-select:focus { border-color: var(--accent); background: #fff; }
+
+    .reg-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .85rem;
+        color: var(--navy);
+        table-layout: fixed;
+    }
+    .reg-table thead tr { background: var(--navy-light); }
+    .reg-table thead th {
+        padding: .65rem 1rem;
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--navy);
+        border-bottom: 2px solid var(--border);
+        white-space: nowrap;
+    }
+    .reg-table tbody tr {
+        border-bottom: 1px solid var(--navy-light);
+        transition: background .12s;
+    }
+    .reg-table tbody tr:last-child { border-bottom: none; }
+    .reg-table tbody tr:hover { background: #f0f4fd; }
+    .reg-table td { padding: .7rem 1rem; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .reg-link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: .85rem; }
+    .reg-link:hover { text-decoration: underline; }
+
+    .reg-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: .28rem .75rem;
+        border-radius: 20px;
+        font-size: .73rem;
+        font-weight: 600;
+    }
+    .badge-warning { background: #fef9c3; color: #854d0e; border: 1px solid #fde68a; }
+    .badge-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge-danger  { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+    .btn-hapus {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: .3rem .75rem;
+        background: #dc2626;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: .78rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background .15s, transform .1s;
+    }
+    .btn-hapus:hover { background: #b91c1c; transform: translateY(-1px); }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Daftar Pengajuan</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item active">Daftar Pengajuan</li>
+<div class="reg-header">
+    <h2 class="reg-page-title">Daftar Pengajuan</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li aria-current="page" style="color:#94a3b8;">Daftar Pengajuan</li>
         </ol>
-    </div>
+    </nav>
 </div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            <div class="card-body">
-                {% include "alert.html" %}
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Filter Status</label>
-                        <select class="form-select" id="filter_status">
-                            <option value="all">Semua</option>
-                            <option value="0">Menunggu Verifikasi</option>
-                            <option value="1">Disetujui</option>
-                            <option value="3">Ditolak / Di-Block</option>
-                        </select>
-                    </div>
-                </div>
-                    <table class="table table-bordered table-striped" id="table-data">
-                        <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th width="15%">NIP</th>
-                            <th width="15%">Email</th>
-                            <th width="15%">User ID</th>
-                            <th width="10%">status</th>
-                            <th width="10%">Aksi</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+
+<div class="col-12 pt-2">
+    <div class="reg-card">
+        <div class="reg-card-header">
+            <p class="reg-card-header-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                Daftar Pengajuan Pendaftaran
+            </p>
+        </div>
+
+        <div class="reg-card-body">
+            {% include "alert.html" %}
+
+            <div class="filter-group">
+                <label class="filter-label">Filter Status</label>
+                <select class="filter-select" id="filter_status">
+                    <option value="all">Semua</option>
+                    <option value="0">Menunggu Verifikasi</option>
+                    <option value="1">Disetujui</option>
+                    <option value="3">Ditolak</option>
+                </select>
             </div>
+
+            <table class="reg-table" id="table-data">
+                <thead>
+                    <tr>
+                        <th style="width:25%">Nama</th>
+                        <th style="width:15%">NIP</th>
+                        <th style="width:25%">Email</th>
+                        <th style="width:15%">User ID</th>
+                        <th style="width:20%">Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
-    {% endblock %}
-
-    {% block script %}
-    <script>
-        var table = new DataTable("#table-data", {
-            ajax: '/verifikasi/data?status=all',
-            processing: true,
-            serverSide: true,
-            columns: [
-                {data : "peg_nama", render : function(data, type, row){
-                        return '<a href="/verifikasi/'+row["ID"]+'">'+data+'</a>'
-                    }
-                },
-                {data : "peg_nip"},
-                {data : "peg_email"},
-                {data : "peg_namauser"},
-                {data : "peg_status", render : function (data, type, row){
-                        if(data == 0)
-                            return '<span class="badge bg-yellow-lt">Menunggu Verifikasi</span>'
-                        else if (data == 1 || data == 2)
-                            return '<span class="badge bg-green-lt">Disetujui</span>'
-                        else if (data == 3)
-                            return '<span class="badge bg-red-lt">Ditolak</span>'
-                    }
-                },
-                {data : "id", orderable: false, searchable: false, render : function(data, type, row){
-                        return '<a href="/verifikasi/hapus/'+data+'" class="btn btn-danger btn-sm" onclick="return confirm(\'Hapus permanen pendaftar ini dari database?\');">Hapus</a>'
-                    }
-                }
-            ],
-            aaSorting: [[0, 'desc']]
-        });
-
-        $('#filter_status').on('change', function(){
-            table.ajax.url('/verifikasi/data?status=' + $(this).val()).load();
-        });
-    </script>
+</div>
 {% endblock %}
+
+{% block script %}
+<script>
+    var table = new DataTable("#table-data", {
+        ajax: '/verifikasi/data?status=all',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data: "peg_nama", render: function(data, type, row){
+                return '<a href="/verifikasi/'+row["ID"]+'" class="reg-link">'+data+'</a>';
+            }},
+            {data: "peg_nip"},
+            {data: "peg_email"},
+            {data: "peg_namauser"},
+            {data: "peg_status", render: function(data, type, row){
+                if (data == 0)
+                    return '<span class="reg-badge badge-warning">● Menunggu Verifikasi</span>';
+                else if (data == 1 || data == 2)
+                    return '<span class="reg-badge badge-success">● Disetujui</span>';
+                else if (data == 3)
+                    return '<span class="reg-badge badge-danger">● Ditolak</span>';
+            }}
+        ],
+        aaSorting: [[0, 'desc']]
+    });
+
+    $('#filter_status').on('change', function(){
+        table.ajax.url('/verifikasi/data?status=' + $(this).val()).load();
+    });
+</script>
+{% endblock %}
+ock %}

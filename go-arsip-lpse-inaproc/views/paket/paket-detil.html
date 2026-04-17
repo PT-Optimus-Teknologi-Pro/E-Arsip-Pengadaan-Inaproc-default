@@ -11,7 +11,7 @@
     <div class="col-auto">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item"><a href="/paket">Daftar Paket</a></li>
+            <li class="breadcrumb-item"><a href="{{ backUrl }}">{% if paket.RupId == 0 %}Dokumen Privat{% else %}Daftar Paket{% endif %}</a></li>
             <li class="breadcrumb-item active">Detil Paket</li>
         </ol>
     </div>
@@ -234,12 +234,12 @@
                         {% if paket.Metode != 8 and paket.Metode != 9 %}
                         <form method="post" action="/paket/send-ukpbj/{{ paket.ID }}">
                         <button type="submit" name="kirim" class="btn btn-primary"><span style="width: 16px;" data-feather="send"></span>Kirim ke UKPBJ</button>
-                        <a href="/paket" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        <a href="{{ backUrl }}" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
                         </form>
                         {% elif paket.Metode == 8 or paket.Metode == 9 %}
                         <form method="post" action="/paket/save/{{ paket.ID }}">
                         <button type="submit" name="simpan" class="btn btn-primary"><span style="width: 16px;" data-feather="send"></span> Simpan </button>
-                        <a href="/paket" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        <a href="{{ backUrl }}" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
                         </form>
                         {% endif %}
                         {% else %}
