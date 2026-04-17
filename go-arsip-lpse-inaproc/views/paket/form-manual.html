@@ -38,100 +38,43 @@ Input Data Manual - Arsip Digital
         {% include "alert.html" %}
         <form action="/paket/create-manual" method="POST" enctype="multipart/form-data">
             <div class="card-body">
-                <div class="row">
-                    <!-- Informasi Utama -->
-                    <div class="col-md-7 border-end-md">
-                        <div class="form-group mb-3">
-                            <label class="form-label required">Nama Paket Pengadaan</label>
-                            <input type="text" name="nama" class="form-control" placeholder="Contoh: Pengadaan Alat Tulis Kantor Tahun 2022" required>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label required">Tahun Anggaran</label>
-                                <input type="number" name="tahun" class="form-control" value="2023" min="1900" max="2100" required>
-                                <div class="text-muted small mt-1">Masukkan tahun (contoh: 2018)</div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label required">Satker / SKPD</label>
-                                <select name="satker_id" class="form-select" required>
-                                    {% for s in satkers %}
-                                    <option value="{{ s.ID }}">{{ s.Nama }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label required">Pagu Anggaran</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Rp</span>
-                                    <input type="text" name="pagu" class="form-control rupiah" placeholder="0" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label required">HPS (Harga Perkiraan Sendiri)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Rp</span>
-                                    <input type="text" name="hps" class="form-control rupiah" placeholder="0" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label required">Jenis Pengadaan</label>
-                                <select id="select-jenis" class="form-select mb-2" onchange="checkLainnya(this, 'manual-jenis')" required>
-                                    <option value="" disabled selected>Pilih Jenis Pengadaan...</option>
-                                    <option value="Barang">Barang</option>
-                                    <option value="Pekerjaan Konstruksi">Pekerjaan Konstruksi</option>
-                                    <option value="Jasa Konsultansi">Jasa Konsultansi</option>
-                                    <option value="Jasa Lainnya">Jasa Lainnya</option>
-                                    <option value="custom">-- Lainnya (Ketik Manual) --</option>
-                                </select>
-                                <input type="text" id="manual-jenis" name="jenis" class="form-control d-none" placeholder="Ketik Jenis Pengadaan kustom...">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label required">Metode Pengadaan</label>
-                                <select id="select-metode" class="form-select mb-2" onchange="checkLainnya(this, 'manual-metode')" required>
-                                    <option value="" disabled selected>Pilih Metode Pengadaan...</option>
-                                    <option value="E-Purchasing">E-Purchasing</option>
-                                    <option value="Pengadaan Langsung">Pengadaan Langsung</option>
-                                    <option value="Penunjukan Langsung">Penunjukan Langsung</option>
-                                    <option value="Tender">Tender</option>
-                                    <option value="Seleksi">Seleksi</option>
-                                    <option value="Tender Cepat">Tender Cepat</option>
-                                    <option value="custom">-- Lainnya (Ketik Manual) --</option>
-                                </select>
-                                <input type="text" id="manual-metode" name="metode" class="form-control d-none" placeholder="Ketik Metode Pengadaan kustom...">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bukti & Keterangan -->
-                    <div class="col-md-5">
-                        <div class="form-group mb-3">
-                            <label class="form-label">Keterangan / Deskripsi</label>
-                            <textarea name="keterangan" class="form-control" rows="4" placeholder="Jelaskan alasan pengarsipan manual atau detail tambahan lainnya..."></textarea>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label class="form-label">Dokumen Bukti (Opsional)</label>
-                            <input type="file" name="bukti" class="form-control" accept=".pdf,.xlsx,.csv,.zip,.docx">
-                            <div class="text-muted small mt-2">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <!-- Simplified Fields: Focus on Description and Evidence -->
+                        <div class="form-group mb-4">
+                            <label class="form-label text-primary fw-bold" for="keterangan">Keterangan / Deskripsi</label>
+                            <textarea name="keterangan" id="keterangan" class="form-control form-control-lg" rows="6" placeholder="Masukkan keterangan atau deskripsi dokumen ini..." required></textarea>
+                            <div class="text-muted extra-small mt-2">
                                 <span style="width: 14px; height: 14px;" data-feather="info"></span>
-                                Unggah dokumen pendukung seperti SK, Ringkasan Kontrak, atau Bukti Selesai Pekerjaan.
+                                Gunakan kolom ini untuk menjelaskan isi dari dokumen yang diunggah. Deskripsi ini juga akan menjadi judul di daftar tabel.
                             </div>
                         </div>
 
-                        <div class="alert alert-warning border-start border-3 border-warning mt-4">
-                            <div class="d-flex">
-                                <div class="me-2">
-                                    <span style="width: 20px; height: 20px;" data-feather="alert-triangle" class="text-warning"></span>
+                        <div class="form-group mb-4">
+                            <label class="form-label text-primary fw-bold">Dokumen Bukti (Sebebas-besarnya)</label>
+                            <div class="upload-zone p-4 text-center border-dashed rounded-3 mb-2" style="border: 2px dashed #cbd5e1; background: #f8fafc; cursor: pointer;" onclick="document.getElementById('bukti-input').click();">
+                                <div class="mb-3">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                </div>
+                                <input type="file" name="bukti" id="bukti-input" class="form-control d-none" accept=".pdf,.xlsx,.csv,.zip,.docx" multiple required onchange="updateFileList(this)">
+                                <div class="fw-bold text-navy">Klik untuk Memilih File atau Seret & Jatuhkan</div>
+                                <div class="text-muted small mt-1">Anda bisa memilih beberapa file sekaligus</div>
+                                <div id="file-list-preview" class="mt-3 text-start small text-primary fw-bold d-none"></div>
+                            </div>
+                            <div class="text-muted extra-small text-center">
+                                Format: PDF, Excel, Zip, Word (Max 10MB/file)
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info bg-opacity-10 border-info border-start border-4 rounded-3 py-3 px-4">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <span style="width: 24px; height: 24px;" data-feather="shield" class="text-info"></span>
                                 </div>
                                 <div class="small">
-                                    Data manual ini akan tersimpan permanen dalam repositori arsip digital. Pastikan data yang diinput sudah benar.
+                                    <strong>Keamanan Arsip:</strong> Dokumen yang Anda unggah akan disimpan secara aman dan hanya dapat diakses oleh Anda.
                                 </div>
                             </div>
                         </div>
@@ -157,29 +100,19 @@ Input Data Manual - Arsip Digital
         $('.rupiah').mask('000.000.000.000.000', {reverse: true});
     });
 
-    function checkLainnya(select, targetId) {
-        const manualInput = document.getElementById(targetId);
-        if (select.value === 'custom') {
-            manualInput.classList.remove('d-none');
-            manualInput.setAttribute('required', 'required');
-            manualInput.value = '';
-            manualInput.focus();
-            
-            // Set the main name to this input
-            manualInput.name = select.id.replace('select-', '');
-            select.removeAttribute('name');
+    function updateFileList(input) {
+        const preview = document.getElementById('file-list-preview');
+        if (input.files.length > 0) {
+            preview.classList.remove('d-none');
+            let html = '<div class="mb-1 text-navy">File terpilih:</div><ul class="ps-3 mb-0">';
+            for (let i = 0; i < input.files.length; i++) {
+                html += `<li>${input.files[i].name} (${Math.round(input.files[i].size/1024)} KB)</li>`;
+            }
+            html += '</ul>';
+            preview.innerHTML = html;
         } else {
-            manualInput.classList.add('d-none');
-            manualInput.removeAttribute('required');
-            
-            // Set the main name to the select
-            select.name = select.id.replace('select-', '');
-            manualInput.removeAttribute('name');
+            preview.classList.add('d-none');
         }
     }
-
-    // Initialize labels
-    document.getElementById('select-jenis').name = 'jenis';
-    document.getElementById('select-metode').name = 'metode';
 </script>
 {% endblock %}

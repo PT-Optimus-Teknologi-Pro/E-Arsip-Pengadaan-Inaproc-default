@@ -52,14 +52,26 @@ func SaveManualPaket(c *fiber.Ctx) error {
 		return Forbiden(c)
 	}
 	
-	nama := c.FormValue("nama")
-	tahun, _ := strconv.Atoi(c.FormValue("tahun"))
-	pagu, _ := strconv.ParseFloat(strings.ReplaceAll(c.FormValue("pagu"), ".", ""), 64)
-	hps, _ := strconv.ParseFloat(strings.ReplaceAll(c.FormValue("hps"), ".", ""), 64)
-	metodeStr := c.FormValue("metode")
-	jenis := c.FormValue("jenis")
-	satkerId, _ := strconv.Atoi(c.FormValue("satker_id"))
 	keterangan := c.FormValue("keterangan")
+	nama := c.FormValue("nama")
+	if nama == "" {
+		// Use first line or first 100 chars of keterangan as nama
+		nama = keterangan
+		if len(nama) > 100 {
+			nama = nama[:100] + "..."
+		}
+		if nama == "" {
+			nama = "Dokumen Privat"
+		}
+	}
+	
+	// Default values for removed fields
+	tahun := time.Now().Year()
+	pagu := 0.0
+	hps := 0.0
+	metodeStr := "-"
+	jenis := "-"
+	satkerId := 0
 
 	// Auto-assign ppkId: if creator is PPK, use their own ID
 	var ppkId uint
@@ -102,6 +114,8 @@ func EditManualPaketForm(c *fiber.Ctx) error {
 
 	mp["paket"] = paket
 	mp["satkers"] = services.GetAllSatker()
+	// Pass existing evidence docs so the form can show them
+	mp["listBukti"] = models.GetDokPaketJenisList(paket.ID, "Bukti Manual")
 	if usersession.IsPpk() {
 		mp["callerRole"] = "ppk"
 	} else if usersession.IsArsiparis() {
@@ -133,14 +147,25 @@ func UpdateManualPaket(c *fiber.Ctx) error {
 		}
 	}
 
-	nama := c.FormValue("nama")
-	tahun, _ := strconv.Atoi(c.FormValue("tahun"))
-	pagu, _ := strconv.ParseFloat(strings.ReplaceAll(c.FormValue("pagu"), ".", ""), 64)
-	hps, _ := strconv.ParseFloat(strings.ReplaceAll(c.FormValue("hps"), ".", ""), 64)
-	metodeStr := c.FormValue("metode")
-	jenis := c.FormValue("jenis")
-	satkerId, _ := strconv.Atoi(c.FormValue("satker_id"))
 	keterangan := c.FormValue("keterangan")
+	nama := c.FormValue("nama")
+	if nama == "" {
+		nama = keterangan
+		if len(nama) > 100 {
+			nama = nama[:100] + "..."
+		}
+		if nama == "" {
+			nama = "Dokumen Privat"
+		}
+	}
+	
+	// Default values for removed fields
+	tahun := time.Now().Year()
+	pagu := 0.0
+	hps := 0.0
+	metodeStr := "-"
+	jenis := "-"
+	satkerId := 0
 
 	err := services.UpdateManualPaket(c, id, usersession.Id, nama, tahun, pagu, hps, 0, metodeStr, jenis, uint(satkerId), keterangan)
 	if err != nil {
@@ -149,9 +174,53 @@ func UpdateManualPaket(c *fiber.Ctx) error {
 	}
 
 	if usersession.IsPpk() || usersession.IsUkpbj() || usersession.IsPokja() || usersession.IsPp() {
-		return flashSuccess(c, "Paket manual berhasil diperbarui", "/"+strings.ToLower(usersession.Role)+"/dokumen-privat")
+		return flashSuccess(c, "Paket manual berhasil diperbarui", "/paket/"+utils.UintToString(id))
 	}
 	return flashSuccess(c, "Paket manual berhasil diperbarui", "/paket/"+utils.UintToString(id))
+}
+
+func DownloadBuktiZip(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+
+	listBukti := models.GetDokPaketJenisList(id, "Bukti Manual")
+	if len(listBukti) == 0 {
+		return flashError(c, "Tidak ada dokumen bukti untuk didownload", c.Get("Referer"))
+	}
+
+	// Just download the single file if there's only one
+	if len(listBukti) == 1 {
+		doc := listBukti[0].Document()
+		return c.Download(doc.Filepath, doc.Filename)
+	}
+
+	var files []string
+	for _, b := range listBukti {
+		files = append(files, b.Document().Filepath)
+	}
+
+	// Use package name for the zip filename
+	safeName := strings.ReplaceAll(paket.Nama, " ", "_")
+	// Simple regex replacement for other special chars if needed, or just use strings.Map
+	safeName = strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' || r == '-' {
+			return r
+		}
+		return -1
+	}, safeName)
+
+	zipName := "bukti-" + safeName + "-" + utils.UintToString(id) + ".zip"
+	zipFile, err := utils.CreateZip(files, zipName)
+	if err != nil {
+		log.Error("Error creating zip: ", err)
+		return flashError(c, "Gagal membuat file zip: "+err.Error(), c.Get("Referer"))
+	}
+
+	return c.Download(zipFile, zipName)
 }
 
 func EditPaket(c *fiber.Ctx) error {
@@ -226,6 +295,10 @@ func GetPaket(c *fiber.Ctx) error {
 	mp["ppks"] = services.GetPPKs()
 	mp["prosesOnlyPpk"] = paket.IsOnlyPpk()
 	mp["bukti"] = models.GetDokPaketJenis(paket.ID, "Bukti Manual")
+	// For manual packages, also pass the bukti document details directly
+	if paket.RupId == 0 {
+		mp["listBukti"] = models.GetDokPaketJenisList(paket.ID, "Bukti Manual")
+	}
 	
 	// Dynamic back URL for manual packages
 	backUrl := "/paket"
@@ -239,6 +312,11 @@ func GetPaket(c *fiber.Ctx) error {
 		}
 	}
 	mp["backUrl"] = backUrl
+
+	// Manual/private packages get their own dedicated detail view
+	if paket.RupId == 0 {
+		return c.Render("paket/dokumen-privat-detil", mp)
+	}
 	return c.Render("paket/paket-detil", mp)
 }
 
@@ -268,10 +346,8 @@ func DeletePaket(c *fiber.Ctx) error {
 	}
 
 	mp := currentMap(c)
-	isArsiparis := mp["isArsiparis"].(bool)
 
-	// Restrict manual packages (RupId == 0) to Arsiparis only
-	if paket.RupId == 0 && !isArsiparis {
+	if !services.AuthorisasiPaket(paket, mp) {
 		return Forbiden(c)
 	}
 
@@ -657,6 +733,13 @@ func HapusDokPaket(c *fiber.Ctx) error {
 		log.Error(err)
 		return flashError(c, "Hapus Dokumen Gagal", "/paket/" + utils.UintToString(pktId))
 	}
+	
+	// If the deletion was triggered from the edit page, stay there
+	referer := c.Get("Referer")
+	if strings.Contains(referer, "/edit-manual/") {
+		return flashSuccess(c, "Hapus Dokumen Sukses", referer)
+	}
+	
 	return flashSuccess(c, "Hapus Dokumen Sukses", "/paket/"+utils.UintToString(pktId))
 }
 

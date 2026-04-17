@@ -123,6 +123,10 @@ func SaveDocument(c *fiber.Ctx, id uint, jenis string, name string) (uint, error
 	if err != nil {
 		return 0, err
 	}
+	return SaveDocumentHeader(c, id, jenis, file)
+}
+
+func SaveDocumentHeader(c *fiber.Ctx, id uint, jenis string, file *multipart.FileHeader) (uint, error) {
 	if file.Size == 0 {
 		return 0, errors.New("file is empty")
 	}
@@ -138,12 +142,9 @@ func SaveDocument(c *fiber.Ctx, id uint, jenis string, name string) (uint, error
 		Filesize: file.Size,
 		Filedate: time.Now(),
 	}
-	// err = models.SaveDocument(&document)
-	// if err != nil {
-	// 	return 0, err
-	// }
+	
 	destination := config.UploadPath() + "/" + utils.UintToString(document.ID) +"/"+utils.IntToString(document.Versi)+ "/" + file.Filename
-	err = saveFile(c, destination, file)
+	err := saveFile(c, destination, file)
 	if err != nil {
 		return 0, err
 	}

@@ -5,160 +5,490 @@ Edit Data Manual - Arsip Digital
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center mb-4">
-    <div class="col">
-        <h2 class="page-title text-primary">Edit Pengarsipan Manual</h2>
-        <div class="text-muted">Perbarui informasi paket pengarsipan data manual #{{ paket.ID }}.</div>
+
+<style>
+    :root {
+        --navy:       #11215D;
+        --navy-mid:   #1a3272;
+        --navy-light: #e8ecf7;
+        --navy-soft:  #f0f3fb;
+        --accent:     #2563eb;
+        --green:      #16a34a;
+        --red:        #dc2626;
+        --red-bg:     #fef2f2;
+        --red-ring:   #fee2e2;
+        --border:     #c7d0e8;
+        --border-soft:#e2e8f0;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+    }
+
+    /* ── Header ── */
+    .edm-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 1.75rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .edm-page-title {
+        font-size: 1.55rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0 0 .3rem;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .edm-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .edm-subtitle {
+        font-size: .82rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+    .edm-subtitle strong { color: var(--navy); }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: .5rem 1rem;
+        background: var(--white);
+        color: var(--navy);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: .82rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background .15s, transform .1s;
+        white-space: nowrap;
+    }
+    .btn-back:hover {
+        background: var(--navy-light);
+        color: var(--navy);
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    /* ── Card ── */
+    .edm-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.07);
+        overflow: hidden;
+    }
+    .edm-card-body { padding: 2rem; }
+    .edm-card-footer {
+        background: var(--navy-soft);
+        border-top: 1px solid var(--border);
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: .75rem;
+    }
+
+    /* ── Section label ── */
+    .edm-section-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: .78rem;
+        font-weight: 700;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        color: var(--navy);
+        margin-bottom: .75rem;
+    }
+    .edm-section-label::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border-soft);
+    }
+
+    /* ── Form controls ── */
+    .edm-label {
+        font-size: .82rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: .45rem;
+        display: block;
+    }
+    .edm-textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: .75rem 1rem;
+        font-size: .88rem;
+        color: #334155;
+        resize: vertical;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+        background: var(--white);
+        line-height: 1.65;
+        font-family: inherit;
+    }
+    .edm-textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+    .edm-hint {
+        display: flex;
+        align-items: flex-start;
+        gap: 5px;
+        font-size: .75rem;
+        color: var(--text-muted);
+        margin-top: .5rem;
+        line-height: 1.5;
+    }
+
+    /* ── Doc list ── */
+    .edm-doc-list {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+    .edm-doc-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .75rem 1rem;
+        background: var(--white);
+        border-bottom: 1px solid var(--border-soft);
+        gap: .75rem;
+    }
+    .edm-doc-item:last-child { border-bottom: none; }
+    .edm-doc-item:hover { background: var(--navy-soft); }
+
+    .edm-doc-icon {
+        width: 36px; height: 36px;
+        border-radius: 8px;
+        background: var(--navy-light);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .edm-doc-info { flex: 1; min-width: 0; }
+    .edm-doc-name {
+        font-size: .82rem;
+        font-weight: 600;
+        color: var(--navy);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .edm-doc-meta {
+        font-size: .72rem;
+        color: var(--text-muted);
+        margin-top: 1px;
+    }
+    .edm-doc-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    .icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px; height: 32px;
+        border-radius: 7px;
+        border: 1px solid transparent;
+        text-decoration: none;
+        transition: background .15s;
+        cursor: pointer;
+    }
+    .icon-btn.download {
+        color: var(--navy);
+        background: var(--navy-light);
+        border-color: var(--border);
+    }
+    .icon-btn.download:hover { background: var(--navy-soft); }
+    .icon-btn.delete {
+        color: var(--red);
+        background: var(--red-bg);
+        border-color: var(--red-ring);
+    }
+    .icon-btn.delete:hover { background: #fee2e2; }
+
+    /* ── Upload zone ── */
+    .edm-upload-zone {
+        border: 2px dashed var(--border);
+        border-radius: 10px;
+        background: var(--navy-soft);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color .2s, background .2s;
+    }
+    .edm-upload-zone:hover {
+        border-color: var(--accent);
+        background: var(--navy-light);
+    }
+    .edm-upload-zone.dragover {
+        border-color: var(--accent);
+        background: var(--navy-light);
+    }
+    .edm-upload-icon {
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        background: var(--navy-light);
+        border: 1.5px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto .75rem;
+    }
+    .edm-upload-title {
+        font-size: .9rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: .25rem;
+    }
+    .edm-upload-sub {
+        font-size: .78rem;
+        color: var(--text-muted);
+    }
+    .edm-file-preview {
+        margin-top: 1rem;
+        text-align: left;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .edm-file-preview-header {
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--navy);
+        padding: .5rem .85rem;
+        background: var(--navy-light);
+        border-bottom: 1px solid var(--border);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+    .edm-file-preview-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: .5rem .85rem;
+        font-size: .78rem;
+        color: #334155;
+        border-bottom: 1px solid var(--border-soft);
+    }
+    .edm-file-preview-item:last-child { border-bottom: none; }
+    .edm-file-preview-size {
+        margin-left: auto;
+        font-size: .7rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+    .edm-upload-hint {
+        font-size: .73rem;
+        color: var(--text-muted);
+        margin-top: .6rem;
+        text-align: center;
+    }
+
+    /* ── Buttons ── */
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: .55rem 1.1rem;
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px solid var(--border-soft);
+        border-radius: 8px;
+        font-size: .82rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background .15s;
+    }
+    .btn-cancel:hover {
+        background: var(--border-soft);
+        color: #334155;
+        text-decoration: none;
+    }
+    .btn-save {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: .6rem 1.4rem;
+        background: var(--navy);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-size: .85rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background .15s, transform .1s;
+    }
+    .btn-save:hover {
+        background: var(--navy-mid);
+        transform: translateY(-1px);
+    }
+</style>
+
+<!-- Header -->
+<div class="edm-header">
+    <div>
+        <h2 class="edm-page-title">Edit Pengarsipan Manual</h2>
+        <p class="edm-subtitle">Perbarui informasi paket pengarsipan data manual <strong>#{{ paket.ID }}</strong></p>
     </div>
-    <div class="col-auto">
-        <a href="/paket" class="btn btn-secondary">
-            <span style="width: 16px; height: 16px;" data-feather="arrow-left"></span>
-            Kembali ke Daftar
-        </a>
-    </div>
+    {% if callerRole == 'ppk' or callerRole == 'ukpbj' or callerRole == 'pokja' or callerRole == 'pp' %}
+    <a href="/{{ callerRole }}/dokumen-privat" class="btn-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Kembali ke Dokumen Privat
+    </a>
+    {% else %}
+    <a href="/paket" class="btn-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Kembali ke Daftar
+    </a>
+    {% endif %}
 </div>
 
 <div class="col-12">
-    <div class="card shadow-sm border-0">
+    <div class="edm-card">
         {% include "alert.html" %}
         <form action="/paket/update-manual/{{ paket.ID }}" method="POST" enctype="multipart/form-data">
-            <div class="card-body">
-                <div class="row">
-                    <!-- Informasi Utama -->
-                    <div class="col-md-7 border-end-md">
-                        <div class="form-group mb-3">
-                            <label class="form-label required">Nama Paket Pengadaan</label>
-                            <input type="text" name="nama" class="form-control" value="{{ paket.Nama }}" required>
-                        </div>
+            <div class="edm-card-body">
+                <div class="row justify-content-center">
+                    <div class="col-md-9">
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label required">Tahun Anggaran</label>
-                                <input type="number" name="tahun" class="form-control" value="{{ paket.Tahun }}" min="1900" max="2100" required>
+                        <!-- Keterangan -->
+                        <div class="mb-4">
+                            <div class="edm-section-label">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                                Keterangan
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label required">Satker / SKPD</label>
-                                <select name="satker_id" class="form-select" required>
-                                    {% for s in satkers %}
-                                    <option value="{{ s.ID }}" {% if s.ID == paket.SatkerId %}selected{% endif %}>{{ s.Nama }}</option>
-                                    {% endfor %}
-                                </select>
+                            <label class="edm-label" for="keterangan">Keterangan / Deskripsi</label>
+                            <textarea name="keterangan" id="keterangan" class="edm-textarea" rows="6" required>{{ paket.Keterangan }}</textarea>
+                            <div class="edm-hint">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                Perbarui deskripsi jika diperlukan. Deskripsi ini memudahkan Anda mengidentifikasi dokumen dalam daftar.
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label required">Pagu Anggaran</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Rp</span>
-                                    <input type="text" name="pagu" class="form-control rupiah" value="{{ paket.Pagu }}" required>
+                        <!-- Dokumen Bukti -->
+                        <div class="mb-2">
+                            <div class="edm-section-label">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                Dokumen Bukti
+                            </div>
+
+                            {% if listBukti and listBukti|length > 0 %}
+                            <label class="edm-label">Dokumen yang Sudah Diunggah</label>
+                            <div class="edm-doc-list mb-4">
+                                {% for b in listBukti %}
+                                <div class="edm-doc-item">
+                                    <div class="edm-doc-icon">
+                                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#11215D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    </div>
+                                    <div class="edm-doc-info">
+                                        <div class="edm-doc-name" title="{{ b.Document.Filename }}">{{ b.Document.Filename }}</div>
+                                        <div class="edm-doc-meta">{{ b.Document.FilesizeKB }} KB &bull; Diunggah {{ b.CreatedAt|date:"d M Y" }}</div>
+                                    </div>
+                                    <div class="edm-doc-actions">
+                                        <a href="/download/{{ b.DokId }}" class="icon-btn download" title="Download">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                        </a>
+                                        <a href="/paket/dok-paket/{{ b.ID }}/hapus" class="icon-btn delete" title="Hapus" onclick="return confirm('Hapus dokumen bukti ini?')">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                        </a>
+                                    </div>
                                 </div>
+                                {% endfor %}
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label required">HPS (Harga Perkiraan Sendiri)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Rp</span>
-                                    <input type="text" name="hps" class="form-control rupiah" value="{{ paket.Hps }}" required>
+                            {% endif %}
+
+                            <label class="edm-label">Tambah Dokumen Baru</label>
+                            <div class="edm-upload-zone" id="upload-zone" onclick="document.getElementById('bukti-input').click();">
+                                <div class="edm-upload-icon">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#11215D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                                    </svg>
                                 </div>
+                                <input type="file" name="bukti" id="bukti-input" class="d-none" accept=".pdf,.xlsx,.csv,.zip,.docx" multiple onchange="updateFileList(this)">
+                                <div class="edm-upload-title">Klik untuk pilih file atau seret ke sini</div>
+                                <div class="edm-upload-sub">Mendukung multi-upload sekaligus</div>
+                                <div id="file-list-preview" class="edm-file-preview d-none"></div>
                             </div>
+                            <div class="edm-upload-hint">Format: PDF, Excel, ZIP, Word &bull; Maks. 10 MB per file</div>
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label required">Jenis Pengadaan</label>
-                                <select id="select-jenis" class="form-select mb-2" onchange="checkLainnya(this, 'manual-jenis')" required>
-                                    <option value="Barang" {% if paket.JenisArsip == 'Barang' %}selected{% endif %}>Barang</option>
-                                    <option value="Pekerjaan Konstruksi" {% if paket.JenisArsip == 'Pekerjaan Konstruksi' %}selected{% endif %}>Pekerjaan Konstruksi</option>
-                                    <option value="Jasa Konsultansi" {% if paket.JenisArsip == 'Jasa Konsultansi' %}selected{% endif %}>Jasa Konsultansi</option>
-                                    <option value="Jasa Lainnya" {% if paket.JenisArsip == 'Jasa Lainnya' %}selected{% endif %}>Jasa Lainnya</option>
-                                    <option value="custom" {% if paket.JenisArsip != 'Barang' and paket.JenisArsip != 'Pekerjaan Konstruksi' and paket.JenisArsip != 'Jasa Konsultansi' and paket.JenisArsip != 'Jasa Lainnya' and paket.JenisArsip != '' %}selected{% endif %}>-- Lainnya (Ketik Manual) --</option>
-                                </select>
-                                <input type="text" id="manual-jenis" name="jenis" class="form-control {% if paket.JenisArsip == 'Barang' or paket.JenisArsip == 'Pekerjaan Konstruksi' or paket.JenisArsip == 'Jasa Konsultansi' or paket.JenisArsip == 'Jasa Lainnya' or paket.JenisArsip == '' %}d-none{% endif %}" value="{{ paket.JenisArsip }}" placeholder="Ketik Jenis Pengadaan kustom...">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label required">Metode Pengadaan</label>
-                                <select id="select-metode" class="form-select mb-2" onchange="checkLainnya(this, 'manual-metode')" required>
-                                    <option value="E-Purchasing" {% if paket.MetodeArsip == 'E-Purchasing' %}selected{% endif %}>E-Purchasing</option>
-                                    <option value="Pengadaan Langsung" {% if paket.MetodeArsip == 'Pengadaan Langsung' %}selected{% endif %}>Pengadaan Langsung</option>
-                                    <option value="Penunjukan Langsung" {% if paket.MetodeArsip == 'Penunjukan Langsung' %}selected{% endif %}>Penunjukan Langsung</option>
-                                    <option value="Tender" {% if paket.MetodeArsip == 'Tender' %}selected{% endif %}>Tender</option>
-                                    <option value="Seleksi" {% if paket.MetodeArsip == 'Seleksi' %}selected{% endif %}>Seleksi</option>
-                                    <option value="Tender Cepat" {% if paket.MetodeArsip == 'Tender Cepat' %}selected{% endif %}>Tender Cepat</option>
-                                    <option value="custom" {% if paket.MetodeArsip != 'E-Purchasing' and paket.MetodeArsip != 'Pengadaan Langsung' and paket.MetodeArsip != 'Penunjukan Langsung' and paket.MetodeArsip != 'Tender' and paket.MetodeArsip != 'Seleksi' and paket.MetodeArsip != 'Tender Cepat' and paket.MetodeArsip != '' %}selected{% endif %}>-- Lainnya (Ketik Manual) --</option>
-                                </select>
-                                <input type="text" id="manual-metode" name="metode" class="form-control {% if paket.MetodeArsip == 'E-Purchasing' or paket.MetodeArsip == 'Pengadaan Langsung' or paket.MetodeArsip == 'Penunjukan Langsung' or paket.MetodeArsip == 'Tender' or paket.MetodeArsip == 'Seleksi' or paket.MetodeArsip == 'Tender Cepat' or paket.MetodeArsip == '' %}d-none{% endif %}" value="{{ paket.MetodeArsip }}" placeholder="Ketik Metode Pengadaan kustom...">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bukti & Keterangan -->
-                    <div class="col-md-5">
-                        <div class="form-group mb-3">
-                            <label class="form-label">Keterangan / Deskripsi</label>
-                            <textarea name="keterangan" class="form-control" rows="4">{{ paket.Keterangan }}</textarea>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label class="form-label">Ganti Dokumen Bukti (Opsional)</label>
-                            <input type="file" name="bukti" class="form-control" accept=".pdf,.xlsx,.csv,.zip,.docx">
-                            <div class="text-muted small mt-2">Biarkan kosong jika tidak ingin mengganti file bukti yang sudah ada.</div>
-                        </div>
                     </div>
                 </div>
             </div>
-            <div class="card-footer bg-light d-flex justify-content-end gap-2">
-                <a href="/paket" class="btn btn-link link-secondary">Batal</a>
-                <button type="submit" class="btn btn-primary shadow-sm">
-                    <span style="width: 16px; height: 16px;" data-feather="save"></span>
+
+            <!-- Footer -->
+            <div class="edm-card-footer">
+                {% if callerRole == 'ppk' or callerRole == 'ukpbj' or callerRole == 'pokja' or callerRole == 'pp' %}
+                <a href="/{{ callerRole }}/dokumen-privat" class="btn-cancel">Batal</a>
+                {% else %}
+                <a href="/paket" class="btn-cancel">Batal</a>
+                {% endif %}
+                <button type="submit" class="btn-save">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                     Simpan Perubahan
                 </button>
             </div>
         </form>
     </div>
 </div>
+
 {% endblock %}
 
 {% block script %}
 <script>
     feather.replace();
+
     $(document).ready(function(){
         $('.rupiah').mask('000.000.000.000.000', {reverse: true});
-        
-        // Trigger initial check for 'custom' options
-        checkInitialLainnya('select-jenis', 'manual-jenis', 'jenis');
-        checkInitialLainnya('select-metode', 'manual-metode', 'metode');
     });
 
-    function checkInitialLainnya(selectId, manualId, name) {
-        const select = document.getElementById(selectId);
-        const manualInput = document.getElementById(manualId);
-        if (select.value === 'custom') {
-            manualInput.name = name;
-            select.removeAttribute('name');
-            manualInput.setAttribute('required', 'required');
+    function updateFileList(input) {
+        const preview = document.getElementById('file-list-preview');
+        if (input.files.length > 0) {
+            preview.classList.remove('d-none');
+            let html = '<div class="edm-file-preview-header">File baru terpilih (' + input.files.length + ')</div>';
+            for (let i = 0; i < input.files.length; i++) {
+                const ext = input.files[i].name.split('.').pop().toUpperCase();
+                html += `<div class="edm-file-preview-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#11215D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${input.files[i].name}</span>
+                    <span class="edm-file-preview-size">${Math.round(input.files[i].size/1024)} KB</span>
+                </div>`;
+            }
+            preview.innerHTML = html;
         } else {
-            select.name = name;
-            manualInput.removeAttribute('name');
+            preview.classList.add('d-none');
         }
     }
 
-    function checkLainnya(select, targetId) {
-        const manualInput = document.getElementById(targetId);
-        if (select.value === 'custom') {
-            manualInput.classList.remove('d-none');
-            manualInput.setAttribute('required', 'required');
-            manualInput.value = '';
-            manualInput.focus();
-            
-            manualInput.name = select.id.replace('select-', '');
-            select.removeAttribute('name');
-        } else {
-            manualInput.classList.add('d-none');
-            manualInput.removeAttribute('required');
-            
-            select.name = select.id.replace('select-', '');
-            manualInput.removeAttribute('name');
-        }
-    }
+    // Drag & drop support
+    const zone = document.getElementById('upload-zone');
+    zone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        zone.classList.add('dragover');
+    });
+    zone.addEventListener('dragleave', function() {
+        zone.classList.remove('dragover');
+    });
+    zone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        const input = document.getElementById('bukti-input');
+        input.files = e.dataTransfer.files;
+        updateFileList(input);
+    });
 </script>
 {% endblock %}

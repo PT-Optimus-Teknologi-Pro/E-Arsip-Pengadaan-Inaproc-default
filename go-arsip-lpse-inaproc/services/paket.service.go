@@ -74,15 +74,20 @@ func UpdateManualPaket(c *fiber.Ctx, id uint, userId uint, nama string, tahun in
 }
 
 func HandleManualEvidence(c *fiber.Ctx, paket *models.Paket, userId uint) {
-	file, _ := c.FormFile("bukti")
-	if file != nil {
-		dokId, err := models.SaveDocument(c, userId, models.TAMBAHAN_PRIVATE, "bukti")
+	form, err := c.MultipartForm()
+	if err != nil {
+		return
+	}
+
+	files := form.File["bukti"]
+	for _, file := range files {
+		dokId, err := models.SaveDocumentHeader(c, userId, models.TAMBAHAN_PRIVATE, file)
 		if err == nil {
 			dokPaket := models.DokPaket{
 				PktId: paket.ID,
 				PegId: userId,
 				DokId: dokId,
-				Jenis: models.TAMBAHAN_PRIVATE,
+				Jenis: "Bukti Manual",
 			}
 			models.SaveDokPaket(&dokPaket)
 		}
@@ -396,6 +401,17 @@ func AuthorisasiPaket(paket models.Paket, sessionMap fiber.Map) bool {
 		return false
 	}
 	id := sessionMap["id"].(uint)
+	
+	// Always allow the creator (especially important for Private Documents)
+	if paket.CreatedBy == id {
+		return true
+	}
+
+	// Always allow Admin, Ukpbj, and Arsiparis (Reviewers)
+	if sessionMap["isAdmin"].(bool) || sessionMap["isUkpbj"].(bool) || sessionMap["isArsiparis"].(bool) {
+		return true
+	}
+
 	if sessionMap["isPPK"].(bool) {
 		return paket.Ppk().ID == id
 	} else if sessionMap["isPokja"].(bool) {
@@ -403,8 +419,6 @@ func AuthorisasiPaket(paket models.Paket, sessionMap fiber.Map) bool {
 		return paket.Status >= 2 || paket.Pokja().IsAnggota(id)
 	} else if sessionMap["isPP"].(bool) {
 		return paket.Pp().ID == id
-	} else if sessionMap["isUkpbj"].(bool) || sessionMap["isArsiparis"].(bool) {
-		return true; // ukpbj dan arsiparis bisa akses semua paket
 	}
 	return false
 }

@@ -43,6 +43,7 @@ type Paket struct {
 	Keterangan     string        `json:"keterangan" form:"keterangan"`
 	JenisArsip     string        `json:"jenis_arsip" form:"jenis_arsip"`
 	MetodeArsip    string        `json:"metode_arsip" form:"metode_arsip"`
+	BuktiDokId     uint          `json:"bukti_dok_id" gorm:"->;-:migration"` // virtual: from LEFT JOIN dok_paket
 }
 
 func (Paket) TableName() string {
@@ -209,6 +210,13 @@ func (obj Paket) DokTambahanPrivateList() []DokPaket {
 func GetDokTambahanPrivateListByUser(pktId uint, userid uint) []DokPaket {
 	var res []DokPaket
 	db.Find(&res, "pkt_id=? AND peg_id=? AND jenis=?", pktId, userid, TAMBAHAN_PRIVATE)
+	return res
+}
+
+// GetDokTambahanPrivateForPackage returns all private docs for a package regardless of uploader
+func GetDokTambahanPrivateForPackage(pktId uint) []DokPaket {
+	var res []DokPaket
+	db.Where("pkt_id=? AND jenis=?", pktId, TAMBAHAN_PRIVATE).Order("id DESC").Find(&res)
 	return res
 }
 
@@ -438,6 +446,12 @@ func GetDokPaket(id uint) DokPaket {
 func GetDokPaketJenis(pktId uint, jenis string) DokPaket {
 	var res DokPaket
 	db.Where("pkt_id = ? AND jenis = ?", pktId, jenis).Order("id DESC").First(&res)
+	return res
+}
+
+func GetDokPaketJenisList(pktId uint, jenis string) []DokPaket {
+	var res []DokPaket
+	db.Where("pkt_id = ? AND jenis = ?", pktId, jenis).Order("id DESC").Find(&res)
 	return res
 }
 

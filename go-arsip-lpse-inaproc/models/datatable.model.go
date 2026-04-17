@@ -200,6 +200,9 @@ func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp, isA
 		orm = orm.Where("paket.rup_id > 0")
 	case "manual":
 		orm = orm.Where("paket.rup_id = 0")
+	default:
+		// Default to showing only SiRUP packages in the main list
+		orm = orm.Where("paket.rup_id > 0")
 	}
 
 	var datas []Paket
@@ -208,7 +211,7 @@ func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp, isA
 }
 
 func GetDataTablePaketPPK(c *fiber.Ctx, ppkId uint) error {
-	orm := db.Model(&Paket{}).Where("ppk_id = ?", ppkId)
+	orm := db.Model(&Paket{}).Where("ppk_id = ? AND (rup_id > 0 OR rup_id IS NOT NULL)", ppkId)
 	
 	// Join with sirup
 	orm = orm.Select("paket.*, COALESCE(NULLIF(paket.tahun, 0), paket_sirup.tahun) as tahun").
@@ -229,21 +232,25 @@ func GetDataTablePaketPPKSirup(c *fiber.Ctx, ppkId uint) error {
 
 // GetDataTablePaketPPKMandiri returns PPK packages entered manually/locally (rup_id = 0)
 func GetDataTablePaketPPKMandiri(c *fiber.Ctx, ppkId uint) error {
-	orm := db.Model(&Paket{}).Where("ppk_id = ? AND (rup_id = 0 OR rup_id IS NULL)", ppkId)
+	orm := db.Model(&Paket{}).
+		Select("paket.*, (SELECT dok_id FROM dok_paket WHERE pkt_id = paket.id AND jenis = 'Bukti Manual' AND deleted_at IS NULL ORDER BY id DESC LIMIT 1) as bukti_dok_id").
+		Where("ppk_id = ? AND (rup_id = 0 OR rup_id IS NULL)", ppkId)
 	var datas []Paket
-	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode_arsip", "paket.jenis_arsip", "paket.tahun", "paket.created_at", "paket.status")
+	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode_arsip", "paket.jenis_arsip", "paket.tahun", "paket.created_at", "paket.status", "bukti_dok_id")
 }
 
 // GetDataTablePaketMandiriByCreator returns manually-entered packages created by any user (for non-PPK roles)
 func GetDataTablePaketMandiriByCreator(c *fiber.Ctx, creatorId uint) error {
-	orm := db.Model(&Paket{}).Where("created_by = ? AND (rup_id = 0 OR rup_id IS NULL)", creatorId)
+	orm := db.Model(&Paket{}).
+		Select("paket.*, (SELECT dok_id FROM dok_paket WHERE pkt_id = paket.id AND jenis = 'Bukti Manual' AND deleted_at IS NULL ORDER BY id DESC LIMIT 1) as bukti_dok_id").
+		Where("created_by = ? AND (rup_id = 0 OR rup_id IS NULL)", creatorId)
 	var datas []Paket
-	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode_arsip", "paket.jenis_arsip", "paket.tahun", "paket.created_at", "paket.status")
+	return populate(orm, c, &datas, "paket.id", "paket.nama", "paket.pagu", "paket.hps", "paket.metode_arsip", "paket.jenis_arsip", "paket.tahun", "paket.created_at", "paket.status", "bukti_dok_id")
 }
 
 func GetDataTablePaketPokja(c *fiber.Ctx, pegId uint) error {
 	orm := db.Model(&Paket{}).
-		Where("pnt_id IN (SELECT pnt_id FROM anggota_panitia WHERE peg_id=? AND deleted_at IS NULL)", pegId)
+		Where("pnt_id IN (SELECT pnt_id FROM anggota_panitia WHERE peg_id=? AND deleted_at IS NULL) AND (rup_id > 0 OR rup_id IS NOT NULL)", pegId)
 	
 	orm = orm.Select("paket.*, COALESCE(NULLIF(paket.tahun, 0), paket_sirup.tahun) as tahun").
 		Joins("LEFT JOIN paket_sirup ON paket.rup_id = paket_sirup.id")
@@ -253,7 +260,7 @@ func GetDataTablePaketPokja(c *fiber.Ctx, pegId uint) error {
 }
 
 func GetDataTablePaketPP(c *fiber.Ctx, ppId uint) error {
-	orm := db.Model(&Paket{}).Where("pp_id = ?", ppId)
+	orm := db.Model(&Paket{}).Where("pp_id = ? AND (rup_id > 0 OR rup_id IS NOT NULL)", ppId)
 	
 	orm = orm.Select("paket.*, COALESCE(NULLIF(paket.tahun, 0), paket_sirup.tahun) as tahun").
 		Joins("LEFT JOIN paket_sirup ON paket.rup_id = paket_sirup.id")

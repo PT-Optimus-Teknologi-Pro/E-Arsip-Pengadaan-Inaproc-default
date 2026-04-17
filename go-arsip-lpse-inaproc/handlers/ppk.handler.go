@@ -108,6 +108,13 @@ func SimpanPrivateDocument(c *fiber.Ctx) error {
 	}
 
 	if !isAuthorized {
+		// Also allow UKPBJ to upload to any manual package
+		if mp["isUkpbj"].(bool) {
+			isAuthorized = true
+		}
+	}
+
+	if !isAuthorized {
 		return Forbiden(c)
 	}
 
@@ -119,27 +126,29 @@ func SimpanPrivateDocument(c *fiber.Ctx) error {
 	return flashSuccess(c, "Simpan Dokumen Privat Berhasil", c.Get("Referer"))
 }
 
-// GetJsonPrivateDocuments returns a list of private documents for a package (strictly isolated for the uploader)
+// GetJsonPrivateDocuments returns a list of private documents for a package
+// Returns all TAMBAHAN_PRIVATE docs for the package so the creator can see everything
 func GetJsonPrivateDocuments(c *fiber.Ctx) error {
-	mp := currentMap(c)
-	
 	pktId := utils.StringToUint(c.Params("id"))
-	userid := utils.InterfaceToUint(mp["id"])
 
-	// Authorization is strictly checked in the query: users only see their OWN private docs
-	docs := models.GetDokTambahanPrivateListByUser(pktId, userid)
-	
+	var docs []models.DokPaket
+	docs = models.GetDokTambahanPrivateForPackage(pktId)
+
 	var res []interface{}
 	for _, d := range docs {
+		doc := d.Document()
 		res = append(res, fiber.Map{
 			"id":        d.ID,
 			"dok_id":    d.DokId,
-			"filename":  d.Document().Filename,
-			"filesize":  d.Document().Filesize,
+			"filename":  doc.Filename,
+			"filesize":  doc.Filesize,
 			"CreatedAt": d.CreatedAt,
 		})
 	}
 
+	if res == nil {
+		return c.JSON([]interface{}{})
+	}
 	return c.JSON(res)
 }
 

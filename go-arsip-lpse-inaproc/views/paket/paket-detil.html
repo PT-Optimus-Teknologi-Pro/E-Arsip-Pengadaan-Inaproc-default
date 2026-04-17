@@ -6,13 +6,13 @@
 {% block content %}
 <div class="row align-items-center">
     <div class="col">
-        <h2 class="page-title">Detil Paket</h2>
+        <h2 class="page-title">{% if paket.RupId == 0 %}Detil Dokumen Privat{% else %}Detil Paket{% endif %}</h2>
     </div>
     <div class="col-auto">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/home">Home</a></li>
             <li class="breadcrumb-item"><a href="{{ backUrl }}">{% if paket.RupId == 0 %}Dokumen Privat{% else %}Daftar Paket{% endif %}</a></li>
-            <li class="breadcrumb-item active">Detil Paket</li>
+            <li class="breadcrumb-item active">{% if paket.RupId == 0 %}Detil Dokumen Privat{% else %}Detil Paket{% endif %}</li>
         </ol>
     </div>
 </div>
@@ -243,7 +243,7 @@
                         </form>
                         {% endif %}
                         {% else %}
-                        <a href="/paket" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
+                        <a href="{{ backUrl }}" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
                         {% endif %}
                         </div>
                     </div>

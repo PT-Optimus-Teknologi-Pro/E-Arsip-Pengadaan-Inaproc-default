@@ -262,6 +262,7 @@ func SetupRoutes(app *fiber.App) {
 	paket.Post("/dok-tambahan/:id", handlers.SimpanDokTambahan)
 	paket.Get("/hapus/:id", handlers.DeletePaket)
 	paket.Get("/dok-paket/:id/hapus", handlers.HapusDokPaket)
+	paket.Get("/:id/download-bukti", handlers.DownloadBuktiZip)
 	paket.Get("/pilih-pokja/:id", handlers.PilihPokjaPaket)
 	paket.Get("/pilih-pp/:id", handlers.PilihPPPaket)
 	paket.Get("/pilih-ppk/:id", handlers.PilihPPPaket)
