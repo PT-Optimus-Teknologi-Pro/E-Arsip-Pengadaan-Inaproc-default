@@ -7,13 +7,15 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/gofiber/fiber/v2 v2.52.9
 	github.com/gofiber/template/django/v3 v3.1.13
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/joho/godotenv v1.5.1
-	github.com/kal72/go-captcha v1.0.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/sujit-baniya/flash v0.1.9
 	github.com/wagslane/go-password-validator v0.3.0
+	github.com/wenlng/go-captcha-assets v1.0.7
+	github.com/wenlng/go-captcha/v2 v2.0.5
 	gorm.io/datatypes v1.2.5
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/driver/sqlite v1.6.0
@@ -27,7 +29,6 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/gofiber/template v1.8.3 // indirect
 	github.com/gofiber/utils v1.1.0 // indirect
-	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
@@ -45,8 +46,6 @@ require (
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.68.0 // indirect
-	github.com/wenlng/go-captcha-assets v1.0.7 // indirect
-	github.com/wenlng/go-captcha/v2 v2.0.5 // indirect
 	golang.org/x/crypto v0.45.0 // indirect
 	golang.org/x/image v0.23.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect

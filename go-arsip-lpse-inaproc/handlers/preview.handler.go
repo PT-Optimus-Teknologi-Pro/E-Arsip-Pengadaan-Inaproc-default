@@ -465,7 +465,13 @@ func generateQrBase64(content string) string {
 
 func CetakBAKajiUlang(c *fiber.Ctx) error {
 	log.Info("cetak BA Reviu Dokumen")
-	url := fmt.Sprintf("http://localhost:%s/preview/ba-kajiulang/%s", config.Port(),c.Params("id"))
+	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if paket.ID > 0 {
+		paket.IsLockedReview = true
+		models.SavePaket(&paket)
+	}
+	url := fmt.Sprintf("http://localhost:%s/preview/ba-kajiulang/%s", config.Port(), c.Params("id"))
 	return print(c, url, "BA-kajiulang.pdf")
 }
 

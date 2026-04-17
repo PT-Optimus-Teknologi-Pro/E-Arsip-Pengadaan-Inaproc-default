@@ -22,6 +22,24 @@ Dokument Persiapan Pengadaan
     <div class="card tab-content">
         {% include "alert.html" %}
         <div class="card-body">
+            {% if isLocked %}
+            <div class="alert alert-warning d-flex align-items-center mb-3">
+                <div class="me-2"><span style="width: 20px;" data-feather="lock"></span></div>
+                <div>
+                   <b>Halaman Terkunci:</b> Cetak Berita Acara Kaji Ulang telah dilakukan. Perubahan dokumen tidak diperbolehkan kecuali Addendum diaktifkan.
+                </div>
+            </div>
+            {% endif %}
+
+            {% if isAddendum %}
+            <div class="alert alert-info d-flex align-items-center mb-3">
+                <div class="me-2"><span style="width: 20px;" data-feather="info"></span></div>
+                <div>
+                   <b>Status Addendum:</b> Seluruh paraf persetujuan telah di-reset. Silakan unggah dokumen revisi dan berikan persetujuan kembali.
+                </div>
+            </div>
+            {% endif %}
+
         <form method="post" action="/dok-final/{{ paket.ID }}" enctype="multipart/form-data">
         <table class="table">
             <tr>
@@ -86,10 +104,19 @@ Dokument Persiapan Pengadaan
          <p><smal>Dokumen yang akan diupload pada halaman ini adalah dokumen final hasil dari Proses Reviu Dokumen</smal></p>
         {% if paket.Status > 2  %}
         <p>
+            {% if not isLocked %}
             <button type="submit" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span> Simpan</button>
+            {% endif %}
+
             <a class="btn btn-secondary" href="/preview/ba-kajiulang/{{ paket.ID }}" target="_blank">Berita Acara KajiUlang</a>
             {% if allowCetak %}
             <a class="btn btn-secondary" href="/preview/ba-kajiulang/{{ paket.ID }}/print" target="_blank" >Cetak Berita Acara KajiUlang</a>
+            {% endif %}
+
+            {% if isLocked and (isPPK or isAdmin) %}
+            <a class="btn btn-danger" href="/dok-final/{{ paket.ID }}/addendum" onclick="return confirm('Apakah Anda yakin ingin mengaktifkan Addendum? Seluruh tanda tangan/persetujuan yang ada akan DIHAPUS dan notifikasi akan dikirim ke pihak terkait.')">
+                <span style="width:16px;" data-feather="refresh-cw"></span> Aktifkan Addendum
+            </a>
             {% endif %}
         </p>
         {% endif %}

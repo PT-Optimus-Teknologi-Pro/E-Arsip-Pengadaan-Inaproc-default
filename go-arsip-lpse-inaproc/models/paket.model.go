@@ -44,6 +44,8 @@ type Paket struct {
 	JenisArsip     string        `json:"jenis_arsip" form:"jenis_arsip"`
 	MetodeArsip    string        `json:"metode_arsip" form:"metode_arsip"`
 	BuktiDokId     uint          `json:"bukti_dok_id" gorm:"->;-:migration"` // virtual: from LEFT JOIN dok_paket
+	IsLockedReview bool          `json:"is_locked_review" gorm:"default:false"`
+	IsAddendum     bool          `json:"is_addendum" gorm:"default:false"`
 }
 
 func (Paket) TableName() string {

@@ -285,6 +285,7 @@ func SetupRoutes(app *fiber.App) {
 	dokfinal := app.Group("/dok-final", handlers.LoggedMiddleware)
 	dokfinal.Post("/:id", handlers.SimpanDokumenPersiapanPaket)
 	dokfinal.Post("/:id/persetujuan", handlers.SimpanDokumenPersiapanPaketPersetujuan)
+	dokfinal.Get("/:id/addendum", handlers.UnlockAddendumReview)
 	dokfinal.Get("/:id/persetujuan", handlers.DokPersiapanPaketPersetujuan)
 	dokfinal.Get("/:id", handlers.DokPersiapanPaket)
 

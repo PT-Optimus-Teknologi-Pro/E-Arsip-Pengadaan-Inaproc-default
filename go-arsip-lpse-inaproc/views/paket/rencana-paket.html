@@ -119,9 +119,18 @@ Daftar Rencana Paket
 
 {% block script %}
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- Hidden flags for JS -->
+<div id="paket-flags" 
+     data-is-arsiparis="{{ isArsiparis }}" 
+     data-is-approved="{{ isApproved }}" 
+     style="display:none;"></div>
 <script>
     feather.replace();
     $('.select2').select2({ width: '100%' });
+
+    const flags = document.getElementById('paket-flags').dataset;
+    const isArsiparis = flags.isArsiparis === 'True' || flags.isArsiparis === 'true';
+    const isApproved = flags.isApproved === 'True' || flags.isApproved === 'true';
 
     function getMetodeLabel(id) {
         const met = ["Pencatatan", "Tender", "Seleksi", "Tender Cepat", "Penunjukan Langsung", "E-Purchasing", "Pengadaan Langsung"];
@@ -174,11 +183,10 @@ Daftar Rencana Paket
             },
             {data : "tahun"},
             {data : "id", className: "text-center", render: function(data, type, row){
-                    {% if isArsiparis and not isApproved %}
-                    return '<span class="badge bg-warning-lt">Pending Verifikasi</span>';
-                    {% else %}
-                    return `<a href="/rencana/${data}" class="btn btn-success btn-sm px-3" style="border-radius: 4px;">Pilih Paket</a>`
-                    {% endif %}
+                    if (isArsiparis && !isApproved) {
+                        return '<span class="badge bg-warning-lt">Pending Verifikasi</span>';
+                    }
+                    return `<a href="/rencana/${data}" class="btn btn-success btn-sm px-3" style="border-radius: 4px;">Pilih Paket</a>`;
                 }
             },
         ],

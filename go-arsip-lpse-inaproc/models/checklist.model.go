@@ -355,3 +355,7 @@ func (c PersetujuanDokPersiapan) DokPersiapan() DokPersiapan {
 	}
 	return dokumen
 }
+
+func DeleteAllPersetujuanDokPersiapan(dkpId uint) error {
+	return db.Where("dkp_id = ?", dkpId).Delete(&PersetujuanDokPersiapan{}).Error
+}

@@ -581,10 +581,13 @@ func DokPersiapanPaket(c *fiber.Ctx) error {
 			allowCetak = false
 		}
 	}
+	isLocked := paket.IsLockedReview && !paket.IsAddendum
+	mp["isLocked"] = isLocked
+	mp["isAddendum"] = paket.IsAddendum
 	mp["allowCetak"] = allowCetak
 	mp["paket"] = paket
 	mp["dokPersiapan"] = dokPersiapans
-	mp["allowUpload"] = mp["isPPK"].(bool) || mp["isPokja"].(bool) || mp["isPP"].(bool)
+	mp["allowUpload"] = (mp["isPPK"].(bool) || mp["isPokja"].(bool) || mp["isPP"].(bool)) && !isLocked
 	return c.Render("paket/dok-persiapan", mp)
 }
 
@@ -593,12 +596,66 @@ func SimpanDokumenPersiapanPaket(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	userid := utils.InterfaceToUint(mp["id"])
 	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if paket.IsLockedReview && !paket.IsAddendum {
+		return flashError(c, "Dokumen sudah dikunci(Final). Silakan aktifkan Addendum untuk mengubah.", "/dok-final/"+utils.UintToString(id))
+	}
 	err := services.SimpanDokPersiapanPaket(c, id, userid)
 	if err != nil {
 		log.Error(err)
 		return flashError(c, "Simpan Dokumen Persiapan gagal", "/dok-final/" + utils.UintToString(id))
 	}
 	return flashSuccess(c, "Simpan Dokumen Persiapan Sukses","/dok-final/"+utils.UintToString(id))
+}
+
+func UnlockAddendumReview(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	mp := currentMap(c)
+	if !mp["isPPK"].(bool) && !mp["isAdmin"].(bool) {
+		return Forbiden(c)
+	}
+
+	paket := services.GetPaket(id)
+	if paket.ID == 0 {
+		return c.SendStatus(404)
+	}
+
+	// 1. Reset flags
+	paket.IsLockedReview = false
+	paket.IsAddendum = true
+	models.SavePaket(&paket)
+
+	// 2. Delete ALL Approvals (reset)
+	dokPersiapans := paket.DokPersiapan()
+	for _, dp := range dokPersiapans {
+		models.DeleteAllPersetujuanDokPersiapan(dp.ID)
+	}
+
+	// 3. Send Notifications
+	subject := "Addendum Review Dokumen - " + paket.Nama
+	content := fmt.Sprintf("Addendum telah diaktifkan untuk paket <b>%s</b>. Mohon kesediaannya untuk melakukan review kembali dan memberikan persetujuan ulang pada menu Dokumen Final.", paket.Nama)
+	
+	targets := []uint{}
+	if paket.PpkId > 0 { targets = append(targets, paket.PpkId) }
+	if paket.PpId > 0 { targets = append(targets, paket.PpId) }
+	
+	pokja := paket.Pokja()
+	for _, m := range pokja.AnggotaList() {
+		targets = append(targets, m.ID)
+	}
+
+	for _, targetId := range targets {
+		inbox := models.Inbox{
+			PegId:       targetId,
+			Subject:     subject,
+			Content:     content,
+			Status:      "inbox",
+			EnqueueDate: time.Now(),
+		}
+		models.SaveInbox(&inbox)
+	}
+
+	return flashSuccess(c, "Addendum Berhasil Diaktifkan. Notifikasi telah dikirim ke semua pihak terkait.", "/dok-final/"+utils.UintToString(id))
 }
 
 func DokPersiapanPaketPersetujuan(c *fiber.Ctx) error {

@@ -597,6 +597,12 @@ func (c Katalog) TableName() string {
 	return "katalog"
 }
 
+func (obj Katalog) Penyedia() Penyedia {
+	var res Penyedia
+	db.First(&res, "kode_penyedia = ?", obj.KodePenyedia)
+	return res
+}
+
 type Penyedia struct {
 	AlamatPenyedia 				string 		`json:"alamat_penyedia"`
     BentukUsaha					string 		`json:"bentuk_usaha"`

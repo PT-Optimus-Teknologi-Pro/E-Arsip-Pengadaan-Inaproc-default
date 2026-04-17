@@ -71,15 +71,18 @@ Hasil Pengadaan
             </div>
             {% if paket.Metode == 9 %}
             <div class="form-group mb-3 row">
-                
+                <label class="col-sm-2  text-end control-label col-form-label">Pemenang</label>
+                <div class="col-sm-4">
+                    <p class="form-control-plaintext">{{ purchase.Penyedia().NamaPenyedia }}</p>
+                </div>
                 <label class="col-sm-2  text-end control-label col-form-label">Nilai hasil</label>
                 <div class="col-sm-4">
-                    <p class="form-control-plaintext">{% if purchase.TotalHarga > 0 %} {{ rupiah(purchase.TotalHarga) }} {% endif %} </p>
+                    <p class="form-control-plaintext">{% if purchase.Total > 0 %} {{ rupiah(purchase.Total) }} {% endif %} </p>
                 </div>
             </div>
             {% else %}
             <div class="form-group mb-3 row">
-                <label class="col-sm-2  text-end control-label col-form-label">Pemenang {{ realisasi[0] }}</label>
+                <label class="col-sm-2  text-end control-label col-form-label">Pemenang</label>
                 <div class="col-sm-4">
                     <p class="form-control-plaintext">{{ realisasi.NamaPenyedia }}</p>
                 </div>
