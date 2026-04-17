@@ -1,68 +1,282 @@
 ﻿{% extends "border.html" %}
 
 {% block pagetitle %}
-Detil Pegawai
+Detil Perubahan Data Akun
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Perubahan Data Akun</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item"><a href="/perubahan-data">Permohonan Perubahan Data Akun</a></li>
-            <li class="breadcrumb-item active">Detil</li>
+
+<style>
+    :root {
+        --navy:       #11215D;
+        --navy-mid:   #1a3272;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+    }
+
+    .reg-card-header {
+        background: var(--navy);
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-header-title {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+
+    .reg-card-body { padding: 1.5rem 1.75rem; }
+
+    .reg-section-label {
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin: 0 0 .75rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--navy-light);
+    }
+
+    .reg-row {
+        display: flex;
+        align-items: flex-start;
+        padding: .6rem 0;
+        border-bottom: 1px solid var(--navy-light);
+    }
+    .reg-row:last-of-type { border-bottom: none; }
+
+    .reg-label {
+        flex: 0 0 220px;
+        font-size: .72rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        padding-top: .15rem;
+        text-align: right;
+        padding-right: 1.25rem;
+    }
+
+    .reg-value {
+        flex: 1;
+        font-size: .88rem;
+        color: var(--navy);
+    }
+
+    .reg-link {
+        color: var(--accent);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: .85rem;
+    }
+    .reg-link:hover { text-decoration: underline; }
+
+    .reg-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: .3rem .85rem;
+        border-radius: 20px;
+        font-size: .78rem;
+        font-weight: 600;
+        background: var(--navy-light);
+        color: var(--navy);
+        border: 1px solid var(--border);
+    }
+
+    .reg-alert-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-left: 4px solid var(--accent);
+        border-radius: 8px;
+        padding: .85rem 1rem;
+        margin-top: 1rem;
+        font-size: .83rem;
+        color: #1e40af;
+    }
+
+    .reg-card-footer {
+        border-top: 1px solid var(--navy-light);
+        padding: 1.1rem 1.75rem;
+        background: #f8faff;
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-edit {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: .6rem 1.5rem;
+        background: #16a34a;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: .88rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background .15s, transform .1s;
+    }
+    .btn-edit:hover { background: #15803d; transform: translateY(-1px); }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: .6rem 1.4rem;
+        background: var(--navy-light);
+        color: var(--navy);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: .85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background .15s, transform .1s;
+    }
+    .btn-back:hover { background: var(--border); color: var(--navy); text-decoration: none; transform: translateY(-1px); }
+</style>
+
+<div class="reg-header">
+    <h2 class="reg-page-title">Perubahan Data Akun</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li><a href="/perubahan-data">Permohonan Perubahan Data Akun</a></li>
+            <li aria-current="page" style="color:#94a3b8;">Detil</li>
         </ol>
-    </div>
+    </nav>
 </div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            {% include "alert.html" %}
-            <form class="form-horizontal" action="/pegawai" method="post">
-                <div class="card-body">
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Nomor Surat</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ perubahan.Nomor }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Perihal</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ perubahan.Perihal }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Surat Permohonan Perubahan Data</label>
-                        <div class="col-sm-9">
-                           <p class="form-control-plaintext"><a href="/download/{{ perubahan.DokId }}"><span style="width: 16px;" data-feather="download"></span> {{ perubahan.Dokumen.Filename }}</a></p>
-                        </div>
-                    </div>
-                    {% if isUkpbj %}
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Status</label>
-                        <div class="col-sm-9">
-                         <p class="form-control-plaintext">{{ perubahan.StatusLabel }}</p>
-                        </div>
-                    </div>
-                    <div class="alert alert-info">
-                        Harap Lakukan Update data di menu Pegawai terlebih dahulu sebelum melakukan update status permohoan
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="border-top">
-                    <div class="card-body">
-                        {%if isAdmin %}
-                        <a href="/perubahan-data/edit/{{perubahan.ID}}" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span> Edit</a>
-                        {% endif %}
-                        <a href="/perubahan-data" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
-                    </div>
-                </div>
-            </form>
+
+<div class="col-12 pt-2">
+    <div class="reg-card">
+        {% include "alert.html" %}
+
+        <div class="reg-card-header">
+            <p class="reg-card-header-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                Detil Permohonan Perubahan Data Akun
+            </p>
+        </div>
+
+        <div class="reg-card-body">
+            <p class="reg-section-label">Data Permohonan</p>
+
+            <div class="reg-row">
+                <span class="reg-label">Nomor Surat</span>
+                <span class="reg-value">{{ perubahan.Nomor }}</span>
+            </div>
+            <div class="reg-row">
+                <span class="reg-label">Perihal</span>
+                <span class="reg-value">{{ perubahan.Perihal }}</span>
+            </div>
+            <div class="reg-row">
+                <span class="reg-label">Surat Permohonan Perubahan Data</span>
+                <span class="reg-value">
+                    <a href="/download/{{ perubahan.DokId }}" class="reg-link">
+                        <span style="width: 16px;" data-feather="download"></span>
+                        {{ perubahan.Dokumen.Filename }}
+                    </a>
+                </span>
+            </div>
+
+            {% if isUkpbj %}
+            <div class="reg-row">
+                <span class="reg-label">Status</span>
+                <span class="reg-value">
+                    <span class="reg-status-badge">
+                        <span style="width: 12px;" data-feather="clock"></span>
+                        {{ perubahan.StatusLabel }}
+                    </span>
+                </span>
+            </div>
+
+            <div class="reg-alert-info">
+                <span style="width: 16px; flex-shrink: 0; margin-top: 1px;" data-feather="info"></span>
+                <span>Harap lakukan update data di menu <strong>Pegawai</strong> terlebih dahulu sebelum melakukan update status permohonan.</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="reg-card-footer">
+            {% if isAdmin %}
+            <a href="/perubahan-data/edit/{{ perubahan.ID }}" class="btn-edit">
+                <span style="width: 16px;" data-feather="edit"></span>
+                Edit
+            </a>
+            {% endif %}
+            <a href="/perubahan-data" class="btn-back">
+                <span style="width: 16px;" data-feather="arrow-left-circle"></span>
+                Kembali
+            </a>
         </div>
     </div>
+</div>
 
 {% endblock %}
 

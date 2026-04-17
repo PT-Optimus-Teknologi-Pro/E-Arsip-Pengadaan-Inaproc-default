@@ -5,105 +5,309 @@ Profile
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Profile</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item active">Profile</li>
+
+<style>
+    :root {
+        --navy:       #11215D;
+        --navy-mid:   #1a3272;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+        --green:      #16a34a;
+        --amber:      #d97706;
+        --amber-bg:   #fffbeb;
+        --amber-ring: #fcd34d;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+    }
+
+    .reg-card-header {
+        background: var(--navy);
+        padding: 1.25rem 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .reg-card-header-left {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+    }
+    .reg-avatar {
+        width: 48px; height: 48px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        border: 2px solid rgba(255,255,255,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    .reg-card-header-name {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 .15rem;
+    }
+    .reg-card-header-role {
+        font-size: .78rem;
+        color: rgba(255,255,255,0.65);
+        margin: 0;
+    }
+    .reg-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: .72rem;
+        font-weight: 600;
+        color: var(--amber);
+        background: var(--amber-bg);
+        border: 1px solid var(--amber-ring);
+        padding: 4px 12px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .reg-card-body { padding: 1.5rem 1.75rem; }
+
+    .reg-section-label {
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin: 0 0 .75rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--navy-light);
+    }
+
+    .form-group {
+        border-bottom: 1px solid var(--navy-light);
+        padding: .5rem 0;
+        margin-bottom: 0 !important;
+    }
+    .form-group:last-child { border-bottom: none; }
+
+    .control-label {
+        font-size: .72rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+    .form-control-plaintext {
+        font-size: .9rem;
+        color: var(--navy);
+        font-weight: 500;
+        padding-top: .375rem;
+        padding-bottom: .375rem;
+        margin: 0;
+    }
+
+    .reg-info-box {
+        background: var(--navy-light);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--navy);
+        border-radius: 8px;
+        padding: .85rem 1rem;
+        margin-top: 1.25rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .reg-info-box svg { flex-shrink: 0; margin-top: 1px; }
+    .reg-info-box p {
+        font-size: .8rem;
+        color: var(--navy-mid);
+        margin: 0;
+        line-height: 1.6;
+    }
+    .reg-info-box p strong { color: var(--navy); }
+</style>
+
+<div class="reg-header">
+    <h2 class="reg-page-title">Profile</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/">Home</a></li>
+            <li aria-current="page">Profile</li>
         </ol>
-    </div>
+    </nav>
 </div>
-    <div class="col-12 pt-2">
-        <div class="card">
-                <div class="card-body">
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2 text-end control-label col-form-label">Pengangkatan Menjadi</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.RoleLabel }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Nama</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.PegNama }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">NIK</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.PegNik }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">NIP/NRP</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.PegNip }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">User ID</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.PegNamauser }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Alamat</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.PegAlamat }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Telepon</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.PegTelepon }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Email</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.PegEmail }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Pangkat</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.PegPangkat }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Jabatan</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.PegJabatan }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Golongan</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.PegGolongan }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Status</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.GetStatusVerifikasi }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Nomor SK</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.PegNoSk }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-2  text-end control-label col-form-label">Masa Berlaku SK</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-plaintext">{{ user.GetMasaBerlaku }}</p>
-                        </div>
-                    </div>
+
+<div class="col-12">
+    <div class="reg-card">
+
+        <div class="reg-card-header">
+            <div class="reg-card-header-left">
+                <div class="reg-avatar">{{ user.PegNama|truncatechars:2|upper }}</div>
+                <div>
+                    <p class="reg-card-header-name">{{ user.PegNama }}</p>
+                    <p class="reg-card-header-role">Pengangkatan sebagai: {{ user.RoleLabel }}</p>
                 </div>
+            </div>
+            <div class="reg-badge">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                {{ user.GetStatusVerifikasi }}
+            </div>
+        </div>
+
+        <div class="reg-card-body">
+            {% include "alert.html" %}
+
+            <p class="reg-section-label">Data Pribadi</p>
+
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Nama</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.PegNama }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">NIK</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.PegNik }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">NIP/NRP</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.PegNip }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">User ID</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.PegNamauser }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Alamat</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.PegAlamat }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Telepon</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.PegTelepon }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Email</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.PegEmail }}</p>
+                </div>
+            </div>
+
+            <p class="reg-section-label" style="margin-top: 1.25rem;">Data Kepegawaian</p>
+
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Pengangkatan Menjadi</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.RoleLabel }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Pangkat</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.PegPangkat }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Jabatan</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.PegJabatan }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Golongan</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.PegGolongan }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Status</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.GetStatusVerifikasi }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Nomor SK</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.PegNoSk }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Masa Berlaku SK</label>
+                <div class="col-sm-9">
+                    <p class="form-control-plaintext">{{ user.GetMasaBerlaku }}</p>
+                </div>
+            </div>
+
+            <div class="reg-info-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#11215D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <p>Data profil Anda dikelola oleh <strong>administrator</strong> instansi. Hubungi admin jika terdapat perubahan data.</p>
+            </div>
+
         </div>
     </div>
+</div>
+
 {% endblock %}

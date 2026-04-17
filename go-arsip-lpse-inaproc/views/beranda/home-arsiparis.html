@@ -569,6 +569,7 @@ Dashboard Arsiparis Digital
   }
 </style>
 
+{% if isApproved %}
 <div class="dash-root">
 
   <!-- ─── Page Header ─── -->
@@ -764,6 +765,65 @@ Dashboard Arsiparis Digital
   </div>
 
 </div>
+{% else %}
+<div class="row align-items-center mb-3">
+    <div class="col">
+        <h2 class="page-title">Status Permohonan Akun</h2>
+    </div>
+</div>
+<div class="col-lg-12 pt-2 mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Profile</h4>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Nama</label>
+                <div class="col-sm-9"><p class="form-control-plaintext">{{ user.PegNama }}</p></div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Email</label>
+                <div class="col-sm-9"><p class="form-control-plaintext">{{ user.PegEmail }}</p></div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label">Roles</label>
+                <div class="col-sm-9"><p class="form-control-plaintext">{{ user.RoleLabel }}</p></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-12 pt-2">
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+            <h4 class="fw-bold mb-4" style="color: #11215D;">Status Permohonan Akun</h4>
+            <div class="table-responsive">
+                <table class="table table-vcenter">
+                    <thead>
+                    <tr>
+                        <th class="text-muted small fw-bold">NAMA</th>
+                        <th class="text-muted small fw-bold" width="15%">NIP</th>
+                        <th class="text-muted small fw-bold" width="15%">EMAIL</th>
+                        <th class="text-muted small fw-bold" width="15%">USER ID</th>
+                        <th class="text-muted small fw-bold">STATUS</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="fw-medium">{{ user.PegNama}}</td>
+                        <td class="text-muted">{{ user.PegNip}}</td>
+                        <td class="text-muted">{{ user.PegEmail}}</td>
+                        <td class="text-muted">{{ user.PegNamauser}}</td>
+                        <td>
+                            <span class="badge bg-green-lt px-2 py-1 rounded-pill">
+                                {{ user.GetStatusVerifikasi}}
+                            </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block script %}

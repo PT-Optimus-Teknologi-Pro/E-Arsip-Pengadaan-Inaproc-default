@@ -35,16 +35,20 @@ func CreatePp(c *fiber.Ctx) error {
 	err := c.BodyParser(pp)
 	if err != nil {
 		log.Error(err)
-		return flashError(c, "Tambah Pejabat Pengadaan Gagal","/pp/edit")
+		return flashError(c, "Tambah Pejabat Pengadaan Gagal: Parse data gagal","/pp/edit")
 	}
-	pp.PeriodeAwal, _ = time.Parse("2006-01-02", c.FormValue("periode_awal"))
-	pp.PeriodeAkhir, _ = time.Parse("2006-01-02", c.FormValue("periode_akhir"))
-	pp.TglSk, _ = time.Parse("2006-01-02", c.FormValue("tgl_sk"))
-	pp.TempatSk = c.FormValue("tempat_sk")
+	
+	sess := getSession(c)
+	group := sess.Get("group").(string)
+	if group == models.UKPBJ {
+		pegawai := services.GetPegawai(utils.InterfaceToUint(sess.Get("id")))
+		pp.UkpbjId = uint(pegawai.UkpbjId.Int64)
+	}
+
 	err = services.SavePejabatPengadaan(pp)
 	if err != nil {
 		log.Error(err)
-		return flashError(c, "Tambah Pejabat Pengadaan Gagal", "/pp/edit")
+		return flashError(c, "Tambah Pejabat Pengadaan Gagal: "+err.Error(), "/pp/edit")
 	}
 	return flashSuccess(c, "Tambah Pejabat Pengadaan Sukses","/pp")
 }
@@ -74,13 +78,17 @@ func UpdatePp(c *fiber.Ctx) error {
 	err := c.BodyParser(&pp)
 	if err != nil {
 		log.Error(err)
-		return flashError(c, "Edit Pejabat Pengadaan Gagal", "/pp/edit/" + utils.IntToString(id))
+		return flashError(c, "Edit Pejabat Pengadaan Gagal: Parse data gagal", "/pp/edit/" + utils.IntToString(id))
 	}
 	pp.ID = uint(id)
-	pp.PeriodeAwal, _ = time.Parse("2006-01-02", c.FormValue("periode_awal"))
-	pp.PeriodeAkhir, _ = time.Parse("2006-01-02", c.FormValue("periode_akhir"))
-	pp.TglSk, _ = time.Parse("2006-01-02", c.FormValue("tgl_sk"))
-	pp.TempatSk = c.FormValue("tempat_sk")
+
+	sess := getSession(c)
+	group := sess.Get("group").(string)
+	if group == models.UKPBJ {
+		pegawai := services.GetPegawai(utils.InterfaceToUint(sess.Get("id")))
+		pp.UkpbjId = uint(pegawai.UkpbjId.Int64)
+	}
+
 	err = services.SavePejabatPengadaan(&pp)
 	if err != nil {
 		return flashError(c, err.Error(), "/pp/edit/" + utils.IntToString(id))
@@ -100,5 +108,5 @@ func DeletePp(c *fiber.Ctx) error {
 }
 
 func GetJsonPp(c *fiber.Ctx) error {
-	return services.GetDataTablePp(c)
+	return services.GetDataTablePp(c, getUserSession(c))
 }

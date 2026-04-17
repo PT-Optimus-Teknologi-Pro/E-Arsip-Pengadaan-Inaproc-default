@@ -50,8 +50,8 @@ func GetDataTablePanitia(c *fiber.Ctx) error {
 	return models.GetDataTablePanitia(c)
 }
 
-func GetDataTablePp(c *fiber.Ctx) error {
-	return models.GetDataTablePp(c)
+func GetDataTablePp(c *fiber.Ctx, usrsession models.UserSession) error {
+	return models.GetDataTablePp(c, usrsession)
 }
 
 func GetDataTableInbox(c *fiber.Ctx, id uint) error {

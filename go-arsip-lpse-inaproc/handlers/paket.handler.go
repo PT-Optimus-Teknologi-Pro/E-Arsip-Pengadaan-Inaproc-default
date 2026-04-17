@@ -172,6 +172,10 @@ func CreatePaket(c *fiber.Ctx) error {
 	log.Info("create paket from rup ", rupid)
 	mp := currentMap(c)
 	userid := utils.InterfaceToUint(mp["id"])
+	pegawai := services.GetPegawai(userid)
+	if !pegawai.IsApprove() {
+		return Forbiden(c)
+	}
 	paketId, err := services.CreatePaket(rupid, userid)
 	if err != nil {
 		log.Error(err)

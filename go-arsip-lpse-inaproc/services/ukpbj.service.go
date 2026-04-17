@@ -3,6 +3,7 @@ package services
 import (
 	"arsip/models"
 	"errors"
+	"time"
 
 	"github.com/gofiber/fiber/v2/log"
 )
@@ -135,22 +136,28 @@ func SavePejabatPengadaan(dto *models.PejabatPengadaanDTO) error {
 	var objPP models.PejabatPengadaan
 	if dto.ID > 0 {
 		objPP = GetPejabatPengadaan(dto.ID)
-		objPP.Groups = dto.Groups
-		objPP.NoSk = dto.NoSk
-		objPP.PeriodeAwal = dto.PeriodeAwal
-		objPP.PeriodeAkhir = dto.PeriodeAkhir
-	}  else {
-		objPP = models.PejabatPengadaan {
-			Groups: dto.Groups,
-			NoSk: dto.NoSk,
-			Tahun: dto.Tahun,
-			PeriodeAwal: dto.PeriodeAwal,
-			PeriodeAkhir: dto.PeriodeAkhir,
-		}
 	}
+	
+	objPP.Groups = dto.Groups
+	objPP.NoSk = dto.NoSk
+	objPP.TempatSk = dto.TempatSk
+	objPP.Tahun = dto.Tahun
+	objPP.UkpbjId = dto.UkpbjId
+	
+	// Parse dates
+	if dto.PeriodeAwal != "" {
+		objPP.PeriodeAwal, _ = time.Parse("2006-01-02", dto.PeriodeAwal)
+	}
+	if dto.PeriodeAkhir != "" {
+		objPP.PeriodeAkhir, _ = time.Parse("2006-01-02", dto.PeriodeAkhir)
+	}
+	if dto.TglSk != "" {
+		objPP.TglSk, _ = time.Parse("2006-01-02", dto.TglSk)
+	}
+
 	err := models.SavePejabatPengadaan(&objPP)
 	if err != nil {
-		log.Error("error saving Pejabar Pengadaan ", err)
+		log.Error("error saving Pejabat Pengadaan ", err)
 		return err
 	}
 	var satkers []models.PejabatPengadaanSatker
@@ -163,12 +170,12 @@ func SavePejabatPengadaan(dto *models.PejabatPengadaanDTO) error {
 	}
 	err = objPP.SavePejabatPengadaanSatker(&satkers)
 	if err != nil {
-		log.Error("error saving Pejabar Pengadaan satker", err)
+		log.Error("error saving Pejabat Pengadaan satker", err)
 		return err
 	}
 	err = objPP.SavePejabatPengadaanPegawai(dto.Pegawai)
 	if err != nil {
-		log.Error("error saving Pejabar Pengadaan satker", err)
+		log.Error("error saving Pejabat Pengadaan pegawai", err)
 		return err
 	}
 	return nil

@@ -346,8 +346,14 @@ func GetDataTablePanitia(c *fiber.Ctx) error {
 	return populate(orm, c, &datas,  "id", "nama", "tahun")
 }
 
-func GetDataTablePp(c *fiber.Ctx) error {
+func GetDataTablePp(c *fiber.Ctx, usrsession UserSession) error {
 	orm := db.Model(&PejabatPengadaan{})
+	if usrsession.IsUkpbj() {
+		pegawai := usrsession.Pegawai()
+		if pegawai.UkpbjId.Valid {
+			orm = orm.Where("ukpbj_id = ?", pegawai.UkpbjId.Int64)
+		}
+	}
 	var datas []PejabatPengadaan
 	return populate(orm, c, &datas,  "id", "groups", "tahun", "no_sk")
 }

@@ -146,12 +146,13 @@ type PejabatPengadaanDTO struct {
 	Groups			string 		`json:"groups" form:"groups"`
 	Tahun			int 		`json:"tahun" form:"tahun"`
 	NoSk			string 		`json:"no_sk" form:"no_sk"`
-	TglSk			time.Time	`json:"tgl_sk" form:"tgl_sk"`
+	TglSk			string	    `json:"tgl_sk" form:"tgl_sk"`
 	TempatSk		string 		`json:"tempat_sk" form:"tempat_sk"`
-	PeriodeAwal		time.Time	`json:"periode_awal" form:"periode_awal"`
-	PeriodeAkhir	time.Time	`json:"periode_akhir" form:"periode_akhir"`
+	PeriodeAwal		string	    `json:"periode_awal" form:"periode_awal"`
+	PeriodeAkhir	string	    `json:"periode_akhir" form:"periode_akhir"`
 	Satker 			[]uint      `json:"satker" form:"satker"`
 	Pegawai 		[]uint 		`json:"pegawai" form:"pegawai"`
+	UkpbjId			uint 		`json:"ukpbj_id" form:"ukpbj_id"`
 }
 
 func GetPejabatPengadaanSatker(satkerId uint) PejabatPengadaanSatker {

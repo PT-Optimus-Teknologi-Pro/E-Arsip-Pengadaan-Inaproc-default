@@ -4,74 +4,237 @@
 Detil Inbox
 {% endblock %}
 
-{% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Detil Inbox</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item"><a href="/inbox">Daftar Inbox</a></li>
-            <li class="breadcrumb-item active">Detil Inbox</li>
-        </ol>
-    </div>
-</div>
-<div class="col-lg-12">
-    <div class="card">
-       <div class="card-body">
-           <div class="basic-form">
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Subject</label>
-                        <div class="col-sm-7">
-                            <p class="form-control-plaintext">{{ inbox.Subject }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Tanggal </label>
-                        <div class="col-sm-7">
-                            <p class="form-control-plaintext">{{ inbox.EnqueueDate }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Status</label>
-                        <div class="col-sm-7">
-                            <p class="form-control-plaintext">{{ inbox.Status }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Content</label>
-                        <div class="col-sm-7">
-                            <p class="form-control-plaintext">{{ inbox.Content }}</p>
-                        </div>
-                    </div>
-                   <a href="/inbox" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span>Kembali</a>
-            </div>
-       </div>
-    </div>
-</div>
-{% endblock %}
-
 {% block css %}
 <style>
-        #video {
-            width: 100%;
-            max-width: 640px;
-            height: auto;
-            border: 1px solid #ddd;
-        }
-        #canvas {
-            width: 100%;
-            max-width: 640px;
-            height: auto;
-            border: 1px solid #ddd;
-            margin-top: 20px;
-        }
-        #captureButton {
-            font-size: 18px;
-            padding: 10px 20px;
-            margin-top: 20px;
-            cursor: pointer;
-        }
+    :root {
+        --navy:       #11215D;
+        --navy-mid:   #1a3272;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+        --amber:      #d97706;
+        --amber-bg:   #fffbeb;
+        --amber-ring: #fcd34d;
+        --green:      #16a34a;
+        --green-bg:   #f0fdf4;
+        --green-ring: #bbf7d0;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+    }
+
+    .reg-card-header {
+        background: var(--navy);
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .reg-card-header-title {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        font-size: .95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+    }
+    .reg-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: .72rem;
+        font-weight: 600;
+        color: var(--amber);
+        background: var(--amber-bg);
+        border: 1px solid var(--amber-ring);
+        padding: 4px 12px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+    .reg-badge.read {
+        color: var(--green);
+        background: var(--green-bg);
+        border-color: var(--green-ring);
+    }
+
+    .reg-card-body { padding: 1.5rem 1.75rem; }
+
+    .reg-section-label {
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin: 0 0 .75rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--navy-light);
+    }
+
+    .form-group {
+        border-bottom: 1px solid var(--navy-light);
+        padding: .5rem 0;
+        margin-bottom: 0 !important;
+    }
+    .form-group:last-of-type { border-bottom: none; }
+
+    .control-label {
+        font-size: .72rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+    .form-control-plaintext {
+        font-size: .9rem;
+        color: var(--navy);
+        font-weight: 500;
+        padding-top: .375rem;
+        padding-bottom: .375rem;
+        margin: 0;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: .6rem 1.4rem;
+        background: var(--navy-light);
+        color: var(--navy);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: .85rem;
+        font-weight: 600;
+        text-decoration: none;
+        margin-top: 1.5rem;
+        transition: background .15s, transform .1s;
+    }
+    .btn-back:hover {
+        background: var(--border);
+        color: var(--navy);
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
 </style>
+{% endblock %}
+
+{% block content %}
+
+<div class="reg-header">
+    <h2 class="reg-page-title">Detil Inbox</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li><a href="/inbox">Daftar Inbox</a></li>
+            <li aria-current="page">Detil Inbox</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="col-lg-12">
+    <div class="reg-card">
+
+        <div class="reg-card-header">
+            <p class="reg-card-header-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                {{ inbox.Subject }}
+            </p>
+            <div class="reg-badge">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                {{ inbox.Status }}
+            </div>
+        </div>
+
+        <div class="reg-card-body">
+            <p class="reg-section-label">Informasi Pesan</p>
+
+            <div class="form-group mb-3 row">
+                <label class="col-sm-3 text-end control-label col-form-label">Subject</label>
+                <div class="col-sm-7">
+                    <p class="form-control-plaintext">{{ inbox.Subject }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-3 text-end control-label col-form-label">Tanggal</label>
+                <div class="col-sm-7">
+                    <p class="form-control-plaintext">{{ inbox.EnqueueDate }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-3 text-end control-label col-form-label">Status</label>
+                <div class="col-sm-7">
+                    <p class="form-control-plaintext">{{ inbox.Status }}</p>
+                </div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-3 text-end control-label col-form-label">Content</label>
+                <div class="col-sm-7">
+                    <p class="form-control-plaintext">{{ inbox.Content }}</p>
+                </div>
+            </div>
+
+            <a href="/inbox" class="btn-back">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 8 8 12 12 16"/>
+                    <line x1="16" y1="12" x2="8" y2="12"/>
+                </svg>
+                Kembali
+            </a>
+        </div>
+
+    </div>
+</div>
+
 {% endblock %}

@@ -185,17 +185,34 @@ func Home(c *fiber.Ctx) error {
 		mp["countUkpbj"] = services.GetCountUkpbj()
 		mp["countPegawai"] = services.GetCountPegawai()
 		mp["user"] = services.GetPegawai(id)
-		if mp["isPPK"].(bool) {
-			return c.Render("beranda/home-ppk", mp)
-		}
-		if mp["isPP"].(bool) {
-			return c.Render("beranda/home-pp", mp)
-		}
-		if mp["isArsiparis"].(bool) {
-			mp["stats"] = services.GetArsiparisDashboardStats()
-			return c.Render("beranda/home-arsiparis", mp)
-		}
-		if mp["isPokja"].(bool) || mp["isPegawai"].(bool) {
+		if mp["isPokja"].(bool) || mp["isPegawai"].(bool) || mp["isPPK"].(bool) || mp["isPP"].(bool) || mp["isArsiparis"].(bool) {
+			var countPaket, countPermohonan, countInbox int64
+			db := models.GetDB()
+			
+			// Paket Count (PPK or PP or Pokja)
+			// For simplicity and coverage:
+			db.Model(&models.Paket{}).Where("ppk_id = ? OR pp_id = ? OR pnt_id IN (SELECT pnt_id FROM anggota_panitia WHERE peg_id=?)", id, id, id).Count(&countPaket)
+			
+			// Perubahan Data Count
+			db.Model(&models.PerubahanData{}).Where("peg_id = ?", id).Count(&countPermohonan)
+			
+			// Inbox Count
+			db.Model(&models.Inbox{}).Where("peg_id = ?", id).Count(&countInbox)
+			
+			mp["countPaket"] = countPaket
+			mp["countPermohonan"] = countPermohonan
+			mp["countInbox"] = countInbox
+
+			if mp["isPPK"].(bool) {
+				return c.Render("beranda/home-ppk", mp)
+			}
+			if mp["isPP"].(bool) {
+				return c.Render("beranda/home-pp", mp)
+			}
+			if mp["isArsiparis"].(bool) {
+				mp["stats"] = services.GetArsiparisDashboardStats()
+				return c.Render("beranda/home-arsiparis", mp)
+			}
 			return c.Render("beranda/home-pokja", mp)
 		}
 	}
@@ -263,15 +280,8 @@ func LoggedMiddleware(c *fiber.Ctx) error {
 	if pegawai.ID == 0 {
 		return Forbiden(c)
 	}
-	if !pegawai.IsApprove() {
-		// User exists but is not yet verified - show friendly error
-		mp := currentMap(c)
-		mp["message"] = "Akun Anda belum diverifikasi oleh Admin. Silakan hubungi administrator untuk melanjutkan."
-		if pegawai.PegStatus == models.REJECT {
-			mp["message"] = "Akun Anda telah ditolak oleh Admin. Silakan hubungi administrator untuk informasi lebih lanjut."
-		}
-		return c.Status(fiber.StatusForbidden).Render("errors/error-403", mp)
-	}
+	// We allow unverified users (WAIT/REJECT) to see the dashboard and account status
+	// instead of being blocked by a 403 page.
 
 	return c.Next()
 }
@@ -291,26 +301,29 @@ func currentMap(c *fiber.Ctx) fiber.Map {
 	}
 	sess := getSession(c)
 	if sess != nil {
-		mp["id"] = sess.Get("id")
-		mp["name"] = sess.Get("name")
-		mp["group"] = sess.Get("group")
-		mp["isPPK"] = sess.Get("group") == models.PPK
-		mp["isPokja"] = sess.Get("group") == models.POKJA
-		mp["isPP"] = sess.Get("group") == models.PP
-		mp["isUkpbj"] = sess.Get("group") == models.UKPBJ
-		mp["isAdmin"] = sess.Get("group") == models.ADMIN
-		mp["isAdminAgency"] = sess.Get("group") == models.ADM_AGENCY
-		mp["isPegawai"] = sess.Get("group") == models.PEGAWAI
-		mp["isArsiparis"] = sess.Get("group") == models.ARSIPARIS
-		
-		// Real-time approval check from database
 		idVal := sess.Get("id")
+		mp["id"] = idVal
+		mp["name"] = sess.Get("name")
+		
 		if idVal != nil {
 			pegawai := services.GetPegawai(utils.InterfaceToUint(idVal))
 			mp["isApproved"] = pegawai.IsApprove()
+			// Use RoleLabel for the visual badge and menu filtering
+			// This ensures unverified users see "Pegawai" and restricted menus
+			mp["group"] = pegawai.RoleLabel()
 		} else {
+			mp["group"] = sess.Get("group")
 			mp["isApproved"] = false
 		}
+
+		mp["isPPK"] = mp["group"] == models.PPK
+		mp["isPokja"] = mp["group"] == models.POKJA
+		mp["isPP"] = mp["group"] == models.PP
+		mp["isUkpbj"] = mp["group"] == models.UKPBJ
+		mp["isAdmin"] = mp["group"] == models.ADMIN
+		mp["isAdminAgency"] = mp["group"] == models.ADM_AGENCY
+		mp["isPegawai"] = mp["group"] == models.PEGAWAI
+		mp["isArsiparis"] = mp["group"] == models.ARSIPARIS
 	} else {
 		mp["isApproved"] = false
 	}

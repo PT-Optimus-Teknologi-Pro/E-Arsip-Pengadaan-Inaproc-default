@@ -5,72 +5,292 @@ Form Permohonan Perubahan Data Akun
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Permohonan Perubahan Data Akun</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item"><a href="/perubahan-data">Permohonan Perubahan Data Akun</a></li>
-            <li class="breadcrumb-item active">Edit</li>
+
+<style>
+    :root {
+        --navy:       #11215D;
+        --navy-mid:   #1a3272;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+        --amber:      #d97706;
+        --amber-bg:   #fffbeb;
+        --amber-ring: #fcd34d;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+    }
+
+    .reg-card-header {
+        background: var(--navy);
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-header-title {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+
+    .reg-card-body { padding: 1.5rem 1.75rem; }
+
+    .reg-section-label {
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin: 0 0 .75rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--navy-light);
+    }
+
+    .form-group {
+        border-bottom: 1px solid var(--navy-light);
+        padding: .5rem 0;
+        margin-bottom: 0 !important;
+    }
+    .form-group:last-of-type { border-bottom: none; }
+
+    .control-label {
+        font-size: .72rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .form-control {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: .88rem;
+        color: var(--navy);
+        padding: .45rem .75rem;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .form-control:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        outline: none;
+    }
+
+    .reg-file-list {
+        list-style: none;
+        padding: 0;
+        margin: .75rem 0 0;
+    }
+    .reg-file-list li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--navy-light);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: .5rem .85rem;
+        font-size: .82rem;
+    }
+    .reg-file-list a {
+        color: var(--accent);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .reg-file-list a:hover { text-decoration: underline; }
+
+    .reg-card-footer {
+        border-top: 1px solid var(--navy-light);
+        padding: 1.1rem 1.75rem;
+        background: #f8faff;
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: .6rem 1.5rem;
+        background: var(--navy);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: .88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .15s, transform .1s;
+    }
+    .btn-submit:hover {
+        background: var(--navy-mid);
+        transform: translateY(-1px);
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: .6rem 1.4rem;
+        background: var(--navy-light);
+        color: var(--navy);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: .85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background .15s, transform .1s;
+    }
+    .btn-back:hover {
+        background: var(--border);
+        color: var(--navy);
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+</style>
+
+<div class="reg-header">
+    <h2 class="reg-page-title">Permohonan Perubahan Data Akun</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li><a href="/perubahan-data">Permohonan Perubahan Data Akun</a></li>
+            <li aria-current="page">Edit</li>
         </ol>
+    </nav>
+</div>
+
+<div class="col-12 pt-2">
+    <div class="reg-card">
+        {% include "alert.html" %}
+
+        <div class="reg-card-header">
+            <p class="reg-card-header-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                Form Perubahan Data Akun
+            </p>
+        </div>
+
+        <form class="form-horizontal" action="{{ url }}" method="post" enctype="multipart/form-data">
+            {% if perubahan.ID > 0 %}
+            <input type="hidden" name="ID" value="{{ perubahan.ID }}">
+            {% endif %}
+
+            <div class="reg-card-body">
+                <p class="reg-section-label">Data Permohonan</p>
+
+                <div class="form-group mb-3 row">
+                    <label class="col-sm-3 text-end control-label col-form-label">Nomor Surat</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="nomor" class="form-control" value="{{ perubahan.Nomor }}"/>
+                    </div>
+                </div>
+                <div class="form-group mb-3 row">
+                    <label class="col-sm-3 text-end control-label col-form-label">Perihal</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="perihal" class="form-control" value="{{ perubahan.Perihal }}"/>
+                    </div>
+                </div>
+                <div class="form-group mb-3 row">
+                    <label class="col-sm-3 text-end control-label col-form-label">Surat Permohonan Perubahan Data</label>
+                    <div class="col-sm-9">
+                        <input type="file" name="file" class="form-control" {% if perubahan.DokId == 0 %} required {% endif %}/>
+                        {% if perubahan.DokId > 0 %}
+                        <ul class="reg-file-list">
+                            <li>
+                                <a href="/download/{{ perubahan.DokId }}">
+                                    <span style="width: 16px;" data-feather="download"></span>
+                                    {{ perubahan.Dokumen.Filename }}
+                                </a>
+                            </li>
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if isAdmin %}
+                <div class="form-group mb-3 row">
+                    <label class="col-sm-3 text-end control-label col-form-label">Status</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" name="status">
+                            <option value="0" {% if perubahan.Status == 0 %} selected {% endif %}>Draft</option>
+                            <option value="1" {% if perubahan.Status == 1 %} selected {% endif %}>Proses</option>
+                            <option value="2" {% if perubahan.Status == 2 %} selected {% endif %}>Selesai</option>
+                        </select>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="reg-card-footer">
+                <button type="submit" class="btn-submit">
+                    <span style="width: 16px;" data-feather="save"></span>
+                    Submit
+                </button>
+                <a href="/perubahan-data" class="btn-back">
+                    <span style="width: 16px;" data-feather="arrow-left-circle"></span>
+                    Kembali
+                </a>
+            </div>
+
+        </form>
     </div>
 </div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            {% include "alert.html" %}
-            <form class="form-horizontal" action="{{ url }}" method="post"  enctype="multipart/form-data">
-                {% if perubahan.ID > 0 %}
-                <input type="hidden" name="ID" value="{{ perubahan.ID }}">
-                {% endif %}
-                <div class="card-body">
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Nomor Surat</label>
-                        <div class="col-sm-9">
-                            <input type="text" name="nomor" class="form-control"  value="{{perubahan.Nomor}}"/>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Perihal</label>
-                        <div class="col-sm-9">
-                            <input type="text" name="perihal" class="form-control"  value="{{perubahan.Perihal}}"/>
-                        </div>
-                    </div>
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Surat Permohonan Perubahan Data</label>
-                        <div class="col-sm-9">
-                            <input type="file" name="file" class="form-control" {% if perubahan.DokId == 0 %} required {% endif %}/>
-                            {% if perubahan.DokId > 0 %}
-                            <ul class="list-group pt-3">
-                                <li class="list-group-item">
-                                    <a href="/download/{{ perubahan.DokId }}"><span style="width: 16px;" data-feather="download"></span> {{ perubahan.Dokumen.Filename }}</a>
-                                </li>
-                            </ul>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% if isAdmin %}
-                    <div class="form-group mb-3 row">
-                        <label class="col-sm-3  text-end control-label col-form-label">Status</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" name="status">
-                                <option value ="0" {% if perubahan.Status == 0 %} selected {% endif %}>Draft</option>
-                                <option value ="1" {% if perubahan.Status == 1 %} selected {% endif %}>Proses</option>
-                                <option value ="2" {% if perubahan.Status == 2 %} selected {% endif %}>Selesai</option>
-                            </select>
-                        </div>
-                    </div>
-                    {% endif %}
-                    <div class="border-top">
-                        <div class="card-body">
-                            <button type="submit" class="btn btn-primary"><span style="width: 16px;" data-feather="save"></span> Submit</button>
-                            <a href="/perubahan-data" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
-                        </div>
-                    </div>
-            </form>
-        </div>
-    </div>
 
 {% endblock %}
 

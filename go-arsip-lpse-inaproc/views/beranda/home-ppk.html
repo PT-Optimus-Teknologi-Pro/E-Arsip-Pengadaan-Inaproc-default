@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Dashboard
@@ -7,7 +7,7 @@ Dashboard
 {% block content %}
 <div class="row align-items-center">
     <div class="col">
-        <h2 class="page-title">Home</h2>
+        <h2 class="page-title">{% if isApproved %}Home{% else %}Status Permohonan Akun{% endif %}</h2>
     </div>
 </div>
     <div class="col-12 pt-2">
@@ -29,7 +29,7 @@ Dashboard
                 <div class="form-group mb-3 row">
                     <label class="col-sm-2  text-end control-label col-form-label">Roles</label>
                     <div class="col-sm-9">
-                        <p class="form-control-plaintext">{{ user.Usrgroup }}</p>
+                        <p class="form-control-plaintext">{{ user.RoleLabel }}</p>
                     </div>
                 </div>
             </div>

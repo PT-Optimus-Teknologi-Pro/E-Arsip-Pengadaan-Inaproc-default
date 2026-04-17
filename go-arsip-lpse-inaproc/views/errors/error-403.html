@@ -17,23 +17,23 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            background: #f5f5f0;
+            background: #e8ecf7;
         }
         .error-card {
             background: #ffffff;
-            border: 0.5px solid #e0dfd8;
+            border: 0.5px solid #c7d0e8;
             border-radius: 12px;
             padding: 3rem 2.5rem;
             max-width: 460px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 24px rgba(17,33,93,0.10);
         }
         .error-icon-wrap {
             width: 72px;
             height: 72px;
             border-radius: 50%;
-            background: #fef2f2;
+            background: #e8ecf7;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -41,28 +41,28 @@
         }
         .error-code-num {
             font-size: 72px;
-            font-weight: 500;
-            color: #1a1a1a;
+            font-weight: 700;
+            color: #11215D;
             line-height: 1;
             margin: 0 0 0.5rem;
             letter-spacing: -2px;
         }
         .error-divider {
             width: 40px;
-            height: 2px;
-            background: #e0dfd8;
+            height: 3px;
+            background: #2563eb;
             margin: 1.25rem auto;
             border-radius: 2px;
         }
         .error-title-text {
             font-size: 18px;
-            font-weight: 500;
-            color: #1a1a1a;
+            font-weight: 600;
+            color: #11215D;
             margin: 0 0 0.5rem;
         }
         .error-desc-text {
             font-size: 14px;
-            color: #6b6b6b;
+            color: #64748b;
             line-height: 1.6;
             margin: 0 0 2rem;
         }
@@ -71,11 +71,11 @@
             align-items: center;
             gap: 6px;
             font-size: 12px;
-            font-weight: 500;
-            color: #b91c1c;
-            background: #fef2f2;
-            border: 0.5px solid #fca5a5;
-            padding: 4px 10px;
+            font-weight: 600;
+            color: #1a3272;
+            background: #e8ecf7;
+            border: 0.5px solid #a3b4d9;
+            padding: 4px 12px;
             border-radius: 8px;
             margin-bottom: 1.5rem;
         }
@@ -84,7 +84,7 @@
             align-items: center;
             gap: 8px;
             padding: 10px 22px;
-            background: #1a1a1a;
+            background: #11215D;
             color: #ffffff;
             border: none;
             border-radius: 8px;
@@ -92,12 +92,13 @@
             font-weight: 500;
             cursor: pointer;
             text-decoration: none;
-            transition: opacity 0.15s;
+            transition: background 0.15s, transform 0.1s;
         }
         .btn-back-home:hover {
-            opacity: 0.85;
+            background: #1a3272;
             color: #ffffff;
             text-decoration: none;
+            transform: translateY(-1px);
         }
     </style>
 </head>
@@ -108,11 +109,11 @@
 
             <div class="error-icon-wrap">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-                    stroke="#dc2626" stroke-width="1.8"
+                    stroke="#11215D" stroke-width="1.8"
                     stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
             </div>
 
@@ -120,7 +121,9 @@
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
                 </svg>
                 403 Forbidden
             </span>

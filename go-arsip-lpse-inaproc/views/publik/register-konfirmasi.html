@@ -1,30 +1,347 @@
-﻿{% extends "border.html" %} {% block pagetitle %} Form Registrasi {% endblock %}
+﻿{% extends "border.html" %}
+
+{% block pagetitle %}
+Form Registrasi
+{% endblock %}
+
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Form Registrasi</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Login</a></li>
-            <li class="breadcrumb-item active">Form Registrasi</li>
+
+<style>
+    :root {
+        --navy:       #11215D;
+        --navy-mid:   #1a3272;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --green:      #16a34a;
+        --green-bg:   #f0fdf4;
+        --green-ring: #bbf7d0;
+        --amber:      #d97706;
+        --amber-bg:   #fffbeb;
+        --amber-ring: #fcd34d;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+    }
+
+    .reg-success-wrap {
+        padding: 2.5rem 2rem 3rem;
+        text-align: center;
+        max-width: 540px;
+        margin: 0 auto;
+    }
+
+    /* ── Step tracker ── */
+    .reg-steps {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 0;
+        margin-bottom: 2.25rem;
+    }
+    .reg-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        max-width: 110px;
+    }
+    .reg-step-dot {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .75rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+        flex-shrink: 0;
+    }
+    .reg-step-dot.done {
+        background: var(--green);
+        color: #ffffff;
+    }
+    .reg-step-dot.active {
+        background: var(--amber-bg);
+        color: var(--amber);
+        border: 2px solid var(--amber-ring);
+        animation: pulse-amber 2s infinite;
+    }
+    @keyframes pulse-amber {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(217,119,6,0.25); }
+        50%       { box-shadow: 0 0 0 6px rgba(217,119,6,0); }
+    }
+    .reg-step-dot.pending {
+        background: var(--navy-light);
+        color: #94a3b8;
+        border: 1.5px solid var(--border);
+    }
+    .reg-step-label {
+        font-size: .72rem;
+        color: var(--text-muted);
+        text-align: center;
+        line-height: 1.3;
+        font-weight: 500;
+    }
+    .reg-step-label.done   { color: var(--green);  font-weight: 700; }
+    .reg-step-label.active { color: var(--amber);  font-weight: 700; }
+    .reg-step-line {
+        flex: 1;
+        height: 2px;
+        background: var(--border);
+        margin-top: 17px;
+        max-width: 56px;
+        flex-shrink: 0;
+    }
+    .reg-step-line.done { background: var(--green); }
+
+    /* ── Icon ── */
+    .reg-icon-wrap {
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        background: var(--amber-bg);
+        border: 2px solid var(--amber-ring);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+
+    /* ── Badge ── */
+    .reg-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--amber);
+        background: var(--amber-bg);
+        border: 0.5px solid var(--amber-ring);
+        padding: 4px 14px;
+        border-radius: 20px;
+        margin-bottom: 1.25rem;
+    }
+
+    .reg-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0 0 .75rem;
+    }
+
+    .reg-divider {
+        width: 40px;
+        height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+        margin: 0 auto 1.25rem;
+    }
+
+    .reg-desc {
+        font-size: .88rem;
+        color: var(--text-muted);
+        line-height: 1.75;
+        margin: 0 0 1.5rem;
+    }
+
+    /* ── Info box ── */
+    .reg-info-box {
+        background: var(--navy-light);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--navy);
+        border-radius: 8px;
+        padding: .9rem 1.1rem;
+        margin-bottom: 2rem;
+        text-align: left;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .reg-info-box svg { flex-shrink: 0; margin-top: 1px; }
+    .reg-info-box p {
+        font-size: .8rem;
+        color: var(--navy-mid);
+        margin: 0;
+        line-height: 1.6;
+    }
+    .reg-info-box p strong { color: var(--navy); }
+
+    /* ── Button ── */
+    .btn-login {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: .7rem 1.8rem;
+        background: var(--navy);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-size: .88rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background .15s, transform .1s;
+    }
+    .btn-login:hover {
+        background: var(--navy-mid);
+        color: #ffffff;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    .reg-note {
+        margin-top: 1.25rem;
+        font-size: .78rem;
+        color: var(--text-muted);
+    }
+    .reg-note strong { color: var(--navy); }
+</style>
+
+<div class="reg-header">
+    <h2 class="reg-page-title">Form Registrasi</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/">Login</a></li>
+            <li aria-current="page">Form Registrasi</li>
         </ol>
-    </div>
+    </nav>
 </div>
-<div class="col-12 pt-2">
-    <div class="card">
-        <div class="card-body">
-            {% include "alert.html" %}
-            <p>
-                Anda sudah menyelesaikan Tahapan pembuatan akun. Silahkan login
-                menggunkan User ID Anda untuk melihat status permohonan akun
-                anda
+
+<div class="col-12">
+    <div class="reg-card">
+        {% include "alert.html" %}
+
+        <div class="reg-success-wrap">
+
+            <!-- Step tracker -->
+            <div class="reg-steps">
+                <div class="reg-step">
+                    <div class="reg-step-dot done">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="reg-step-label done">Isi Data</span>
+                </div>
+                <div class="reg-step-line done"></div>
+                <div class="reg-step">
+                    <div class="reg-step-dot active">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <span class="reg-step-label active">Menunggu</span>
+                </div>
+                <div class="reg-step-line"></div>
+                <div class="reg-step">
+                    <div class="reg-step-dot pending">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <span class="reg-step-label pending">Disetujui</span>
+                </div>
+            </div>
+
+            <!-- Icon -->
+            <div class="reg-icon-wrap">
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+                    stroke="#d97706" stroke-width="1.7"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+            </div>
+
+            <div class="reg-badge">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Menunggu Persetujuan
+            </div>
+
+            <p class="reg-title">Akun Berhasil Didaftarkan!</p>
+            <div class="reg-divider"></div>
+
+            <p class="reg-desc">
+                Anda telah menyelesaikan tahapan pembuatan akun. Silakan login menggunakan
+                <strong style="color: var(--navy);">User ID</strong> Anda
+                untuk melihat status permohonan akun.
             </p>
-            <p>
-                Untuk Login silahkan
-                <a href="/login" class="btn-success">klik disini</a>
-            </p>
+
+            <!-- Info box -->
+            <div class="reg-info-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#11215D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <p>Akun Anda sedang dalam proses <strong>verifikasi oleh administrator</strong>. Anda akan mendapatkan notifikasi setelah akun disetujui. Proses ini biasanya memakan waktu 1×24 jam kerja.</p>
+            </div>
+
+            <a href="/login" class="btn-login">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                    <polyline points="10 17 15 12 10 7"/>
+                    <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+                Cek Status Login
+            </a>
+
+            <p class="reg-note">Butuh bantuan? Hubungi <strong>administrator</strong> instansi Anda.</p>
+
         </div>
     </div>
 </div>
+
 {% endblock %}

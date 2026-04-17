@@ -5,9 +5,72 @@ Dashboard
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
+<div class="row align-items-center mb-4">
     <div class="col">
-        <h2 class="page-title">Home</h2>
+        <h2 class="page-title fw-bold" style="color: #11215D;">{% if isApproved %}Home{% else %}Status Permohonan Akun{% endif %}</h2>
+        {% if not isApproved %}
+        <p class="text-muted">Halo {{ user.PegNama }}, berikut adalah ringkasan aktivitas akun Anda.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Summary Cards Section -->
+<div class="row g-3 mb-4">
+    <!-- Paket Card -->
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm rounded-4" style="background: linear-gradient(135deg, #11215D 0%, #1e3a8a 100%);">
+            <div class="card-body p-4 position-relative overflow-hidden">
+                <!-- Decorative Circle -->
+                <div class="position-absolute end-0 top-0 translate-middle-x mt-n3 me-n3 bg-white bg-opacity-10 rounded-circle" style="width: 100px; height: 100px;"></div>
+                
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-white bg-opacity-20 p-2 rounded-3 text-white">
+                        <i data-feather="package" style="width: 20px; height: 20px;"></i>
+                    </div>
+                    <span class="text-white bg-white bg-opacity-10 px-2 py-1 rounded small fw-bold">PAKET TUGAS</span>
+                </div>
+                <div class="mb-0">
+                    <h2 class="text-white fw-bold mb-1" style="font-size: 2rem;">{{ countPaket|default:0 }}</h2>
+                    <p class="text-white text-opacity-75 small mb-0">Total paket yang dikelola</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permohonan Data Card -->
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm rounded-4" style="background: #fff; border-left: 4px solid #FF9500 !important;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-warning bg-opacity-10 p-2 rounded-3 text-warning">
+                        <i data-feather="file-text" style="width: 20px; height: 20px;"></i>
+                    </div>
+                    <span class="text-muted small fw-bold" style="letter-spacing: 0.05em;">PERMOHONAN DATA</span>
+                </div>
+                <div class="mb-0">
+                    <h2 class="fw-bold mb-1" style="color: #11215D; font-size: 2rem;">{{ countPermohonan|default:0 }}</h2>
+                    <p class="text-muted small mb-0">Perubahan data akun Anda</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inbox Card -->
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm rounded-4" style="background: #fff; border-left: 4px solid #3b82f6 !important;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-blue bg-opacity-10 p-2 rounded-3 text-blue">
+                        <i data-feather="mail" style="width: 20px; height: 20px;"></i>
+                    </div>
+                    <span class="text-muted small fw-bold" style="letter-spacing: 0.05em;">INBOX / NOTIFIKASI</span>
+                </div>
+                <div class="mb-0">
+                    <h2 class="fw-bold mb-1" style="color: #11215D; font-size: 2rem;">{{ countInbox|default:0 }}</h2>
+                    <p class="text-muted small mb-0">Pesan dan notifikasi sistem</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
     <div class="col-lg-12 pt-2">
@@ -29,12 +92,13 @@ Dashboard
                 <div class="form-group mb-3 row">
                     <label class="col-sm-2  text-end control-label col-form-label">Roles</label>
                     <div class="col-sm-9">
-                        <p class="form-control-plaintext">{{ user.Usrgroup }}</p>
+                        <p class="form-control-plaintext">{{ user.RoleLabel }}</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    {% if isApproved %}
     <div class="col-12 pt-2 mb-4">
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div class="card-header bg-white py-3 border-0 d-flex align-items-center gap-3">
@@ -66,6 +130,7 @@ Dashboard
             </div>
         </div>
     </div>
+    {% endif %}
 
     <div class="col-12 pt-2">
         <div class="card border-0 shadow-sm rounded-4">
@@ -103,6 +168,7 @@ Dashboard
 {% endblock %}
 
 {% block script %}
+{% if isApproved %}
 <script>
     new DataTable("#table-workload", {
         ajax: '/paket/data',
@@ -158,4 +224,5 @@ Dashboard
         }
     });
 </script>
+{% endif %}
 {% endblock %}

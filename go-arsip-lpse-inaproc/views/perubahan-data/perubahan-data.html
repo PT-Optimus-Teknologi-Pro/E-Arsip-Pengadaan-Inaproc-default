@@ -5,59 +5,195 @@ Permohonan Perubahan Data Akun
 {% endblock %}
 
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Permohonan Perubahan Data Akun</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item active">Permohonan Perubahan Data Akun</li>
+<style>
+    :root {
+        --navy:       #11215D;
+        --navy-mid:   #1a3272;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+    }
+    .reg-card-header {
+        background: var(--navy);
+        padding: 1.1rem 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-header-title {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+    .reg-card-body { padding: 1.5rem 1.75rem; }
+    .reg-card-footer {
+        border-top: 1px solid var(--navy-light);
+        padding: 1.1rem 1.75rem;
+        background: #f8faff;
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        flex-wrap: wrap;
+    }
+
+    .reg-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .85rem;
+        color: var(--navy);
+    }
+    .reg-table thead tr { background: var(--navy-light); }
+    .reg-table thead th {
+        padding: .65rem 1rem;
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--navy);
+        border-bottom: 2px solid var(--border);
+        white-space: nowrap;
+    }
+    .reg-table tbody tr {
+        border-bottom: 1px solid var(--navy-light);
+        transition: background .12s;
+    }
+    .reg-table tbody tr:last-child { border-bottom: none; }
+    .reg-table tbody tr:hover { background: #f0f4fd; }
+    .reg-table td { padding: .7rem 1rem; vertical-align: middle; }
+
+    .btn-tambah {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: .6rem 1.5rem;
+        background: #16a34a;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: .88rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background .15s, transform .1s;
+    }
+    .btn-tambah:hover { background: #15803d; transform: translateY(-1px); }
+</style>
+
+<div class="reg-header">
+    <h2 class="reg-page-title">Permohonan Perubahan Data Akun</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li aria-current="page" style="color:#94a3b8;">Permohonan Perubahan Data Akun</li>
         </ol>
+    </nav>
+</div>
+
+<div class="col-12 pt-2">
+    <div class="reg-card">
+        <div class="reg-card-header">
+            <p class="reg-card-header-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+                </svg>
+                Daftar Permohonan Perubahan Data Akun
+            </p>
+        </div>
+
+        <div class="reg-card-body">
+            {% include "alert.html" %}
+            <table class="reg-table" id="table-data"></table>
+        </div>
+
+        {% if allow %}
+        <div class="reg-card-footer">
+            <a href="/perubahan-data/edit" class="btn-tambah">
+                <span style="width: 16px;" data-feather="plus-circle"></span>
+                Tambah
+            </a>
+        </div>
+        {% endif %}
     </div>
 </div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            <div class="card-body">
-                {% include "alert.html" %}
-                <table class="table table-bordered table-striped" id="table-data">
-                </table>
-                {%if allow %}
-                <a href="/perubahan-data/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
-                {%endif %}
-            </div>
-        </div>
-    </div>
 {% endblock %}
 
 {% block script %}
-    <script>
-        new DataTable("#table-data", {
-            ajax: '/perubahan-data/data',
-            processing: true,
-            serverSide: true,
-            columns: [
-                {data : "nomor", title: 'Surat Permohonan', width : '15%', render : function(data, type, row){
-                        return '<a href="/perubahan-data/'+row["ID"]+'">'+data+'</a>'
-                    }
-                },
-                {data : 'perihal', title : 'Perihal'},
-                {data : "created_at", title: 'Tanggal', width : '15%', render : function(data, type, row){
-                        return moment(data).format("MM-DD-YYYY");
-                    }
-                },
-                {data : "status", title: 'Status', width : '15%', render : function(data, type, row){
-                        return statusPerubahan(data);
-                    }
-                },
-                {data : "Pegawai", title : "Nama Pengirim", render : function(data, type, row){
-                        return data.peg_nama;
-                }}
-            ],
-            aaSorting: [[0, 'desc']],
-            drawCallback: function( settings ) {
-                feather.replace();
-            }
-        });
-    </script>
+<script>
+    new DataTable("#table-data", {
+        ajax: '/perubahan-data/data',
+        processing: true,
+        serverSide: true,
+        columns: [
+            {data: "nomor", title: 'Surat Permohonan', width: '15%', render: function(data, type, row){
+                return '<a href="/perubahan-data/'+row["ID"]+'" style="color:#2563eb;font-weight:600;">'+data+'</a>';
+            }},
+            {data: 'perihal', title: 'Perihal'},
+            {data: "created_at", title: 'Tanggal', width: '15%', render: function(data, type, row){
+                return moment(data).format("MM-DD-YYYY");
+            }},
+            {data: "status", title: 'Status', width: '15%', render: function(data, type, row){
+                return statusPerubahan(data);
+            }},
+            {data: "Pegawai", title: "Nama Pengirim", render: function(data, type, row){
+                return data.peg_nama;
+            }}
+        ],
+        aaSorting: [[0, 'desc']],
+        drawCallback: function(settings) {
+            feather.replace();
+        }
+    });
+</script>
 {% endblock %}

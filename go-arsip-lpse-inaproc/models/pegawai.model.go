@@ -106,25 +106,10 @@ func (u Pegawai) GetTglBuat() string {
 }
 
 func (u Pegawai) RoleLabel() string {
-	switch u.Usrgroup {
-	case ADMIN:
-		return "Admin"
-	case ADM_AGENCY:
-		return "Admin Agency"
-	case UKPBJ:
-		return "Admin UKPBJ"
-	case PPK:
-		return "PPK"
-	case POKJA:
-		return "Pokja"
-	case PP:
-		return "Pejabat Pengadaan"
-	case PEGAWAI:
-		return "Pejabat Pengadaan / Pokja"
-	case ARSIPARIS:
-		return "Arsiparis"
+	if !u.IsApprove() && u.Usrgroup != ADMIN && u.Usrgroup != ADM_AGENCY && u.Usrgroup != UKPBJ {
+		return PEGAWAI
 	}
-	return ""
+	return u.Usrgroup
 }
 
 func (u Pegawai) IsPPK() bool {

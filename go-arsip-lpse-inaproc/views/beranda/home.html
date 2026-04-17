@@ -6,6 +6,7 @@ Dashboard
 
 {% block content %}
 
+{% if isApproved or not id %}
 <div class="hero-container mb-5">
     
     <div class="hs-wrap" id="hsWrap">
@@ -192,6 +193,76 @@ Dashboard
             </div>
         </div>
     </div>
+{% elif id and not isApproved %}
+<div class="row align-items-center mb-3 text-center">
+    <div class="col">
+        <h2 class="page-title text-uppercase font-weight-bold" style="color:#11215D">Status Permohonan Akun</h2>
+        <p class="text-muted">Akun Anda sedang dalam proses verifikasi pihak Admin/UKPBJ.</p>
+    </div>
+</div>
+<div class="col-lg-12 pt-2 mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title fw-bold" style="color: #11215D;">Profile Pegawai</h4>
+            <div class="form-group mb-3 row border-bottom pb-2">
+                <label class="col-sm-2 text-end control-label col-form-label fw-bold">Nama</label>
+                <div class="col-sm-9"><p class="form-control-plaintext mb-0">{{ user.PegNama }}</p></div>
+            </div>
+            <div class="form-group mb-3 row border-bottom pb-2">
+                <label class="col-sm-2 text-end control-label col-form-label fw-bold">Email</label>
+                <div class="col-sm-9"><p class="form-control-plaintext mb-0">{{ user.PegEmail }}</p></div>
+            </div>
+            <div class="form-group mb-3 row">
+                <label class="col-sm-2 text-end control-label col-form-label fw-bold">Roles</label>
+                <div class="col-sm-9"><p class="form-control-plaintext mb-0 text-primary fw-bold">{{ user.RoleLabel }}</p></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-12 pt-2">
+    <div class="card border-0 shadow-sm rounded-4" style="background: #f8fafc;">
+        <div class="card-body">
+            <h4 class="fw-bold mb-4" style="color: #11215D;">Detail Permohonan Akun</h4>
+            <div class="table-responsive">
+                <table class="table table-vcenter table-bordered bg-white">
+                    <thead class="bg-light">
+                    <tr>
+                        <th class="text-muted small fw-bold">NAMA</th>
+                        <th class="text-muted small fw-bold" width="15%">NIP</th>
+                        <th class="text-muted small fw-bold" width="15%">EMAIL</th>
+                        <th class="text-muted small fw-bold" width="15%">USER ID</th>
+                        <th class="text-muted small fw-bold text-center">STATUS</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="fw-medium">{{ user.PegNama}}</td>
+                        <td class="text-muted">{{ user.PegNip}}</td>
+                        <td class="text-muted">{{ user.PegEmail}}</td>
+                        <td class="text-muted">{{ user.PegNamauser}}</td>
+                        <td class="text-center">
+                            <span class="badge bg-warning-lt px-3 py-2 rounded-pill fw-bold">
+                                {{ user.GetStatusVerifikasi}}
+                            </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="alert alert-info mt-4" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <i data-feather="info" class="me-2"></i>
+                    </div>
+                    <div>
+                        Informasi: Silahkan menunggu verifikasi dari Admin UKPBJ. Status Anda akan berubah menjadi <strong>Disetujui</strong> setelah data Anda divalidasi.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
     <div class="modal fade" id="theModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
