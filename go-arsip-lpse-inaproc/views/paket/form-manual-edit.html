@@ -394,7 +394,7 @@ Edit Data Manual - Arsip Digital
                                     </div>
                                     <div class="edm-doc-info">
                                         <div class="edm-doc-name" title="{{ b.Document.Filename }}">{{ b.Document.Filename }}</div>
-                                        <div class="edm-doc-meta">{{ b.Document.FilesizeKB }} KB &bull; Diunggah {{ b.CreatedAt|date:"d M Y" }}</div>
+                                        <div class="edm-doc-meta">{{ b.Document.FilesizeKB }} KB &bull; Diunggah {{ formatDate(b.CreatedAt) }}</div>
                                     </div>
                                     <div class="edm-doc-actions">
                                         <a href="/download/{{ b.DokId }}" class="icon-btn download" title="Download">

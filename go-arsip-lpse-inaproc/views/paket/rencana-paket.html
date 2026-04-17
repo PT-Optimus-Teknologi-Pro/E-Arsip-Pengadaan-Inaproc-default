@@ -28,11 +28,11 @@ Daftar Rencana Paket
         </div>
         <div class="card-body">
             {% include "alert.html" %}
-            <form id="filter-form">
+            <form id="filter-form" action="" method="GET">
                 <div class="row g-3">
                     <div class="col-md-3">
                         <label class="form-label small font-weight-bold">Tahun Anggaran</label>
-                        <select class="form-select form-select-sm select2" name="tahun" onchange="this.form.submit()">
+                        <select class="form-select form-select-sm select2" name="tahun">
                             {% for obj in tahunlist %}
                             <option value="{{ obj }}" {%if obj == tahun %} selected {% endif %}>{{ obj }}</option>
                             {% endfor %}
@@ -40,12 +40,12 @@ Daftar Rencana Paket
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small font-weight-bold">Satuan Kerja</label>
-                        <select name="satker" id="satker" class="form-select form-select-sm select2" onchange="this.form.submit()">
+                        <select name="satker" id="satker" class="form-select form-select-sm select2">
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small font-weight-bold">Jenis Pengadaan</label>
-                        <select name="jenis" id="jenis" class="form-select form-select-sm select2" onchange="this.form.submit()">
+                        <select name="jenis" id="jenis" class="form-select form-select-sm select2">
                             <option value=""></option>
                             {% for obj in jenislist %}
                             <option value="{{ obj }}" {%if obj == jenis %} selected {% endif %}>{{ obj }}</option>
@@ -54,7 +54,7 @@ Daftar Rencana Paket
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small font-weight-bold">Metode</label>
-                        <select name="metode" id="metode" class="form-select form-select-sm select2" onchange="this.form.submit()">
+                        <select name="metode" id="metode" class="form-select form-select-sm select2">
                             <option value=""></option>
                             {% for obj in metodelist %}
                             <option value="{{ obj }}" {%if obj == metode %} selected {% endif %}>{{ obj }}</option>
@@ -129,6 +129,11 @@ Daftar Rencana Paket
     }
     window.metode = getMetodeLabel;
 
+    // Bind static filters immediately
+    $('select[name="tahun"], select[name="jenis"], select[name="metode"]').on('change', function() {
+        $('#filter-form').submit();
+    });
+
     fetch('/satker/json?tahun={{tahun}}')
       .then(response => response.json())
       .then(data => {
@@ -137,7 +142,12 @@ Daftar Rencana Paket
                 options += '<option value="' + data[i].ID + '">' + data[i].Nama + '</option>';
              }
              $('#satker').html(options);
-             $('#satker').val({{ satker }}).trigger('change.select2');
+             $('#satker').val('{{ satker }}').trigger('change.select2');
+             
+             // Bind satker change after initialization is complete
+             $('#satker').on('change', function() {
+                 $('#filter-form').submit();
+             });
       });
 
     new DataTable("#table-data", {

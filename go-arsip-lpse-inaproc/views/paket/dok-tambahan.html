@@ -61,7 +61,7 @@
                         {{ number(d.Document().FilesizeKB()) }} KB
                     </td>
                     <td data-label="Tanggal" class="text-muted">
-                        {{ d.Document().Filedate.Format("02-01-2006 15:04") }}
+                        {{ formatDateTime(d.Document().Filedate) }}
                     </td>
                     <td>
                         <div class="btn-list flex-nowrap">

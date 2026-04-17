@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -24,7 +25,28 @@ func FormatDateTime(obj time.Time) string{
 }
 
 
-func FormatRupiah(amount float64) string {
+func toFloat(i interface{}) float64 {
+	switch v := i.(type) {
+	case int:
+		return float64(v)
+	case int32:
+		return float64(v)
+	case int64:
+		return float64(v)
+	case float32:
+		return float64(v)
+	case float64:
+		return v
+	case string:
+		f, _ := strconv.ParseFloat(v, 64)
+		return f
+	default:
+		return 0
+	}
+}
+
+func FormatRupiah(i interface{}) string {
+	amount := toFloat(i)
 	if amount == 0 {
 		return ""
 	}
@@ -37,16 +59,16 @@ func Prosentase(value float64, total float64) string {
 	if total == 0 {
 		return ""
 	}
-	persen := (value/total) * 100
-	return fmt.Sprintf("%.2f", persen)+"%"
+	persen := (value / total) * 100
+	return fmt.Sprintf("%.2f", persen) + "%"
 }
-
 
 func Len(obj []interface{}) int {
 	return len(obj)
 }
 
-func FormatNumber(amount float64) string {
+func FormatNumber(i interface{}) string {
+	amount := toFloat(i)
 	humanizeValue := humanize.CommafWithDigits(amount, 0)
 	return strings.Replace(humanizeValue, ",", ".", -1)
 }

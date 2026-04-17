@@ -219,7 +219,7 @@ Detil Dokumen Privat
                     <div class="col-md-6">
                         <div class="field-group">
                             <div class="field-label">Tanggal Input</div>
-                            <div class="field-value">{{ paket.CreatedAt|date:"d F Y, H:i" }}</div>
+                            <div class="field-value">{{ formatDateTime(paket.CreatedAt) }}</div>
                         </div>
                     </div>
                 </div>
@@ -237,7 +237,7 @@ Detil Dokumen Privat
                             </div>
                             <div style="flex: 1; min-width: 0;">
                                 <div class="bukti-filename text-truncate" title="{{ b.Document.Filename }}">{{ b.Document.Filename }}</div>
-                                <div class="bukti-size">{{ b.Document.FilesizeKB }} KB</div>
+                                <div class="edm-doc-meta">{{ b.Document.FilesizeKB }} KB &bull; Diunggah {{ formatDate(b.CreatedAt) }}</div>
                             </div>
                             <a href="/download/{{ b.DokId }}" class="btn-priv btn-success-priv">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
