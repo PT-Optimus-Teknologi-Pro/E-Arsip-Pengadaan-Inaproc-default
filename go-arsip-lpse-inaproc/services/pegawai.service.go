@@ -77,6 +77,9 @@ func VerifikasiAkun(pegawai models.Pegawai, action string, usrgroup string) erro
 	}
 	switch action {
 	case "approve":
+		if pegawai.Usrgroup == "" || pegawai.Usrgroup == models.PEGAWAI {
+			return errors.New("Peringatan: Anda harus memilih Pengangkatan Menjadi (Role) terlebih dahulu!")
+		}
 		switch usrgroup {
 		case models.UKPBJ:
 			pegawai.PegStatus = models.APPROVED_UKPBJ

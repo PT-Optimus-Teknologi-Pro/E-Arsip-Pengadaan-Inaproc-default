@@ -231,18 +231,18 @@ Form Pegawai
                         <div class="row">
                             <div class="col-md-6 form-group-wrap">
                                 <label class="modern-label">Pengangkatan Menjadi (Role)</label>
-                                {% if pegawai.ID > 0 %}
-                                    <input type="text" class="modern-input" value="{{ pegawai.RoleLabel }}" readonly style="background:#f9fafb; font-weight:600; color:#0026B4;">
-                                    <input type="hidden" name="usrgroup" value="{{ pegawai.Usrgroup }}">
-                                {% elif isAdmin %}
+                                {% if isAdmin %}
                                     <select name="usrgroup" class="modern-input" required>
                                         <option value="">-- Pilih Akses Role --</option>
-                                        <option value="UKPBJ">UKPBJ</option>
-                                        <option value="PPK">PPK</option>
-                                        <option value="PP">Pejabat Pengadaan (PP)</option>
-                                        <option value="POKJA">Pokja</option>
-                                        <option value="ARSIPARIS">Arsiparis</option>
+                                        <option value="UKPBJ" {% if pegawai.Usrgroup == 'UKPBJ' %} selected {% endif %}>UKPBJ</option>
+                                        <option value="PPK" {% if pegawai.Usrgroup == 'PPK' %} selected {% endif %}>PPK</option>
+                                        <option value="PP" {% if pegawai.Usrgroup == 'PP' %} selected {% endif %}>Pejabat Pengadaan (PP)</option>
+                                        <option value="POKJA" {% if pegawai.Usrgroup == 'POKJA' %} selected {% endif %}>Pokja</option>
+                                        <option value="ARSIPARIS" {% if pegawai.Usrgroup == 'ARSIPARIS' %} selected {% endif %}>Arsiparis</option>
                                     </select>
+                                {% else %}
+                                    <input type="text" class="modern-input" value="{{ pegawai.RoleLabel }}" readonly style="background:#f9fafb; font-weight:600; color:#0026B4;">
+                                    <input type="hidden" name="usrgroup" value="{{ pegawai.Usrgroup }}">
                                 {% endif %}
                             </div>
                             

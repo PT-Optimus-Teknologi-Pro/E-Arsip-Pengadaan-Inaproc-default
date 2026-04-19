@@ -110,7 +110,7 @@
 
         {% endif %}
 
-        {% if isAdmin or isPPK or group == "PPK" or isPokja or isPP or isPegawai or isArsiparis %}
+        {% if (isPPK or group == "PPK" or isPokja or isPP or isPegawai or isArsiparis) and not isAdmin %}
         {% if isApproved or isUkpbj %}
         <li class="app-nav-item {% if path == '/paket' or path == '/paket/edit' %} active {% endif %}">
           <a class="app-nav-link" href="/paket">

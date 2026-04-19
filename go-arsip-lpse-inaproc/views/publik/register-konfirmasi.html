@@ -1,4 +1,4 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Form Registrasi
@@ -271,46 +271,63 @@ Form Registrasi
                     </div>
                     <span class="reg-step-label done">Isi Data</span>
                 </div>
-                <div class="reg-step-line done"></div>
+                <div class="reg-step-line {% if isApproved %}done{% endif %}"></div>
                 <div class="reg-step">
-                    <div class="reg-step-dot active">
+                    <div class="reg-step-dot {% if isApproved %}done{% else %}active{% endif %}">
+                        {% if isApproved %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        {% else %}
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10"/>
                             <polyline points="12 6 12 12 16 14"/>
                         </svg>
+                        {% endif %}
                     </div>
-                    <span class="reg-step-label active">Menunggu</span>
+                    <span class="reg-step-label {% if isApproved %}done{% else %}active{% endif %}">Menunggu</span>
                 </div>
-                <div class="reg-step-line"></div>
+                <div class="reg-step-line {% if isApproved %}done{% endif %}"></div>
                 <div class="reg-step">
-                    <div class="reg-step-dot pending">
+                    <div class="reg-step-dot {% if isApproved %}done{% else %}pending{% endif %}">
+                        {% if isApproved %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        {% else %}
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         </svg>
+                        {% endif %}
                     </div>
-                    <span class="reg-step-label pending">Disetujui</span>
+                    <span class="reg-step-label {% if isApproved %}done{% else %}pending{% endif %}">Disetujui</span>
                 </div>
             </div>
 
             <!-- Icon -->
-            <div class="reg-icon-wrap">
+            <div class="reg-icon-wrap" style="{% if isApproved %}background: var(--green-bg); border-color: var(--green-ring);{% endif %}">
+                {% if isApproved %}
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                {% else %}
                 <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
                     stroke="#d97706" stroke-width="1.7"
                     stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"/>
                     <polyline points="12 6 12 12 16 14"/>
                 </svg>
+                {% endif %}
             </div>
 
-            <div class="reg-badge">
+            <div class="reg-badge" style="{% if isApproved %}background: var(--green-bg); color: var(--green); border-color: var(--green-ring);{% endif %}">
+                {% if isApproved %}
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Persetujuan Selesai
+                {% else %}
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"/>
                     <polyline points="12 6 12 12 16 14"/>
                 </svg>
                 Menunggu Persetujuan
+                {% endif %}
             </div>
 
-            <p class="reg-title">Akun Berhasil Didaftarkan!</p>
+            <p class="reg-title">{% if isApproved %}Akun Telah Disetujui!{% else %}Akun Berhasil Didaftarkan!{% endif %}</p>
             <div class="reg-divider"></div>
 
             <p class="reg-desc">
@@ -320,13 +337,18 @@ Form Registrasi
             </p>
 
             <!-- Info box -->
-            <div class="reg-info-box">
+            <div class="reg-info-box" style="{% if isApproved %}border-left-color: var(--green); background: var(--green-bg);{% endif %}">
+                {% if isApproved %}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <p>Selamat! Akun Anda telah <strong>berhasil diverifikasi</strong>. Anda sekarang dapat masuk ke dashboard dan menggunakan seluruh fitur sistem e-Arsip.</p>
+                {% else %}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#11215D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"/>
                     <line x1="12" y1="8" x2="12" y2="12"/>
                     <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
                 <p>Akun Anda sedang dalam proses <strong>verifikasi oleh administrator</strong>. Anda akan mendapatkan notifikasi setelah akun disetujui. Proses ini biasanya memakan waktu 1×24 jam kerja.</p>
+                {% endif %}
             </div>
 
             <a href="/login" class="btn-login">

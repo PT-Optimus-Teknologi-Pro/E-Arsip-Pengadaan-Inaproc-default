@@ -249,6 +249,7 @@ Detil Verifikasi
                                                 <div class="cs-options" id="cs-options">
                                                     <div class="cs-option" data-value="PP" onclick="selectCS('PP','Pejabat Pengadaan (PP)')">Pejabat Pengadaan (PP)</div>
                                                     <div class="cs-option" data-value="POKJA" onclick="selectCS('POKJA','Pokja')">Pokja</div>
+                                                    <div class="cs-option" data-value="PPK" onclick="selectCS('PPK','PPK')">PPK</div>
                                                     <div class="cs-option" data-value="ARSIPARIS" onclick="selectCS('ARSIPARIS','Arsiparis')">Arsiparis</div>
                                                 </div>
                                                 <div class="cs-empty" id="cs-empty" style="display:none">Tidak ada hasil</div>
@@ -394,7 +395,7 @@ Detil Verifikasi
                 <div class="d-flex align-items-center gap-2">
                     {% if isAdmin and (pegawai.PegStatus == 0 or pegawai.PegStatus == 3) %}
                         {% if pegawai.PegStatus == 0 or pegawai.PegStatus == 3 %}
-                        <button type="submit" class="btn-action btn-navy" name="action" value="approve">
+                        <button type="submit" class="btn-action btn-navy" name="action" value="approve" onclick="return validateApprove()">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                             Update & Approve
                         </button>
@@ -431,6 +432,15 @@ Detil Verifikasi
 
 {% block script %}
 <script>
+    function validateApprove() {
+        var val = document.getElementById('usrgroup-val').value;
+        if (!val || val == "") {
+            alert('PEMBERITAHUAN: Anda harus memilih Pengangkatan Menjadi (Role) terlebih dahulu!');
+            return false;
+        }
+        return true;
+    }
+
     $(".datepicker").flatpickr({
         enableTime: true,
         dateFormat: "Y-m-d",
