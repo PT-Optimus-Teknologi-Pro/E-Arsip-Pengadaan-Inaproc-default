@@ -689,9 +689,22 @@ func UnlockAddendumReview(c *fiber.Ctx) error {
 	paket.IsAddendum = true
 	models.SavePaket(&paket)
 
-	return flashSuccess(c, "Addendum Berhasil Diaktifkan. Versi sebelumnya telah disimpan di riwayat.", "/dok-final/"+utils.UintToString(id))
-}	for _, m := range pokja.AnggotaList() {
-		targets = append(targets, m.ID)
+	// 5. Send Inbox Notifications to relevant parties
+	subject := "Pemberitahuan Addendum Reviu Dokumen: " + paket.Nama
+	content := fmt.Sprintf("Addendum telah diaktifkan untuk paket %s. Alasan: %s. Silakan lakukan peninjauan dan persetujuan ulang pada dokumen persiapan.", paket.Nama, c.FormValue("reason"))
+
+	// Targets: PPK and Pokja/PP
+	var targets []uint
+	if paket.PpkId > 0 {
+		targets = append(targets, paket.PpkId)
+	}
+	if paket.PpId > 0 {
+		targets = append(targets, paket.PpId)
+	} else if paket.PntId > 0 {
+		pokja := paket.Pokja()
+		for _, m := range pokja.AnggotaList() {
+			targets = append(targets, m.ID)
+		}
 	}
 
 	for _, targetId := range targets {
@@ -705,7 +718,7 @@ func UnlockAddendumReview(c *fiber.Ctx) error {
 		models.SaveInbox(&inbox)
 	}
 
-	return flashSuccess(c, "Addendum Berhasil Diaktifkan. Notifikasi telah dikirim ke semua pihak terkait.", "/dok-final/"+utils.UintToString(id))
+	return flashSuccess(c, "Addendum Berhasil Diaktifkan. Versi sebelumnya telah disimpan di riwayat dan notifikasi telah dikirim.", "/dok-final/"+utils.UintToString(id))
 }
 
 func DokPersiapanPaketPersetujuan(c *fiber.Ctx) error {

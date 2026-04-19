@@ -64,6 +64,12 @@ func DeleteReviu(reviu *Reviu) error {
 	return db.Delete(reviu).Error
 }
 
+func GetAllReviu() []Reviu {
+	var results []Reviu
+	db.Find(&results)
+	return results
+}
+
 type ReviuPaket struct {
 	gorm.Model
 	PktId			uint 		`json:"pkt_id"`

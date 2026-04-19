@@ -5,6 +5,7 @@ import (
 	"arsip/models"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"image/png"
 	"os"
 	"path"

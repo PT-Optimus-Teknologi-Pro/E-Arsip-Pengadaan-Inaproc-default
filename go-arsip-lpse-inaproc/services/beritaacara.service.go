@@ -3,7 +3,12 @@ package services
 import (
 	"fmt"
 	"time"
+	"arsip/models"
 )
+
+func GetAllReviu() []models.Reviu {
+	return models.GetAllReviu()
+}
 
 
 func SimpanBaNego(id uint, nomor string, tanggal time.Time) error {

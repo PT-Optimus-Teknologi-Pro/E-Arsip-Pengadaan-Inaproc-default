@@ -356,6 +356,96 @@ func CetakSkPokja(c *fiber.Ctx) error {
 	url := fmt.Sprintf("http://localhost:%s/preview/sk-pokja/%s",config.Port(), c.Params("id"))
 	return print(c, url, "SK-pokja.pdf")
 }
+func PreviewBAKajiUlang(c *fiber.Ctx) error {
+	id, _ := c.ParamsInt("id")
+	log.Info("priview BA Reviu Dokumen")
+	mp := currentMap(c)
+	paket := services.GetPaket(uint(id))
+	mp["paket"] = paket
+	
+	// Data Signers (TTE)
+	type Signer struct {
+		Nama     string
+		Jabatan  string
+		IsSigned bool
+		QrCode   string
+		SigImg   string // NEW: Base64 signature image
+		Nip      string
+	}
+
+	var signersPPK []Signer
+	var signersProses []Signer
+
+	// 1. Ambil Data PPK
+	ppk := paket.Ppk()
+	if ppk.ID > 0 {
+		isSigned := false
+		// Cek apakah PPK sudah menyetujui dokumen persiapan
+		dokPersiapans := paket.DokPersiapan()
+		if len(dokPersiapans) > 0 {
+			// Jika ada setidaknya satu dokumen dan sudah disetujui PPK
+			p := dokPersiapans[0].PersetujuanPegawai(ppk.ID)
+			isSigned = p.Status
+		}
+
+		s := Signer{
+			Nama:     ppk.PegNama,
+			Jabatan:  "Pejabat Pembuat Komitmen",
+			IsSigned: isSigned,
+			Nip:      ppk.PegNip,
+		}
+		if isSigned {
+			fullUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%d/verify/%d", c.Protocol(), c.Hostname(), id, ppk.ID)
+			s.QrCode = generateQrBase64(fullUrl)
+		}
+		signersPPK = append(signersPPK, s)
+	}
+
+	// 2. Ambil Data Pelaksana (PP atau Pokja)
+	if paket.PpId > 0 {
+		pp := paket.Pp()
+		isSigned := false
+		dokPersiapans := paket.DokPersiapan()
+		if len(dokPersiapans) > 0 {
+			p := dokPersiapans[0].PersetujuanPegawai(pp.ID)
+			isSigned = p.Status
+		}
+
+		s := Signer{
+			Nama:     pp.PegNama,
+			Jabatan:  "Pejabat Pengadaan",
+			IsSigned: isSigned,
+			Nip:      pp.PegNip,
+		}
+		if isSigned {
+			fullUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%d/verify/%d", c.Protocol(), c.Hostname(), id, pp.ID)
+			s.QrCode = generateQrBase64(fullUrl)
+		}
+		signersProses = append(signersProses, s)
+	} else if paket.PntId > 0 {
+		panitia := paket.Pokja()
+		anggota := panitia.AnggotaList()
+		dokPersiapans := paket.DokPersiapan()
+		
+		for _, a := range anggota {
+			isSigned := false
+			if len(dokPersiapans) > 0 {
+				p := dokPersiapans[0].PersetujuanPegawai(a.ID)
+				isSigned = p.Status
+			}
+			s := Signer{
+				Nama:     a.PegNama,
+				Jabatan:  "Anggota Pokja",
+				IsSigned: isSigned,
+				Nip:      a.PegNip,
+			}
+			if isSigned {
+				fullUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%d/verify/%d", c.Protocol(), c.Hostname(), id, a.ID)
+				s.QrCode = generateQrBase64(fullUrl)
+			}
+			signersProses = append(signersProses, s)
+		}
+	}
 
 	// 3. New: Fetch BA Metadata and Checklist Results
 	var ba models.BeritaAcara
@@ -371,7 +461,7 @@ func CetakSkPokja(c *fiber.Ctx) error {
 	}
 
 	// 4. Fetch Actual Signature Images (PNG) for each signer
-	for i, s := range signersPPK {
+	for i := range signersPPK {
 		doc := models.GetDocumentByJenis(ppk.ID, models.TTD) // Simplified: assuming one TTD per user
 		if doc.ID > 0 {
 			signersPPK[i].SigImg = services.GetBase64FromFile(doc.Filepath)
@@ -379,7 +469,7 @@ func CetakSkPokja(c *fiber.Ctx) error {
 	}
 	
 	// For process signers (PP/Pokja)
-	for i, s := range signersProses {
+	for i := range signersProses {
 		// We need to find the PegId for this signer to get their SigImg
 		var pid uint
 		if paket.PpId > 0 { pid = paket.PpId } else { pid = paket.Pokja().AnggotaList()[i].ID }

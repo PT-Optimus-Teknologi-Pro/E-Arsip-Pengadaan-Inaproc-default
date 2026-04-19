@@ -333,6 +333,8 @@ Daftar Paket
 
 {% block script %}
 <script>
+    var isPPK_Local = ("{{ isPPK|default:false }}" === "true");
+
     function getStatusLabel(status) {
         const labels = ["Draft", "Pengajuan", "Disetujui", "Tolak", "Reviu Dokumen", "Proses", "Selesai"];
         return labels[status] || "Unknown";
@@ -407,13 +409,12 @@ Daftar Paket
                 className: "text-center",
                 render: function(data, type, row) {
                     let html = '<div style="display:flex;align-items:center;justify-content:center;">';
-                    {% if isPPK %}
-                    if (row["status"] == 0 || row["status"] == 4) {
+                    
+                    if (isPPK_Local && (row["status"] == 0 || row["status"] == 4)) {
                         html += `<a href="/paket/hapus/${data}" class="action-icon danger" title="Hapus" onclick="return confirm('Hapus paket ini?')">
                                     <span style="width:15px;height:15px;" data-feather="trash-2"></span>
                                  </a>`;
                     }
-                    {% endif %}
                     if (row["status"] > 2) {
                         html += `<a href="/download-all/${data}" class="action-icon info" title="Download">
                                     <span style="width:15px;height:15px;" data-feather="download"></span>
