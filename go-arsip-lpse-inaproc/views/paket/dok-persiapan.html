@@ -26,7 +26,7 @@ Dokument Persiapan Pengadaan
             <div class="alert alert-warning d-flex align-items-center mb-3">
                 <div class="me-2"><span style="width: 20px;" data-feather="lock"></span></div>
                 <div>
-                   <b>Halaman Terkunci:</b> Cetak Berita Acara Kaji Ulang telah dilakukan. Perubahan dokumen tidak diperbolehkan kecuali Addendum diaktifkan.
+                   <b>Halaman Terkunci:</b> Cetak Berita Acara Reviu Dokumen telah dilakukan. Perubahan dokumen tidak diperbolehkan kecuali Addendum diaktifkan.
                 </div>
             </div>
             {% endif %}
@@ -108,9 +108,9 @@ Dokument Persiapan Pengadaan
             <button type="submit" class="btn btn-success"><span style="width: 16px;" data-feather="edit"></span> Simpan</button>
             {% endif %}
 
-            <a class="btn btn-secondary" href="/preview/ba-kajiulang/{{ paket.ID }}" target="_blank">Berita Acara KajiUlang</a>
-            {% if allowCetak %}
-            <a class="btn btn-secondary" href="/preview/ba-kajiulang/{{ paket.ID }}/print" target="_blank" >Cetak Berita Acara KajiUlang</a>
+            <a class="btn btn-secondary" href="/preview/ba-kajiulang/{{ paket.ID }}" target="_blank">Berita Acara Reviu Dokumen</a>
+            {% if paket.Status >= 4 %}
+            <a class="btn btn-secondary" href="/preview/ba-kajiulang/{{ paket.ID }}/print" target="_blank" >Cetak Berita Acara Reviu Dokumen</a>
             {% endif %}
 
             {% if isLocked and (isPPK or isAdmin) %}
