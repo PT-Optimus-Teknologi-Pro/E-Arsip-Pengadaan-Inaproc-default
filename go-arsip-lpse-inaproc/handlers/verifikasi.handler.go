@@ -18,6 +18,9 @@ func CreateVerifikasi(c *fiber.Ctx) error {
 	action := c.FormValue("action")
 	group := c.FormValue("usrgroup")
 	if action == "approve" {
+		if group == "" {
+			return flashError(c, "Gagal: Anda harus memilih Pengangkatan Menjadi terlebih dahulu!", "/verifikasi/" + utils.UintToString(uint(id)))
+		}
 		user.Usrgroup = group
 	}
 	err := services.VerifikasiAkun(user, action, usrgroup)

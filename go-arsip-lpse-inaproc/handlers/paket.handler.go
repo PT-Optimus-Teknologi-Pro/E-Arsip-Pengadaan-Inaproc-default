@@ -4,6 +4,7 @@ import (
 	"arsip/models"
 	"arsip/services"
 	"arsip/utils"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -582,12 +583,17 @@ func DokPersiapanPaket(c *fiber.Ctx) error {
 		}
 	}
 	isLocked := paket.IsLockedReview && !paket.IsAddendum
+	// Fetch foto rapat dari dok_paket
+	fotoRapat := models.GetDokPaketJenis(id, models.FOTO_RAPAT)
+
 	mp["isLocked"] = isLocked
 	mp["isAddendum"] = paket.IsAddendum
 	mp["allowCetak"] = allowCetak
 	mp["paket"] = paket
 	mp["dokPersiapan"] = dokPersiapans
 	mp["allowUpload"] = (mp["isPPK"].(bool) || mp["isPokja"].(bool) || mp["isPP"].(bool)) && !isLocked
+	mp["fotoRapat"] = fotoRapat
+	mp["addendums"] = models.GetReviewAddendumList(id)
 	return c.Render("paket/dok-persiapan", mp)
 }
 
@@ -597,9 +603,21 @@ func SimpanDokumenPersiapanPaket(c *fiber.Ctx) error {
 	userid := utils.InterfaceToUint(mp["id"])
 	id := utils.StringToUint(c.Params("id"))
 	paket := services.GetPaket(id)
+	
+	// Locking Logic: Cannot save if already locked OR if any users have already approved
 	if paket.IsLockedReview && !paket.IsAddendum {
 		return flashError(c, "Dokumen sudah dikunci(Final). Silakan aktifkan Addendum untuk mengubah.", "/dok-final/"+utils.UintToString(id))
 	}
+	
+	// Extra check: if NOT in addendum mode, prevent upload if ANY approval exists
+	if !paket.IsAddendum {
+		for _, dp := range paket.DokPersiapan() {
+			if !dp.IsBelumAdaPersetujuan() {
+				return flashError(c, "Dokumen sudah mulai disetujui. Tidak dapat mengubah file kecuali melalui Addendum.", "/dok-final/"+utils.UintToString(id))
+			}
+		}
+	}
+	
 	err := services.SimpanDokPersiapanPaket(c, id, userid)
 	if err != nil {
 		log.Error(err)
@@ -611,6 +629,9 @@ func SimpanDokumenPersiapanPaket(c *fiber.Ctx) error {
 func UnlockAddendumReview(c *fiber.Ctx) error {
 	id := utils.StringToUint(c.Params("id"))
 	mp := currentMap(c)
+	userid := utils.InterfaceToUint(mp["id"])
+	reason := c.FormValue("reason")
+
 	if !mp["isPPK"].(bool) && !mp["isAdmin"].(bool) {
 		return Forbiden(c)
 	}
@@ -620,27 +641,56 @@ func UnlockAddendumReview(c *fiber.Ctx) error {
 		return c.SendStatus(404)
 	}
 
-	// 1. Reset flags
+	// 1. Create Addendum Record
+	var currentVersion int
+	models.GetDB().Model(&models.ReviewAddendum{}).Where("pkt_id = ?", id).Count(new(int64))
+	models.GetDB().Raw("SELECT COALESCE(MAX(version), 0) FROM review_addendum WHERE pkt_id = ?", id).Scan(&currentVersion)
+	
+	addendum := models.ReviewAddendum{
+		PktId:     id,
+		Version:   currentVersion + 1,
+		Reason:    reason,
+		CreatedBy: userid,
+	}
+	models.GetDB().Save(&addendum)
+
+	// 2. Snapshot current DokPersiapan & Approvals
+	dokPersiapans := paket.DokPersiapan()
+	for _, dp := range dokPersiapans {
+		// Capture approvals as JSON
+		approvals := dp.Persetujuan()
+		type ApprovalState struct {
+			Name   string `json:"name"`
+			Status bool   `json:"status"`
+		}
+		var state []ApprovalState
+		for _, a := range approvals {
+			state = append(state, ApprovalState{
+				Name:   a.Pegawai().PegNama,
+				Status: a.Status,
+			})
+		}
+		stateJson, _ := json.Marshal(state)
+
+		snapshot := models.ReviewAddendumSnapshot{
+			AddendumId: addendum.ID,
+			ChkId:      dp.ChkId,
+			DokId:      dp.DokId,
+			Approvals:  string(stateJson),
+		}
+		models.GetDB().Save(&snapshot)
+
+		// 3. Reset Approvals for this document
+		models.DeleteAllPersetujuanDokPersiapan(dp.ID)
+	}
+
+	// 4. Update Paket status
 	paket.IsLockedReview = false
 	paket.IsAddendum = true
 	models.SavePaket(&paket)
 
-	// 2. Delete ALL Approvals (reset)
-	dokPersiapans := paket.DokPersiapan()
-	for _, dp := range dokPersiapans {
-		models.DeleteAllPersetujuanDokPersiapan(dp.ID)
-	}
-
-	// 3. Send Notifications
-	subject := "Addendum Review Dokumen - " + paket.Nama
-	content := fmt.Sprintf("Addendum telah diaktifkan untuk paket <b>%s</b>. Mohon kesediaannya untuk melakukan review kembali dan memberikan persetujuan ulang pada menu Dokumen Final.", paket.Nama)
-	
-	targets := []uint{}
-	if paket.PpkId > 0 { targets = append(targets, paket.PpkId) }
-	if paket.PpId > 0 { targets = append(targets, paket.PpId) }
-	
-	pokja := paket.Pokja()
-	for _, m := range pokja.AnggotaList() {
+	return flashSuccess(c, "Addendum Berhasil Diaktifkan. Versi sebelumnya telah disimpan di riwayat.", "/dok-final/"+utils.UintToString(id))
+}	for _, m := range pokja.AnggotaList() {
 		targets = append(targets, m.ID)
 	}
 

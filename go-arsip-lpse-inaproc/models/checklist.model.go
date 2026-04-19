@@ -357,5 +357,60 @@ func (c PersetujuanDokPersiapan) DokPersiapan() DokPersiapan {
 }
 
 func DeleteAllPersetujuanDokPersiapan(dkpId uint) error {
-	return db.Where("dkp_id = ?", dkpId).Delete(&PersetujuanDokPersiapan{}).Error
+	return db.Unscoped().Where("dkp_id = ?", dkpId).Delete(&PersetujuanDokPersiapan{}).Error
 }
+
+type ReviewAddendum struct {
+	gorm.Model
+	PktId     uint   `json:"pkt_id"`
+	Version   int    `json:"version"`
+	Reason    string `json:"reason"`
+	CreatedBy uint   `json:"created_by"`
+}
+
+func (ReviewAddendum) TableName() string {
+	return "review_addendum"
+}
+
+func (c ReviewAddendum) Snapshot() []ReviewAddendumSnapshot {
+	var res []ReviewAddendumSnapshot
+	db.Find(&res, "addendum_id=?", c.ID)
+	return res
+}
+
+func (c ReviewAddendum) Pegawai() Pegawai {
+	var res Pegawai
+	db.First(&res, c.CreatedBy)
+	return res
+}
+
+type ReviewAddendumSnapshot struct {
+	gorm.Model
+	AddendumId uint   `json:"addendum_id"`
+	ChkId      uint   `json:"chk_id"`
+	DokId      uint   `json:"dok_id"`
+	Approvals  string `json:"approvals"` // Store as JSON string [{pegawai: "Name", status: true}, ...]
+}
+
+func (ReviewAddendumSnapshot) TableName() string {
+	return "review_addendum_snapshot"
+}
+
+func (c ReviewAddendumSnapshot) Dokumen() Document {
+	var res Document
+	db.First(&res, c.DokId)
+	return res
+}
+
+func (c ReviewAddendumSnapshot) Checklist() ChecklistPaket {
+	var res ChecklistPaket
+	db.First(&res, c.ChkId)
+	return res
+}
+
+func GetReviewAddendumList(pktId uint) []ReviewAddendum {
+	var res []ReviewAddendum
+	db.Where("pkt_id = ?", pktId).Order("version DESC").Find(&res)
+	return res
+}
+
