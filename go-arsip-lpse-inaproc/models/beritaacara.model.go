@@ -15,11 +15,17 @@ var BidangList = []string {
 
 type BeritaAcara struct {
 	gorm.Model
-	Nomor   string       `gorm:"nomor"`
-	Jenis   string       `form:"jenis"`
-	Uraian  string       `form:"uraian"`
-	Tanggal sql.NullTime `form:"tanggal"`
-	DokId   uint         `form:"dok_id"`
+	PktId     uint         `gorm:"pkt_id" json:"pkt_id"` // Link to Paket
+	Nomor     string       `gorm:"nomor"`
+	Jenis     string       `form:"jenis"`
+	Hari      string       `form:"hari"`      // NEW
+	Tanggal   sql.NullTime `form:"tanggal"`
+	Tempat    string       `form:"tempat"`    // NEW
+	Waktu     string       `form:"waktu"`     // NEW
+	SubKeg    string       `form:"sub_keg"`   // NEW (Sub Kegiatan)
+	Pengadaan string       `form:"pengadaan"` // NEW (Nama Pengadaan)
+	Uraian    string       `form:"uraian"`
+	DokId     uint         `form:"dok_id"`
 }
 
 func (BeritaAcara) TableName() string {
@@ -62,6 +68,7 @@ type ReviuPaket struct {
 	gorm.Model
 	PktId			uint 		`json:"pkt_id"`
 	RevId			uint		`json:"rev_id"`
+	Status          int         `json:"status"` // 0: Kosong, 1: Sesuai/Tersedia, 2: Tidak Sesuai/Tidak Tersedia
 	Keterangan		string		`json:"Keteranga"`
 	CatatanKhusus	string		`json:"catatan_khusus"`
 	PegId			uint 		`json:"peg_id"`

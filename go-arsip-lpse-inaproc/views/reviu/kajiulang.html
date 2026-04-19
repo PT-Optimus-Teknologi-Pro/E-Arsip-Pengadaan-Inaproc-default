@@ -34,7 +34,8 @@ Detil Paket
                     <p class="form-control-plaintext">{{ paket.Nama }}</p>
                     {% if isPPK or isPP or isPokja %}
                     <div class="text-end">
-                    <a href="/kajiulang/berita-acara/{{ paket.ID }}" class="btn btn-primary me-2"><span style="width: 16px;" data-feather="file-text"></span> Foto Rapat Reviu Dokumen</a>
+                    <a href="/kajiulang/manage-ba/{{ paket.ID }}" class="btn btn-indigo me-2"><span style="width: 16px;" data-feather="edit-3"></span> Kelola Berita Acara</a>
+                    <a href="/kajiulang/berita-acara/{{ paket.ID }}" target="_blank" class="btn btn-primary me-2"><span style="width: 16px;" data-feather="printer"></span> Cetak BA</a>
                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#pertanyaan">Kirim Pertanyaan</button>
                     </div>
                     {% endif %}

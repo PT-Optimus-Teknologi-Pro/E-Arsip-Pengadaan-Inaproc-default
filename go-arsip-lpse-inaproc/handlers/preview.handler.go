@@ -357,96 +357,42 @@ func CetakSkPokja(c *fiber.Ctx) error {
 	return print(c, url, "SK-pokja.pdf")
 }
 
-func PreviewBAKajiUlang(c *fiber.Ctx) error {
-	id, _ := c.ParamsInt("id")
-	log.Info("priview BA Reviu Dokumen")
-	mp := currentMap(c)
-	paket := services.GetPaket(uint(id))
-	mp["paket"] = paket
+	// 3. New: Fetch BA Metadata and Checklist Results
+	var ba models.BeritaAcara
+	models.GetDB().Where("pkt_id = ? AND jenis = 'REVIU'", id).First(&ba)
 	
-	// Data Signers (TTE)
-	type Signer struct {
-		Nama     string
-		Jabatan  string
-		IsSigned bool
-		QrCode   string
-		Nip      string
+	reviuMaster := services.GetAllReviu()
+	var reviuResults []models.ReviuPaket
+	models.GetDB().Where("pkt_id = ?", id).Find(&reviuResults)
+	
+	resMap := make(map[uint]models.ReviuPaket)
+	for _, r := range reviuResults {
+		resMap[r.RevId] = r
 	}
 
-	var signersPPK []Signer
-	var signersProses []Signer
-
-	// 1. Ambil Data PPK
-	ppk := paket.Ppk()
-	if ppk.ID > 0 {
-		isSigned := false
-		// Cek apakah PPK sudah menyetujui dokumen persiapan
-		dokPersiapans := paket.DokPersiapan()
-		if len(dokPersiapans) > 0 {
-			// Jika ada setidaknya satu dokumen dan sudah disetujui PPK
-			p := dokPersiapans[0].PersetujuanPegawai(ppk.ID)
-			isSigned = p.Status
+	// 4. Fetch Actual Signature Images (PNG) for each signer
+	for i, s := range signersPPK {
+		doc := models.GetDocumentByJenis(ppk.ID, models.TTD) // Simplified: assuming one TTD per user
+		if doc.ID > 0 {
+			signersPPK[i].SigImg = services.GetBase64FromFile(doc.Filepath)
 		}
-
-		s := Signer{
-			Nama:     ppk.PegNama,
-			Jabatan:  "Pejabat Pembuat Komitmen",
-			IsSigned: isSigned,
-			Nip:      ppk.PegNip,
-		}
-		if isSigned {
-			fullUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%d/verify/%d", c.Protocol(), c.Hostname(), id, ppk.ID)
-			s.QrCode = generateQrBase64(fullUrl)
-		}
-		signersPPK = append(signersPPK, s)
 	}
-
-	// 2. Ambil Data Pelaksana (PP atau Pokja)
-	if paket.PpId > 0 {
-		pp := paket.Pp()
-		isSigned := false
-		dokPersiapans := paket.DokPersiapan()
-		if len(dokPersiapans) > 0 {
-			p := dokPersiapans[0].PersetujuanPegawai(pp.ID)
-			isSigned = p.Status
-		}
-
-		s := Signer{
-			Nama:     pp.PegNama,
-			Jabatan:  "Pejabat Pengadaan",
-			IsSigned: isSigned,
-			Nip:      pp.PegNip,
-		}
-		if isSigned {
-			fullUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%d/verify/%d", c.Protocol(), c.Hostname(), id, pp.ID)
-			s.QrCode = generateQrBase64(fullUrl)
-		}
-		signersProses = append(signersProses, s)
-	} else if paket.PntId > 0 {
-		panitia := paket.Pokja()
-		anggota := panitia.AnggotaList()
-		dokPersiapans := paket.DokPersiapan()
+	
+	// For process signers (PP/Pokja)
+	for i, s := range signersProses {
+		// We need to find the PegId for this signer to get their SigImg
+		var pid uint
+		if paket.PpId > 0 { pid = paket.PpId } else { pid = paket.Pokja().AnggotaList()[i].ID }
 		
-		for _, a := range anggota {
-			isSigned := false
-			if len(dokPersiapans) > 0 {
-				p := dokPersiapans[0].PersetujuanPegawai(a.ID)
-				isSigned = p.Status
-			}
-			s := Signer{
-				Nama:     a.PegNama,
-				Jabatan:  "Anggota Pokja",
-				IsSigned: isSigned,
-				Nip:      a.PegNip,
-			}
-			if isSigned {
-				fullUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%d/verify/%d", c.Protocol(), c.Hostname(), id, a.ID)
-				s.QrCode = generateQrBase64(fullUrl)
-			}
-			signersProses = append(signersProses, s)
+		doc := models.GetDocumentByJenis(pid, models.TTD)
+		if doc.ID > 0 {
+			signersProses[i].SigImg = services.GetBase64FromFile(doc.Filepath)
 		}
 	}
 
+	mp["ba"] = ba
+	mp["reviuMaster"] = reviuMaster
+	mp["reviuResults"] = resMap
 	mp["signersPPK"] = signersPPK
 	mp["signersProses"] = signersProses
 

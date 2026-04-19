@@ -317,6 +317,9 @@ func SetupRoutes(app *fiber.App) {
 	kajiulang.Get("/berita-acara/:id", handlers.PreviewBA)
 	kajiulang.Post("/foto-rapat/:id", handlers.UploadFotoRapat)
 	kajiulang.Post("/foto-rapat", handlers.UploadFotoRapat)
+	kajiulang.Get("/manage-ba/:id", handlers.GetManageBAReviu)
+	kajiulang.Post("/save-ba/:id", handlers.SubmitBAReviu)
+	kajiulang.Post("/sign-ba/:id", handlers.SignBAReviu)
 	kajiulang.Get("/:id", handlers.GetKajiUlang)
 
 	beritacara := app.Group("/berita-acara", handlers.LoggedMiddleware)
