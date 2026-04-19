@@ -237,19 +237,24 @@ WHERE usrgroup in ('POKJA', 'PP')`, tahun, tahun).Scan(&res)
 func GetRekapPaketSatker(tahun int) []RekapPaketSatker {
 	var res []RekapPaketSatker
 	db.Raw(`SELECT 
-		i.id AS kd_satker, 
-		i.nama AS nama_satker, 
-		COALESCE(t.jumlah, 0) AS tender, 
-		COALESCE(n.jumlah, 0) AS nontender, 
-		COALESCE(p.jumlah, 0) AS pencatatan, 
-		COALESCE(k.jumlah, 0) AS katalog 
-	FROM satker i
-	LEFT JOIN (SELECT kd_satker::numeric AS id, count(*) AS jumlah FROM tender WHERE tahun_anggaran=? GROUP BY kd_satker) t ON t.id=i.id
-	LEFT JOIN (SELECT kd_satker::numeric AS id, count(*) AS jumlah FROM nontender WHERE tahun_anggaran=? GROUP BY kd_satker) n ON n.id=i.id
-	LEFT JOIN (SELECT kd_satker::numeric AS id, count(*) AS jumlah FROM pencatatan WHERE tahun_anggaran=? GROUP BY kd_satker) p ON p.id=i.id
-	LEFT JOIN (SELECT satker_id::numeric AS id, count(*) AS jumlah FROM katalog_archive WHERE tahun_anggaran=? GROUP BY satker_id) k ON k.id=i.id
-	WHERE (COALESCE(t.jumlah, 0) + COALESCE(n.jumlah, 0) + COALESCE(p.jumlah, 0) + COALESCE(k.jumlah, 0)) > 0
-	ORDER BY i.nama`, tahun, tahun, tahun, tahun).Scan(&res)
+		kd_satker::bigint AS kd_satker, 
+		MAX(nama_satker) AS nama_satker, 
+		SUM(tender)::int AS tender, 
+		SUM(nontender)::int AS nontender, 
+		SUM(pencatatan)::int AS pencatatan, 
+		SUM(katalog)::int AS katalog 
+	FROM (
+		SELECT kd_satker, nama_satker, count(*) AS tender, 0 AS nontender, 0 AS pencatatan, 0 AS katalog FROM tender WHERE tahun_anggaran=? GROUP BY kd_satker, nama_satker
+		UNION ALL
+		SELECT kd_satker, nama_satker, 0 AS tender, count(*) AS nontender, 0 AS pencatatan, 0 AS katalog FROM nontender WHERE tahun_anggaran=? GROUP BY kd_satker, nama_satker
+		UNION ALL
+		SELECT kd_satker, nama_satker, 0 AS tender, 0 AS nontender, count(*) AS pencatatan, 0 AS katalog FROM pencatatan WHERE tahun_anggaran=? GROUP BY kd_satker, nama_satker
+		UNION ALL
+		SELECT satker_id::text AS kd_satker, nama_satker, 0 AS tender, 0 AS nontender, 0 AS pencatatan, count(*) AS katalog FROM katalog_archive WHERE tahun_anggaran=? GROUP BY satker_id, nama_satker
+	) combined
+	WHERE kd_satker IS NOT NULL
+	GROUP BY kd_satker
+	ORDER BY nama_satker`, tahun, tahun, tahun, tahun).Scan(&res)
 	return res
 }
 

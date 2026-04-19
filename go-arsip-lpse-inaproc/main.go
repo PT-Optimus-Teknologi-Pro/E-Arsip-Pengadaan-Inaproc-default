@@ -18,7 +18,7 @@ import (
 
 func main() {
 	go services.SyncSirup()
-	services.AutoCreateAdminIfNoExist();
+	services.AutoCreateAdminIfNoExist()
 	c := cron.New()
 	cronjob := config.CronJob()
 	c.AddFunc(cronjob, func() {

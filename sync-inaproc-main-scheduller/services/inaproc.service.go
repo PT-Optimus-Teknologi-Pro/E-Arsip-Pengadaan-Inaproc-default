@@ -33,14 +33,8 @@ const (
 func Sync() {
 	// syncSatker()
 	// syncProgram()
-	syncRupAnggaran()
-	syncRup()
-	syncRupAnggaranSwakelola()
-	syncRupSwakelola()
-	syncKatalog()
-	syncPenyediaKatalog()
-	syncKatalogArchive()
-	syncPenyediaArchive()
+	
+	// Prioritaskan SPSE data untuk dashboard report
 	syncNontender()
 	syncNontenderSelesai()
 	syncJadwalNontender()
@@ -54,4 +48,14 @@ func Sync() {
 	syncPeserta()
 	syncKontrak()
 	syncKontrakNontender()
+	
+	// Jalankan RUP dan Katalog setelahnya
+	syncRupAnggaran()
+	syncRup()
+	syncRupAnggaranSwakelola()
+	syncRupSwakelola()
+	syncKatalog()
+	syncPenyediaKatalog()
+	syncKatalogArchive()
+	syncPenyediaArchive()
 }
