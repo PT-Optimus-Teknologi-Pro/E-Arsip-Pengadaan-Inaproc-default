@@ -70,15 +70,6 @@ func SubmitRegister(c *fiber.Ctx) error {
 		return flashError(c, "Registrasi Akun Gagal","/register")
 	}
 
-	// Auto login after dynamic registration to enable real-time status tracking
-	sess := getSession(c)
-	sess.Set("id", user.ID)
-	sess.Set("name", user.PegNama)
-	sess.Set("group", user.Usrgroup)
-	if err := sess.Save(); err != nil {
-		log.Error("Session save error after registration:", err)
-	}
-
 	return flashSuccess(c, "Registrasi Akun Sukses","/register/success")
 }
 

@@ -174,21 +174,38 @@ func Registrasi(c *fiber.Ctx, pegawai *models.Pegawai, plainPassw string) error 
 	pegawai.Passw = utils.HashPassword(pegawai.Passw)
 	err := models.SavePegawai(pegawai)
 	if err != nil {
-		log.Error(err)
-		return errors.New("Registrasi Akun Gagal")
+		log.Error("SavePegawai error:", err)
+		return err
 	}
+	
 	_, err = models.SaveDocument(c, pegawai.ID, models.KTP, "ktp")
-	_, err =models.SaveDocument(c, pegawai.ID, models.SK, "sk")
-	_, err =models.SaveDocument(c, pegawai.ID, models.SERTIFIKAT, "sertifikat")
+	if err != nil {
+		log.Error("SaveDocument KTP error:", err)
+		return err
+	}
+	
+	_, err = models.SaveDocument(c, pegawai.ID, models.SK, "sk")
+	if err != nil {
+		log.Error("SaveDocument SK error:", err)
+		return err
+	}
+	
+	_, err = models.SaveDocument(c, pegawai.ID, models.SERTIFIKAT, "sertifikat")
+	if err != nil {
+		log.Error("SaveDocument Sertifikat error:", err)
+		return err
+	}
+	
 	err = SaveTTD(c, pegawai.ID)
 	if err != nil {
-		log.Error(err)
-		return errors.New("Registrasi Akun Gagal")
+		log.Error("SaveTTD error:", err)
+		return err
 	}
+	
 	err = SendNotifikasi(pegawai, plainPassw)
 	if err != nil {
-		log.Error(err)
-		return errors.New("Registrasi Akun Gagal")
+		log.Error("SendNotifikasi error:", err)
+		return err
 	}
 	return nil
 }

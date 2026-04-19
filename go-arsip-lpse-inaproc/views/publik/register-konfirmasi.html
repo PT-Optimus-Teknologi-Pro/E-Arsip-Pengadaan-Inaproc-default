@@ -156,6 +156,10 @@ Form Registrasi
         justify-content: center;
         margin: 0 auto 1.5rem;
     }
+    .reg-icon-wrap.is-approved {
+        background: var(--green-bg);
+        border-color: var(--green-ring);
+    }
 
     /* ── Badge ── */
     .reg-badge {
@@ -170,6 +174,11 @@ Form Registrasi
         padding: 4px 14px;
         border-radius: 20px;
         margin-bottom: 1.25rem;
+    }
+    .reg-badge.is-approved {
+        background: var(--green-bg);
+        color: var(--green);
+        border-color: var(--green-ring);
     }
 
     .reg-title {
@@ -206,6 +215,10 @@ Form Registrasi
         display: flex;
         align-items: flex-start;
         gap: 10px;
+    }
+    .reg-info-box.is-approved {
+        border-left-color: var(--green);
+        background: var(--green-bg);
     }
     .reg-info-box svg { flex-shrink: 0; margin-top: 1px; }
     .reg-info-box p {
@@ -301,7 +314,7 @@ Form Registrasi
             </div>
 
             <!-- Icon -->
-            <div class="reg-icon-wrap" style="{% if isApproved %}background: var(--green-bg); border-color: var(--green-ring);{% endif %}">
+            <div class="reg-icon-wrap {% if isApproved %}is-approved{% endif %}">
                 {% if isApproved %}
                 <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                 {% else %}
@@ -314,7 +327,7 @@ Form Registrasi
                 {% endif %}
             </div>
 
-            <div class="reg-badge" style="{% if isApproved %}background: var(--green-bg); color: var(--green); border-color: var(--green-ring);{% endif %}">
+            <div class="reg-badge {% if isApproved %}is-approved{% endif %}">
                 {% if isApproved %}
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                 Persetujuan Selesai
@@ -337,7 +350,7 @@ Form Registrasi
             </p>
 
             <!-- Info box -->
-            <div class="reg-info-box" style="{% if isApproved %}border-left-color: var(--green); background: var(--green-bg);{% endif %}">
+            <div class="reg-info-box {% if isApproved %}is-approved{% endif %}">
                 {% if isApproved %}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 <p>Selamat! Akun Anda telah <strong>berhasil diverifikasi</strong>. Anda sekarang dapat masuk ke dashboard dan menggunakan seluruh fitur sistem e-Arsip.</p>

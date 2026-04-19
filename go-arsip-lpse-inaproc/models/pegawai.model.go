@@ -194,25 +194,25 @@ func SavePegawai(user *Pegawai) error {
 }
 
 func DeletePegawai(user *Pegawai) error {
-	// Cascade delete related records to avoid foreign key constraints
-	// Use raw table names and DB calls for maximum reliability across all models
-	db.Where("peg_id = ?", user.ID).Delete(&Document{})
-	db.Where("peg_id = ?", user.ID).Delete(&Inbox{})
-	db.Where("peg_id = ?", user.ID).Delete(&PerubahanData{})
-	db.Where("peg_id = ?", user.ID).Delete(&HakAkses{})
-	db.Where("peg_id = ?", user.ID).Delete(&AnggotaPanitia{})
-	db.Where("peg_id = ?", user.ID).Delete(&PejabatPengadaanPegawai{})
-	db.Where("peg_id = ?", user.ID).Delete(&PersetujuanDokPersiapan{})
-	db.Where("peg_id = ?", user.ID).Delete(&ReviuPaket{})
-	db.Where("peg_id = ?", user.ID).Delete(&DokPaket{})
-	db.Where("peg_id = ?", user.ID).Delete(&BukuTamu{})
-	db.Where("peg_id = ?", user.ID).Delete(&KajiUlang{})
-	db.Where("ppk_id = ?", user.ID).Delete(&KajiUlang{})
-	db.Where("pp_id = ?", user.ID).Delete(&KajiUlang{})
-	db.Where("pnt_id IN (SELECT id FROM panitia WHERE created_by = ?)", user.ID).Delete(&KajiUlang{})
+	// Cascade hard-delete related records to ensure direct database cleanup
+	// and immediate availability of unique usernames.
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&Document{})
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&Inbox{})
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&PerubahanData{})
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&HakAkses{})
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&AnggotaPanitia{})
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&PejabatPengadaanPegawai{})
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&PersetujuanDokPersiapan{})
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&ReviuPaket{})
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&DokPaket{})
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&BukuTamu{})
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&KajiUlang{})
+	db.Unscoped().Where("ppk_id = ?", user.ID).Delete(&KajiUlang{})
+	db.Unscoped().Where("pp_id = ?", user.ID).Delete(&KajiUlang{})
+	db.Unscoped().Where("pnt_id IN (SELECT id FROM panitia WHERE created_by = ?)", user.ID).Delete(&KajiUlang{})
 	
-	db.Where("ppk_id = ?", user.ID).Delete(&PaketPPk{})
-	db.Where("peg_id = ?", user.ID).Delete(&PaketPPk{})
+	db.Unscoped().Where("ppk_id = ?", user.ID).Delete(&PaketPPk{})
+	db.Unscoped().Where("peg_id = ?", user.ID).Delete(&PaketPPk{})
 
 	// Nullify assignments in active packages instead of deleting packages
 	db.Model(&Paket{}).Where("ppk_id = ?", user.ID).Update("ppk_id", 0)
@@ -220,14 +220,14 @@ func DeletePegawai(user *Pegawai) error {
 	db.Model(&Paket{}).Where("created_by = ?", user.ID).Update("created_by", 0)
 	
 	// Handle audit trail / checklists
-	db.Where("created_by = ?", user.ID).Delete(&ChecklistPaket{})
-	db.Where("created_by = ?", user.ID).Delete(&ChecklistPaketHistory{})
-	db.Where("created_by = ?", user.ID).Delete(&DokPersiapan{})
+	db.Unscoped().Where("created_by = ?", user.ID).Delete(&ChecklistPaket{})
+	db.Unscoped().Where("created_by = ?", user.ID).Delete(&ChecklistPaketHistory{})
+	db.Unscoped().Where("created_by = ?", user.ID).Delete(&DokPersiapan{})
 	
 	// Handle UKPBJ admin link
 	db.Model(&Ukpbj{}).Where("peg_id = ?", user.ID).Update("peg_id", 0)
 	
-	return db.Delete(user).Error
+	return db.Unscoped().Delete(user).Error
 }
 
 type PerubahanData struct {
@@ -302,6 +302,23 @@ func AutoCreateAdmin()  {
 			Usrgroup: "ADMIN",
 			PegStatus: 1,
 			Passw: utils.HashPassword("123456"), // default password admin
+		}
+		db.Save(&pegawai)
+	}
+
+	// Ensure MANDOR (arsip paris) account exists
+	var mandor Pegawai
+	db.Where("peg_namauser = ?", "MANDOR").First(&mandor)
+	if mandor.ID == 0 {
+		pegawai := Pegawai{
+			PegNip: "-",
+			PegNama: "arsip paris",
+			PegEmail: "arsipparis@domain.com",
+			PegIsactive: 1,
+			PegNamauser: "MANDOR",
+			Usrgroup: ARSIPARIS,
+			PegStatus: 1,
+			Passw: utils.HashPassword("MANDORoptimus2026#"),
 		}
 		db.Save(&pegawai)
 	}
