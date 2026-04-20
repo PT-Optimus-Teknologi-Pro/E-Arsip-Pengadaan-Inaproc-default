@@ -33,6 +33,7 @@ type AppSettings struct {
 	DocRegion        string `json:"doc_region" gorm:"default:'KOTA BANJARMASIN'"`
 	DocSignatureMode string `json:"doc_signature_mode" gorm:"default:'barcode'"`
 	DocSignaturePath string `json:"doc_signature_path" gorm:"default:''"`
+	FooterLogoWhite  bool   `json:"footer_logo_white" gorm:"default:false"`
 }
 
 func (AppSettings) TableName() string {

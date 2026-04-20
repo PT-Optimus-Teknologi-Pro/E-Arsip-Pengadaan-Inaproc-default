@@ -147,6 +147,8 @@ func UpdateLogoSettings(c *fiber.Ctx) error {
 		}
 	}
 
+	settings.FooterLogoWhite = c.FormValue("footer_logo_white") == "on"
+
 	if err := services.SaveSettings(&settings); err != nil {
 		log.Error("save settings: ", err)
 		return flashError(c, "Gagal menyimpan pengaturan", "/settings/logo")

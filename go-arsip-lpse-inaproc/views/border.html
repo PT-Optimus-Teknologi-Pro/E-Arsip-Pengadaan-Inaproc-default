@@ -89,7 +89,7 @@
             
             <div class="col-lg-4 pe-lg-5">
               <div class="footer-brand mb-4">
-                <img src="{{ logoPath }}" alt="Logo" style="height: 55px; width: auto; max-height: 55px; display: block;" />
+                <img src="{{ logoPath }}" alt="Logo" class="{% if app_settings.FooterLogoWhite %}white-filter{% endif %}" style="height: 55px; width: auto; max-height: 55px; display: block;" />
               </div>
               <p class="mb-4" style="line-height: 1.7; font-size: 0.95rem; text-align: justify;">
                 {{ app_settings.FooterDescription }}
@@ -300,6 +300,9 @@
         min-height: calc(100vh - 64px); /* Adjust based on navbar height */
         display: flex;
         flex-direction: column;
+      }
+      .white-filter {
+        filter: brightness(0) invert(1) !important;
       }
     </style>
 

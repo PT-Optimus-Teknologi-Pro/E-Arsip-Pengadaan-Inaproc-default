@@ -1,10 +1,10 @@
-﻿<footer class="premium-footer pt-5 pb-4 mt-5">
+<footer class="premium-footer pt-5 pb-4 mt-5">
     <div class="container-xl">
         <div class="row g-4">
             
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="footer-info">
-                    <img src="{{ logo_path }}" alt="{{ app_title }}" class="mb-3 footer-logo" style="max-height: 50px;">
+                    <img src="{{ logo_path }}" alt="{{ app_title }}" class="mb-3 footer-logo {% if app_settings.FooterLogoWhite %}white-filter{% endif %}" style="max-height: 50px;">
                     <p class="footer-desc mb-4 text-white-50">
                         {{ footer_description }}
                     </p>
@@ -138,5 +138,8 @@
 .footer-contact i {
     width: 18px;
     height: 18px;
+}
+.white-filter {
+    filter: brightness(0) invert(1) !important;
 }
 </style>

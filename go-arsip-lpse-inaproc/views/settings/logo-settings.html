@@ -232,6 +232,19 @@
             <a href="https://express.adobe.com/id/tools/convert-to-svg" target="_blank" style="color: #2563eb; font-weight: bold; text-decoration: underline;">Adobe Express</a> atau 
             <a href="https://convertio.co/id/png-svg/" target="_blank" style="color: #2563eb; font-weight: bold; text-decoration: underline;">Convertio</a> sebelum di-upload ke sini.
           </div>
+
+          <!-- Pilihan Filter Putih Footer -->
+          <div style="margin-top: 20px; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="footer_logo_white" name="footer_logo_white" {% if settings.FooterLogoWhite %}checked{% endif %}>
+              <label class="form-check-label" for="footer_logo_white" style="font-weight: 600; color: #334155; margin-left: 8px;">
+                Gunakan Filter Putih pada Logo Footer
+              </label>
+            </div>
+            <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px; margin-left: 32px; margin-bottom: 0;">
+              Aktifkan ini jika warna logo Anda menyerupai warna gelap footer agar logo tetap terlihat jelas (menjadi putih).
+            </p>
+          </div>
         </div>
       </div>
     </div>
