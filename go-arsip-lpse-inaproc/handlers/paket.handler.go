@@ -273,7 +273,29 @@ func GetAllPaket(c *fiber.Ctx) error {
 	mp := currentMap(c)
 	usersession := getUserSession(c)
 	user := usersession.Pegawai()
-	mp["allowBuatPaket"] = user.IsApprove() && (usersession.IsPpk() || usersession.IsArsiparis() || usersession.IsAdmin()) && user.IsAktif()
+	mp["allowBuatPaket"] = user.IsApprove() && (usersession.IsPpk() || usersession.IsAdmin()) && user.IsAktif()
+
+	if isArsiparis, ok := mp["isArsiparis"].(bool); ok && isArsiparis {
+		var tenderMethods []string
+		var tenderJenis []string
+		models.GetDB().Table("tender").Joins("JOIN tender_selesai ts ON tender.kd_tender = ts.kd_tender").Where("tender.mtd_pemilihan IS NOT NULL AND tender.mtd_pemilihan != ''").Distinct("tender.mtd_pemilihan").Pluck("tender.mtd_pemilihan", &tenderMethods)
+		models.GetDB().Table("tender").Joins("JOIN tender_selesai ts ON tender.kd_tender = ts.kd_tender").Where("tender.jenis_pengadaan IS NOT NULL AND tender.jenis_pengadaan != ''").Distinct("tender.jenis_pengadaan").Pluck("tender.jenis_pengadaan", &tenderJenis)
+
+		var nonTenderMethods []string
+		var nonTenderJenis []string
+		models.GetDB().Table("nontender").Joins("JOIN nontender_selesai ts ON nontender.kd_nontender = ts.kd_nontender").Where("nontender.mtd_pemilihan IS NOT NULL AND nontender.mtd_pemilihan != ''").Distinct("nontender.mtd_pemilihan").Pluck("nontender.mtd_pemilihan", &nonTenderMethods)
+		models.GetDB().Table("nontender").Joins("JOIN nontender_selesai ts ON nontender.kd_nontender = ts.kd_nontender").Where("nontender.jenis_pengadaan IS NOT NULL AND nontender.jenis_pengadaan != ''").Distinct("nontender.jenis_pengadaan").Pluck("nontender.jenis_pengadaan", &nonTenderJenis)
+
+		// E-Purchasing data is pulled from katalog table via UNION in datatable model, so we must add it as an option.
+		nonTenderMethods = append(nonTenderMethods, "E-Purchasing")
+		nonTenderJenis = append(nonTenderJenis, "Barang/Jasa")
+
+		mp["tenderMethods"] = tenderMethods
+		mp["tenderJenis"] = tenderJenis
+		mp["nonTenderMethods"] = nonTenderMethods
+		mp["nonTenderJenis"] = nonTenderJenis
+	}
+
 	return c.Render("paket/paket", mp)
 }
 
@@ -342,8 +364,14 @@ func UpdatePaket(c *fiber.Ctx) error {
 func DeletePaket(c *fiber.Ctx) error {
 	id := utils.StringToUint(c.Params("id"))
 	paket := services.GetPaket(id)
+
+	redirect := c.Query("redirect")
+	if redirect == "" {
+		redirect = c.Get("Referer", "/paket")
+	}
+
 	if paket.ID == 0 {
-		return flashError(c, "Paket tidak ditemukan", "/paket")
+		return flashError(c, "Paket tidak ditemukan", redirect)
 	}
 
 	mp := currentMap(c)
@@ -355,9 +383,9 @@ func DeletePaket(c *fiber.Ctx) error {
 	err := services.HapusPaket(id)
 	if err != nil {
 		log.Error(err)
-		return flashError(c, err.Error(), "/paket")
+		return flashError(c, err.Error(), redirect)
 	}
-	return flashSuccess(c, "Hapus Paket Sukses", "/paket")
+	return flashSuccess(c, "Hapus Paket Sukses", redirect)
 }
 
 func GetJsonPaket(c *fiber.Ctx) error {

@@ -282,6 +282,15 @@ func SetupRoutes(app *fiber.App) {
 	ppk.Get("/dokumen-privat/hapus/:id", handlers.DeletePrivateDocument)
 	ppk.Get("/hapus/:id", handlers.DeletePegawai)
 
+	arsiparis := app.Group("/arsiparis", handlers.LoggedMiddleware)
+	arsiparis.Get("/dokumen-privat", handlers.GetPrivateDocumentPage)
+	arsiparis.Get("/dokumen-privat/data", handlers.GetJsonPaketPrivate)
+	arsiparis.Get("/dokumen-privat/data-sirup", handlers.GetJsonPaketPrivateSirup)
+	arsiparis.Get("/dokumen-privat/data-mandiri", handlers.GetJsonPaketPrivateMandiri)
+	arsiparis.Get("/dokumen-privat/list/:id", handlers.GetJsonPrivateDocuments)
+	arsiparis.Post("/dokumen-privat/:id", handlers.SimpanPrivateDocument)
+	arsiparis.Get("/dokumen-privat/hapus/:id", handlers.DeletePrivateDocument)
+
 	dokfinal := app.Group("/dok-final", handlers.LoggedMiddleware)
 	dokfinal.Post("/:id", handlers.SimpanDokumenPersiapanPaket)
 	dokfinal.Post("/:id/persetujuan", handlers.SimpanDokumenPersiapanPaketPersetujuan)

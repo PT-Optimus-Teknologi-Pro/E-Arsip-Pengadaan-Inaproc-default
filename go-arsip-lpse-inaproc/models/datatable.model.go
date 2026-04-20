@@ -280,20 +280,19 @@ type TenderArsiparis struct {
 func GetDataTableTenderArsiparis(c *fiber.Ctx) error {
 	orm := db.Table("tender").
 		Select("tender.kd_tender, tender.kd_rup, tender.nama_paket, tender.mtd_pemilihan, tender.jenis_pengadaan, tender.pagu, ts.nilai_kontrak").
-		Joins("LEFT JOIN tender_selesai ts ON tender.kd_tender = ts.kd_tender")
+		Joins("JOIN tender_selesai ts ON tender.kd_tender = ts.kd_tender")
 
 	metode := c.Query("metode")
 	if metode != "" && metode != "all" {
-		if strings.Contains(metode, ",") {
-			metodeStrArr := strings.Split(metode, ",")
-			var metodeArr []string
-			for _, mStr := range metodeStrArr {
-				metodeArr = append(metodeArr, strings.TrimSpace(mStr))
-			}
-			orm = orm.Where("tender.mtd_pemilihan IN (?)", metodeArr)
-		} else {
-			orm = orm.Where("tender.mtd_pemilihan = ?", metode)
-		}
+		orm = orm.Where("tender.mtd_pemilihan = ?", metode)
+	}
+	jenis := c.Query("jenis_pengadaan")
+	if jenis != "" {
+		orm = orm.Where("tender.jenis_pengadaan = ?", jenis)
+	}
+	nama := c.Query("nama_paket")
+	if nama != "" {
+		orm = orm.Where("tender.nama_paket ILIKE ?", "%"+nama+"%")
 	}
 
 	var datas []TenderArsiparis
@@ -301,7 +300,7 @@ func GetDataTableTenderArsiparis(c *fiber.Ctx) error {
 }
 
 type NontenderArsiparis struct {
-	KdNontender    uint    `json:"kd_nontender" gorm:"column:kd_nontender"`
+	KdNontender    string  `json:"kd_nontender" gorm:"column:kd_nontender"`
 	KdRup          string  `json:"kd_rup" gorm:"column:kd_rup"`
 	NamaPaket      string  `json:"nama_paket" gorm:"column:nama_paket"`
 	MtdPemilihan   string  `json:"mtd_pemilihan" gorm:"column:mtd_pemilihan"`
@@ -311,26 +310,30 @@ type NontenderArsiparis struct {
 }
 
 func GetDataTableNontenderArsiparis(c *fiber.Ctx) error {
-	orm := db.Table("nontender").
-		Select("nontender.kd_nontender, nontender.kd_rup, nontender.nama_paket, nontender.mtd_pemilihan, nontender.jenis_pengadaan, nontender.pagu, nts.nilai_kontrak").
-		Joins("LEFT JOIN nontender_selesai nts ON nontender.kd_nontender = nts.kd_nontender")
+	sub1 := db.Table("nontender").
+		Select("nontender.kd_nontender::text as kd_nontender, nontender.kd_rup, nontender.nama_paket, nontender.mtd_pemilihan, nontender.jenis_pengadaan, nontender.pagu, nts.nilai_kontrak").
+		Joins("JOIN nontender_selesai nts ON nontender.kd_nontender = nts.kd_nontender")
+
+	sub2 := db.Table("katalog").
+		Select("katalog.order_id as kd_nontender, katalog.rup_code as kd_rup, katalog.rup_name as nama_paket, 'E-Purchasing' as mtd_pemilihan, 'Barang/Jasa' as jenis_pengadaan, katalog.total as pagu, katalog.total as nilai_kontrak")
+
+	orm := db.Table("(?) AS comb", db.Raw("? UNION ALL ?", sub1, sub2))
 
 	metode := c.Query("metode")
 	if metode != "" && metode != "all" {
-		if strings.Contains(metode, ",") {
-			metodeStrArr := strings.Split(metode, ",")
-			var metodeArr []string
-			for _, mStr := range metodeStrArr {
-				metodeArr = append(metodeArr, strings.TrimSpace(mStr))
-			}
-			orm = orm.Where("nontender.mtd_pemilihan IN (?)", metodeArr)
-		} else {
-			orm = orm.Where("nontender.mtd_pemilihan = ?", metode)
-		}
+		orm = orm.Where("comb.mtd_pemilihan = ?", metode)
+	}
+	jenis := c.Query("jenis_pengadaan")
+	if jenis != "" {
+		orm = orm.Where("comb.jenis_pengadaan = ?", jenis)
+	}
+	nama := c.Query("nama_paket")
+	if nama != "" {
+		orm = orm.Where("comb.nama_paket ILIKE ?", "%"+nama+"%")
 	}
 
 	var datas []NontenderArsiparis
-	return populate(orm, c, &datas, "nontender.kd_rup", "nontender.kd_nontender", "nontender.nama_paket", "nontender.mtd_pemilihan", "nontender.jenis_pengadaan", "nontender.pagu", "nts.nilai_kontrak")
+	return populate(orm, c, &datas, "comb.kd_rup", "comb.kd_nontender", "comb.nama_paket", "comb.mtd_pemilihan", "comb.jenis_pengadaan", "comb.pagu", "comb.nilai_kontrak")
 }
 
 func GetDataTableTemplates(c *fiber.Ctx) error {

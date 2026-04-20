@@ -295,6 +295,115 @@ Daftar Paket
     </nav>
 </div>
 
+{% if isArsiparis %}
+<div class="col-12 mb-4">
+    <h3 class="fw-bold text-navy mb-3 px-1" style="letter-spacing: -0.5px;">
+        <span style="width: 22px; height: 22px;" data-feather="monitor" class="me-2 text-primary"></span>
+        1. Pengadaan SPSE (Tender & Seleksi)
+    </h3>
+    <div class="dp-card">
+        <div class="dp-card-body bg-light border-bottom p-3">
+            <h6 class="text-secondary fw-bold mb-3"><i data-feather="filter" class="me-2" style="width: 14px;"></i>Filter Pencarian Tender</h6>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-muted">Nama Tender</label>
+                    <input type="text" class="form-control form-control-sm" id="search-tender-nama" placeholder="Ketik kata kunci...">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-muted">Metode Pengadaan</label>
+                    <select class="form-select form-select-sm" id="search-tender-metode">
+                        <option value="">Semua Metode</option>
+                        {% for m in tenderMethods %}
+                        <option value="{{ m }}">{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-muted">Jenis Pengadaan</label>
+                    <select class="form-select form-select-sm" id="search-tender-jenis">
+                        <option value="">Semua Jenis</option>
+                        {% for j in tenderJenis %}
+                        <option value="{{ j }}">{{ j }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="dp-card-body">
+            <div class="table-responsive">
+                <table class="table" id="table-data-tender" style="width:100%">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #11215D 0%, #1a3272 100%);">
+                            <th width="10%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Kode RUP</th>
+                            <th width="10%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Kode Tender</th>
+                            <th style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Nama Tender</th>
+                            <th width="12%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Metode Pengadaan</th>
+                            <th width="12%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Jenis Pengadaan</th>
+                            <th width="12%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Pagu Anggaran</th>
+                            <th width="5%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;text-align:center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12 mt-3 mb-5">
+    <h3 class="fw-bold text-navy mb-3 px-1" style="letter-spacing: -0.5px;">
+        <span style="width: 22px; height: 22px;" data-feather="layers" class="me-2 text-primary"></span>
+        2. Pengadaan SPSE (Non-Tender & E-Purchasing)
+    </h3>
+    <div class="dp-card">
+        <div class="dp-card-body bg-light border-bottom p-3">
+            <h6 class="text-secondary fw-bold mb-3"><i data-feather="filter" class="me-2" style="width: 14px;"></i>Filter Pencarian Non-Tender</h6>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-muted">Nama Paket</label>
+                    <input type="text" class="form-control form-control-sm" id="search-nontender-nama" placeholder="Ketik kata kunci...">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-muted">Metode Pengadaan</label>
+                    <select class="form-select form-select-sm" id="search-nontender-metode">
+                        <option value="">Semua Metode</option>
+                        {% for m in nonTenderMethods %}
+                        <option value="{{ m }}">{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-muted">Jenis Pengadaan</label>
+                    <select class="form-select form-select-sm" id="search-nontender-jenis">
+                        <option value="">Semua Jenis</option>
+                        {% for j in nonTenderJenis %}
+                        <option value="{{ j }}">{{ j }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="dp-card-body">
+            <div class="table-responsive">
+                <table class="table" id="table-data-nontender" style="width:100%">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #11215D 0%, #1a3272 100%);">
+                            <th width="10%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Kode RUP</th>
+                            <th width="10%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Kode Non-Tender</th>
+                            <th style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Nama Paket</th>
+                            <th width="12%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Metode Pengadaan</th>
+                            <th width="12%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Jenis Pengadaan</th>
+                            <th width="12%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;">Pagu Anggaran</th>
+                            <th width="5%" style="color:#fff;font-size:0.72rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;padding:13px 14px;border:none;white-space:nowrap;text-align:center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
 <div class="col-12">
     <div class="dp-card mb-4">
         <div class="dp-card-body">
@@ -354,6 +463,7 @@ Daftar Paket
         </div>
     </div>
 </div>
+{% endif %}
 
 {% endblock %}
 
@@ -375,6 +485,108 @@ Daftar Paket
         const met = ["Pencatatan","Tender","Seleksi","Tender Cepat","Penunjukan Langsung","E-Purchasing","Pengadaan Langsung"];
         return met[id] || "Tender";
     }
+
+    {% if isArsiparis %}
+    var dtConfig = {
+        processing: true,
+        serverSide: true,
+        language: {
+            search: "Search:",
+            lengthMenu: "_MENU_ entries per page",
+            processing: "Memuat data...",
+            zeroRecords: "Tidak ada data yang ditemukan",
+            info: "Menampilkan _START_ - _END_ dari _TOTAL_ entri",
+            infoEmpty: "Tidak ada entri",
+            infoFiltered: "(disaring dari _MAX_ total entri)"
+        },
+        drawCallback: function(settings) {
+            if(typeof feather !== 'undefined') feather.replace();
+        }
+    };
+
+    var tableTender = new DataTable("#table-data-tender", Object.assign({}, dtConfig, {
+        ajax: {
+            url: '/paket/data-tender',
+            data: function(d) {
+                d.nama_paket = $('#search-tender-nama').val();
+                d.metode = $('#search-tender-metode').val();
+                d.jenis_pengadaan = $('#search-tender-jenis').val();
+            }
+        },
+        columns: [
+            { data: "kd_rup", render: function(d) { return d ? d : '-'; } },
+            { data: "kd_tender" },
+            { data: "nama_paket" },
+            { data: "mtd_pemilihan" },
+            { data: "jenis_pengadaan" },
+            {
+                data: "pagu",
+                render: function(data) {
+                    return data ? `Rp ${data.toLocaleString("id-ID")}` : "Rp 0";
+                }
+            },
+            {
+                data: "kd_tender",
+                className: "text-center",
+                render: function(data) {
+                    return `<div style="display:flex;align-items:center;justify-content:center;">
+                                <a href="/paket/detail-tender/${data}" class="action-icon info" title="Lihat Detail Tender">
+                                    <span style="width:15px;height:15px;" data-feather="eye"></span>
+                                </a>
+                            </div>`;
+                }
+            }
+        ]
+    }));
+
+    var tableNontender = new DataTable("#table-data-nontender", Object.assign({}, dtConfig, {
+        ajax: {
+            url: '/paket/data-nontender',
+            data: function(d) {
+                d.nama_paket = $('#search-nontender-nama').val();
+                d.metode = $('#search-nontender-metode').val();
+                d.jenis_pengadaan = $('#search-nontender-jenis').val();
+            }
+        },
+        columns: [
+            { data: "kd_rup", render: function(d) { return d ? d : '-'; } },
+            { data: "kd_nontender" },
+            { data: "nama_paket" },
+            { data: "mtd_pemilihan" },
+            { data: "jenis_pengadaan" },
+            {
+                data: "pagu",
+                render: function(data) {
+                    return data ? `Rp ${data.toLocaleString("id-ID")}` : "Rp 0";
+                }
+            },
+            {
+                data: "kd_nontender",
+                className: "text-center",
+                render: function(data, type, row) {
+                    if (row.mtd_pemilihan === "E-Purchasing") {
+                        return `<div style="display:flex;align-items:center;justify-content:center;">
+                                    <button class="btn btn-sm btn-light text-muted border-0" onclick="alert('Profil detail E-Purchasing via Katalog belum tersedia di versi ini.');" style="font-size:11px; cursor:not-allowed;" title="Tidak Tersedia"><i data-feather="eye-off" style="width:14px;height:14px;"></i></button>
+                                </div>`;
+                    }
+                    return `<div style="display:flex;align-items:center;justify-content:center;">
+                                <a href="/paket/detail-nontender/${data}" class="action-icon info" title="Lihat Detail Non-Tender">
+                                    <span style="width:15px;height:15px;" data-feather="eye"></span>
+                                </a>
+                            </div>`;
+                }
+            }
+        ]
+    }));
+
+    $('#search-tender-nama, #search-tender-metode, #search-tender-jenis').on('change keyup', function() {
+        tableTender.ajax.reload();
+    });
+    $('#search-nontender-nama, #search-nontender-metode, #search-nontender-jenis').on('change keyup', function() {
+        tableNontender.ajax.reload();
+    });
+
+    {% else %}
 
     var table = new DataTable("#table-data", {
         ajax: {
@@ -443,15 +655,20 @@ Daftar Paket
                 data: "ID",
                 className: "text-center",
                 render: function(data, type, row) {
-                    let html = '<div style="display:flex;align-items:center;justify-content:center;">';
+                    let html = '<div style="display:flex;align-items:center;justify-content:center; gap: 8px;">';
                     
-                    if (isPPK_Local && (row["status"] == 0 || row["status"] == 4)) {
-                        html += `<a href="/paket/hapus/${data}" class="action-icon danger" title="Hapus" onclick="return confirm('Hapus paket ini?')">
-                                    <span style="width:15px;height:15px;" data-feather="trash-2"></span>
-                                 </a>`;
-                    }
+                    let editUrl = (!row["rup_id"] || row["rup_id"] == 0) ? `/paket/edit-manual/${data}` : `/paket/edit/${data}`;
+                    
+                    html += `<a href="${editUrl}" class="action-icon warning" title="Edit Paket">
+                                <span style="width:15px;height:15px;" data-feather="edit"></span>
+                             </a>`;
+                             
+                    html += `<a href="/paket/hapus/${data}?redirect=/paket" class="action-icon danger" title="Hapus Paket" onclick="return confirm('Apakah Anda yakin ingin menghapus paket ini secara permanen?')">
+                                <span style="width:15px;height:15px;" data-feather="trash-2"></span>
+                             </a>`;
+
                     if (row["status"] > 2) {
-                        html += `<a href="/download-all/${data}" class="action-icon info" title="Download">
+                        html += `<a href="/download-all/${data}" class="action-icon info" title="Download Semua Dokumen">
                                     <span style="width:15px;height:15px;" data-feather="download"></span>
                                  </a>`;
                     }
@@ -469,6 +686,8 @@ Daftar Paket
     $('.filter-metode').on('change', function() {
         table.ajax.reload();
     });
+
+    {% endif %}
 
     window.statusPaket = getStatusLabel;
     window.metode = getMetodeLabel;
