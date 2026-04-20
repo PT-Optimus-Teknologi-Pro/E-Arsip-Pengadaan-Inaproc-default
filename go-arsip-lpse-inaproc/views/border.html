@@ -89,7 +89,7 @@
             
             <div class="col-lg-4 pe-lg-5">
               <div class="footer-brand mb-4">
-                <img src="{{ logoPath }}" alt="Logo" style="height: 55px; width: auto; max-height: 55px; display: block; filter: brightness(0) invert(1);" />
+                <img src="{{ logoPath }}" alt="Logo" style="height: 55px; width: auto; max-height: 55px; display: block;" />
               </div>
               <p class="mb-4" style="line-height: 1.7; font-size: 0.95rem; text-align: justify;">
                 {{ app_settings.FooterDescription }}
@@ -98,7 +98,7 @@
                 {% for s in GetFooterSocials() %}
                 <a href="{{ s.url }}" target="_blank" class="social-icon-btn d-flex align-items-center justify-content-center" title="{{ s.label }}">
                   {% if StartWith(s.icon, "http") or StartWith(s.icon, "/") or StartWith(s.icon, "data:") %}
-                    <img src="{{ s.icon }}" alt="{{ s.label }}" style="width: 22px; height: 22px; object-fit: contain; display: block; filter: brightness(0) invert(1);">
+                    <img src="{{ s.icon }}" alt="{{ s.label }}" style="width: 22px; height: 22px; object-fit: contain; display: block;">
                   {% elif s.icon != "" %}
                     <i data-feather="{{ s.icon }}"></i>
                   {% else %}
