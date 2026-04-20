@@ -486,7 +486,9 @@ Daftar Paket
         return met[id] || "Tender";
     }
 
-    {% if isArsiparis %}
+    var isArsiparis_Local = ("{{ isArsiparis|default:false }}" === "true");
+
+    if (isArsiparis_Local) {
     var dtConfig = {
         processing: true,
         serverSide: true,
@@ -586,7 +588,7 @@ Daftar Paket
         tableNontender.ajax.reload();
     });
 
-    {% else %}
+    } else {
 
     var table = new DataTable("#table-data", {
         ajax: {
@@ -687,7 +689,7 @@ Daftar Paket
         table.ajax.reload();
     });
 
-    {% endif %}
+    }
 
     window.statusPaket = getStatusLabel;
     window.metode = getMetodeLabel;

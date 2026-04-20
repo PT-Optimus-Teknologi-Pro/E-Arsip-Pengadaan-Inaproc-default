@@ -132,7 +132,7 @@ Dokument Persiapan Pengadaan
                 {# Print only if fully approved and NOT in active addendum #}
                 {% if allowCetak and not isAddendum %}
                 <a class="btn btn-primary" href="/preview/ba-kajiulang/{{ paket.ID }}" target="_blank"><span style="width: 16px;" data-feather="eye"></span> Berita Acara Reviu</a>
-                <a class="btn btn-primary" href="/preview/ba-kajiulang/{{ paket.ID }}/print" target="_blank"><span style="width: 16px;" data-feather="printer"></span> Cetak BA (Final)</a>
+                <a class="btn btn-primary" href="#" onclick="triggerCetakModal('/preview/ba-kajiulang/{{ paket.ID }}/print'); return false;"><span style="width: 16px;" data-feather="printer"></span> Cetak BA (Final)</a>
                 {% elif not isAddendum %}
                 <button class="btn btn-secondary" disabled title="Tunggu persetujuan semua pihak"><span style="width: 16px;" data-feather="printer"></span> Cetak BA (Belum Lengkap)</button>
                 {% endif %}
@@ -145,6 +145,8 @@ Dokument Persiapan Pengadaan
             {% endif %}
         </div>
         </form>
+
+        {% include "modal-cetak.html" %}
         
         <hr class="my-4">
         <div class="mt-4">

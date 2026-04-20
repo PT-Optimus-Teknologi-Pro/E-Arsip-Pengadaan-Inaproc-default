@@ -4,6 +4,7 @@ import (
 	"arsip/cache"
 	"arsip/models"
 	"arsip/services"
+	"encoding/base64"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -87,6 +88,13 @@ func UpdateLogoSettings(c *fiber.Ctx) error {
 	if v := c.FormValue("doc_pejabat_nama"); v != "" { settings.DocPejabatNama = v }
 	if v := c.FormValue("doc_pejabat_jabata"); v != "" { settings.DocPejabatJabata = v }
 	if v := c.FormValue("doc_pejabat_nip"); v != "" { settings.DocPejabatNip = v }
+	if v := c.FormValue("doc_region"); v != "" { settings.DocRegion = v }
+	
+	if v := c.FormValue("doc_signature_mode"); v != "" { 
+	    settings.DocSignatureMode = v 
+	} else {
+	    settings.DocSignatureMode = "barcode" 
+	}
 
 	// Handle upload logo dokumen
 	docLogoFile, err := c.FormFile("doc_logo")
@@ -107,6 +115,36 @@ func UpdateLogoSettings(c *fiber.Ctx) error {
 		}
 	} else if err != nil && !strings.Contains(err.Error(), "no such file") {
 		log.Errorf("Error receiving doc_logo file: %v", err)
+	}
+
+	// Handle upload signature (Tanda Tangan Pejabat Fisik atau Canvas)
+	if settings.DocSignatureMode == "canvas" {
+		canvasData := c.FormValue("doc_signature_canvas_data")
+		if canvasData != "" && strings.HasPrefix(canvasData, "data:image/png;base64,") {
+			base64Str := strings.TrimPrefix(canvasData, "data:image/png;base64,")
+			dec, err := base64.StdEncoding.DecodeString(base64Str)
+			if err == nil {
+				filename := fmt.Sprintf("doc_sig_%d.png", time.Now().Unix())
+				dst := filepath.Join(settingsUploadDir, filename)
+				if err := os.WriteFile(dst, dec, 0644); err == nil {
+					settings.DocSignaturePath = "/uploads/settings/" + filename
+					log.Infof("Tanda tangan pejabat dari canvas berhasil disimpan: %s", settings.DocSignaturePath)
+				}
+			}
+		}
+	} else if settings.DocSignatureMode == "digital" {
+		sigFile, err := c.FormFile("doc_signature")
+		if err == nil && sigFile != nil {
+			ext := strings.ToLower(filepath.Ext(sigFile.Filename))
+			if ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".webp" { // Must support transparency ideally
+				filename := fmt.Sprintf("doc_sig_%d%s", time.Now().Unix(), ext)
+				dst := filepath.Join(settingsUploadDir, filename)
+				if err := c.SaveFile(sigFile, dst); err == nil {
+					settings.DocSignaturePath = "/uploads/settings/" + filename
+					log.Infof("Tanda tangan pejabat digital berhasil disimpan: %s", settings.DocSignaturePath)
+				}
+			}
+		}
 	}
 
 	if err := services.SaveSettings(&settings); err != nil {

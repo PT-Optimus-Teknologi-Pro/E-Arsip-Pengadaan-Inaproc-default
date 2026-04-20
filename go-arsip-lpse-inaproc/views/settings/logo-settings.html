@@ -192,7 +192,7 @@
 
   {% include "alert.html" %}
 
-  <form action="/settings/logo" method="post" enctype="multipart/form-data">
+  <form action="/settings/logo" method="post" enctype="multipart/form-data" id="logoForm">
 
     <!-- ===== LOGO NAVBAR ===== -->
     <div class="logo-card">
@@ -343,6 +343,11 @@
                    value="{{ settings.DocSubInstansi }}" placeholder="S E K R E T A R I A T D A E R A H"/>
           </div>
           <div class="upload-area" style="grid-column: span 2;">
+            <label>Nama Daerah Penetapan (Kotak Validasi / Tanda Tangan)</label>
+            <input type="text" name="doc_region" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.DocRegion }}" placeholder="KOTA BANJARMASIN"/>
+          </div>
+          <div class="upload-area" style="grid-column: span 2;">
             <label>Alamat Lengkap (Kop)</label>
             <input type="text" name="doc_address" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
                    value="{{ settings.DocAddress }}" placeholder="J . RE. Martadinata No.1 Banjarmasin 70111"/>
@@ -386,6 +391,46 @@
             <input type="text" name="doc_pejabat_jabata" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
                    value="{{ settings.DocPejabatJabata }}" placeholder="SEKRETARIS DAERAH"/>
           </div>
+          
+          <div class="upload-area" style="grid-column: span 2; margin-top: 1rem; border-top: 1px dashed #d1d5db; padding-top: 1rem;">
+              <label>Metode Tanda Tangan Pejabat pada Cetakan Dokumen</label>
+              <select name="doc_signature_mode" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;">
+                  <option value="barcode" {% if settings.DocSignatureMode == 'barcode' %}selected{% endif %}>Barcode Validasi MD5 (Otomatis)</option>
+                  <option value="digital" {% if settings.DocSignatureMode == 'digital' %}selected{% endif %}>Upload Cap Tanda Tangan Fisik</option>
+                  <option value="canvas" {% if settings.DocSignatureMode == 'canvas' %}selected{% endif %}>Gambar Langsung (Signature Pad)</option>
+              </select>
+          </div>
+          
+          <!-- Upload Tanda Tangan Fisik -->
+          <div id="sigUploadArea" style="display: flex; gap: 2rem; align-items: flex-start; width: 100%; grid-column: span 2; padding-top: 1rem;">
+            <div class="preview-box" id="sigPreviewBox" style="height: 100px; width: 150px;">
+              <img id="sigPreviewImg" src="{% if settings.DocSignaturePath %}{{ settings.DocSignaturePath }}{% else %}/modern/images/placeholder.png{% endif %}" alt="Preview Signature"/>
+              <span class="preview-label">TTE Fisik</span>
+            </div>
+            <div class="upload-area">
+              <label>Upload Gambar Tanda Tangan (Jika memilih metode Upload Fisik)</label>
+              <div class="file-row" onclick="document.getElementById('fileSignature').click()" style="cursor:pointer;">
+                <button type="button" class="btn-pick">Pilih File</button>
+                <span class="fname" id="sigName">Tidak ada file dipilih</span>
+                <input type="file" id="fileSignature" name="doc_signature" class="file-real" accept=".png,.webp"
+                  onchange="previewImage(this,'sigPreviewImg','sigName')"/>
+              </div>
+              <p class="hint">Format WAJIB: PNG background transparent / tanpa background. Muncul di atas NIP Pejabat.</p>
+            </div>
+          </div>
+          
+          <!-- Signature Canvas Area -->
+          <div id="sigCanvasArea" style="display: none; width: 100%; grid-column: span 2; padding-top: 1rem;">
+             <label style="font-size: 0.855rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem; display: block;">Gambar Tanda Tangan Pejabat (Secara Langsung)</label>
+             <div style="border: 2px dashed #0026B4; border-radius: 12px; background: #ffffff; padding: 1.25rem; position: relative; cursor: crosshair; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
+                <div style="position: absolute; bottom: 50px; left: 10%; right: 10%; height: 2px; background: #e5e7eb; z-index: 1; pointer-events: none;"></div>
+                <canvas id="signature-pad" width="600" height="150" style="display: block; width: 100%; height: 160px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; z-index: 2; position: relative;"></canvas>
+             </div>
+             <button type="button" id="clearCanvas" style="margin-top: 0.6rem; background: none; border: 1px solid #d1d5db; border-radius: 6px; padding: 0.25rem 0.85rem; font-size: 0.8rem; color: #6b7280; cursor: pointer; display: flex; align-items: center; gap: 4px;">Bersihkan Canvas</button>
+             <input type="hidden" id="doc_signature_canvas_data" name="doc_signature_canvas_data" value="">
+             <p class="hint" style="font-size: 0.78rem; color: #9ca3af; margin-top: 0.4rem;">Tanda tangan yang Anda buat di sini akan disimpan dan dicetak sebagai cap basah.</p>
+          </div>
+          
         </div>
       </div>
     </div>
@@ -406,6 +451,7 @@
 {% endblock %}
 
 {% block script %}
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 <script>
   function previewImage(input, imgId, nameId) {
     var file = input.files[0];
@@ -418,5 +464,57 @@
     };
     reader.readAsDataURL(file);
   }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+      // Signature Pad init
+      var canvas = document.getElementById('signature-pad');
+      var signaturePad = new SignaturePad(canvas, {
+          backgroundColor: 'rgba(255,255,255,0)',
+          penColor: 'rgb(0,0,0)'
+      });
+      
+      document.getElementById('clearCanvas').addEventListener('click', function () {
+          signaturePad.clear();
+      });
+      
+      function resizeCanvas() {
+          var ratio =  Math.max(window.devicePixelRatio || 1, 1);
+          canvas.width = canvas.offsetWidth * ratio;
+          canvas.height = canvas.offsetHeight * ratio;
+          canvas.getContext("2d").scale(ratio, ratio);
+          signaturePad.clear();
+      }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      
+      // Mode toggle
+      const sigModeObj = document.querySelector('select[name="doc_signature_mode"]');
+      const sigUploadArea = document.getElementById('sigUploadArea');
+      const sigCanvasArea = document.getElementById('sigCanvasArea');
+      
+      function toggleAreas() {
+          if (sigModeObj.value === 'digital') {
+              sigUploadArea.style.display = 'flex';
+              sigCanvasArea.style.display = 'none';
+          } else if (sigModeObj.value === 'canvas') {
+              sigUploadArea.style.display = 'none';
+              sigCanvasArea.style.display = 'block';
+              resizeCanvas(); // Important, otherwise canvas scales poorly when hidden initially
+          } else {
+              sigUploadArea.style.display = 'none';
+              sigCanvasArea.style.display = 'none';
+          }
+      }
+      sigModeObj.addEventListener('change', toggleAreas);
+      toggleAreas(); // run on load
+      
+      // Submit Handler
+      document.getElementById('logoForm').addEventListener('submit', function(e) {
+          if (sigModeObj.value === 'canvas' && !signaturePad.isEmpty()) {
+              var imageData = signaturePad.toDataURL("image/png");
+              document.getElementById("doc_signature_canvas_data").value = imageData;
+          }
+      });
+  });
 </script>
 {% endblock %}

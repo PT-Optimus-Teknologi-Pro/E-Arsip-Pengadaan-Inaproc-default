@@ -1,14 +1,29 @@
-<h6 class="text-center pt-3" data-pdfmake="{'alignment' : 'center'}">
-      KEPUTUSAN SEKRETARIS DAERAH KOTA BANJARMASIN<br />
-      NOMOR 102 TAHUN 2024 <br />
-      TENTANG <br />
-      PENETAPAN POKJA PENGADAAN BARANG/JASA <br />
-      PADA BAGIAN PENGADAAN BARANG DAN JASA <br />
-      SEKRETARIAT DAERAH KOTA BANJARMASIN <br />
-      TAHUN ANGGARAN 2025 <br />
-      SEKRETARIS DAERAH KOTA BANJARMASIN
-</h6>
-<div class="mx-auto pt-3">
+<table style="width: 100%; border: none; margin-bottom: 5px;">
+    <tr>
+        <td style="width: 20%;"></td>
+        <td style="width: 60%; text-align: center;">
+            <h6 style="text-align:center; margin:0; padding-top: 15px;" data-pdfmake="{'alignment' : 'center'}">
+                  KEPUTUSAN {% if appSettings.DocPejabatJabata %}{{ appSettings.DocPejabatJabata }}{% else %}SEKRETARIS DAERAH{% endif %} KOTA BANJARMASIN<br />
+                  NOMOR {% if dokTercetak.NomorSurat %}{{ dokTercetak.NomorSurat }}{% else %}...{% endif %} TAHUN {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}...{% endif %}  <br />
+                  TENTANG <br />
+                  PENETAPAN POKJA PENGADAAN BARANG/JASA <br />
+                  PADA {% if appSettings.DocSubInstansi %}{{ appSettings.DocSubInstansi }}{% else %}BAGIAN PENGADAAN BARANG DAN JASA{% endif %} <br />
+                  {% if appSettings.DocInstansi %}{{ appSettings.DocInstansi }}{% else %}SEKRETARIAT DAERAH KOTA BANJARMASIN{% endif %} <br />
+                  TAHUN ANGGARAN {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}...{% endif %} <br />
+                  {% if appSettings.DocPejabatJabata %}{{ appSettings.DocPejabatJabata|upper }}{% else %}SEKRETARIS DAERAH{% endif %} KOTA BANJARMASIN
+            </h6>
+        </td>
+        <td style="width: 20%; text-align: right; vertical-align: top;">
+            {% if qrValidasi %}
+            <div style="border:1px solid #ccc; padding:3px; display:inline-block; text-align:center;">
+                <img src="data:image/png;base64,{{ qrValidasi }}" style="width:75px;"><br>
+                <div style="font-size:6pt; text-align:center; font-weight:bold;">Scan Verifikasi</div>
+            </div>
+            {% endif %}
+        </td>
+    </tr>
+</table>
+<div class="mx-auto mt-2">
   <table class="table table-borderless" data-pdfmake="{'widths': [150, '*'], 'layout': 'noBorders'}">
       <tr data-pdfmake="{'fontSize' : 4}">
           <td width="300">Menimbang</td>
@@ -81,7 +96,7 @@
       </tr>
       <tr>
           <td>Memperhatikan</td>
-          <td>Dokumen Pelaksanaan Anggaran Satuan Kerja Perangkat Daerah Bagian Pengadaan Barang dan Jasa Sekretariat Daerah Kota Banjarmasin Tahun Anggaran 2025</td>
+          <td>Dokumen Pelaksanaan Anggaran Satuan Kerja Perangkat Daerah {% if appSettings.DocSubInstansi %}{{ appSettings.DocSubInstansi }}{% else %}Bagian Pengadaan Barang dan Jasa{% endif %} Tahun Anggaran {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}...{% endif %}</td>
       </tr>
   </table>
       <h6 class="text-center pt-3" data-pdfmake="{'alignment' : 'center', 'fontSize' : 10 }">Memutuskan</h6>
@@ -89,8 +104,7 @@
       <table class="table table-borderless" data-pdfmake="{'widths': [150, '*'], 'layout': 'noBorders', 'fontSize' : 10}">
           <tr>
               <td width="30%">KESATU</td>
-              <td>Pokja Pengadaan Barang/Jasa Pada Bagian Pengadaan Barang Dan Jasa Sekretariat Daerah Kota
-                  Banjarmasin Tahun Anggaran 2025 sebagai berikut: <br /><br />
+              <td>Pokja Pengadaan Barang/Jasa Pada {% if appSettings.DocSubInstansi %}{{ appSettings.DocSubInstansi }}{% else %}Bagian Pengadaan Barang Dan Jasa{% endif %} Tahun Anggaran {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}...{% endif %} sebagai berikut: <br /><br />
                   {% for obj in panitia.AnggotaList %}
                   Nama        : {{ obj.PegNama }} <br />
                   NIP         : {{ obj.PegNip }} <br />
@@ -131,13 +145,27 @@
               <td>Keputusan Sekretaris Daerah ini mulai berlaku pada tanggal ditetapkan.</td>
           </tr>
       </table>
-      <p class="pt-3" data-pdfmake="{'marginLeft': 5, 'fontSize' : 10}" style="padding-left: 70%;">
-          Ditetapkan di Banjarmasin <br />
-          pada tanggal 9 Desember 2024 <br />
-          SEKRETARIS DAERAH <br />
-          KOTA BANJARMASIN <br />
-          <br />
-          <br />
-          AHSAN BUDIMAN
-      </p>
+      <table style="width: 100%;">
+          <tr>
+              <td style="width: 60%; text-align: center;"></td>
+              <td style="width: 40%; padding-left: 20px;">
+                  <p class="pt-3" data-pdfmake="{'fontSize' : 10}">
+                      Ditetapkan di {% if dokTercetak.TempatPenetapan %}{{ dokTercetak.TempatPenetapan }}{% elif appSettings.DocRegion %}{{ appSettings.DocRegion }}{% else %}Banjarmasin{% endif %} <br />
+                      pada tanggal {% if dokTercetak.TanggalPenetapan %}{{ dokTercetak.TanggalPenetapan.Format("02 Jan 2006") }}{% else %}...{% endif %} <br />
+                      {% if appSettings.DocPejabatJabata %}{{ appSettings.DocPejabatJabata|upper }}{% else %}SEKRETARIS DAERAH{% endif %} <br />
+                      {% if appSettings.DocRegion %}{{ appSettings.DocRegion|upper }}{% else %}KOTA BANJARMASIN{% endif %} <br />
+                      {% if appSettings.DocSignatureMode == 'digital' or appSettings.DocSignatureMode == 'canvas' %}
+                          {% if appSettings.DocSignaturePath %}
+                          <img src="{{ appSettings.DocSignaturePath }}" style="max-height: 60px; margin-top: 10px;" />
+                          <br />
+                          {% endif %}
+                      {% else %}
+                      <br />
+                      <br />
+                      {% endif %}
+                      {% if appSettings.DocPejabatNama %}{{ appSettings.DocPejabatNama|upper }}{% else %}AHSAN BUDIMAN{% endif %}
+                  </p>
+              </td>
+          </tr>
+      </table>
 </div>

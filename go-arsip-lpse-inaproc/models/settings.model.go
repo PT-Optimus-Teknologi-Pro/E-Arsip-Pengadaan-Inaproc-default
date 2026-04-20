@@ -30,6 +30,9 @@ type AppSettings struct {
 	DocPejabatJabata string `json:"doc_pejabat_jabata" gorm:"default:'SEKRETARIS DAERAH'"`
 	DocPejabatNip    string `json:"doc_pejabat_nip" gorm:"default:''"`
 	DocLogoPath      string `json:"doc_logo_path" gorm:"default:''"`
+	DocRegion        string `json:"doc_region" gorm:"default:'KOTA BANJARMASIN'"`
+	DocSignatureMode string `json:"doc_signature_mode" gorm:"default:'barcode'"`
+	DocSignaturePath string `json:"doc_signature_path" gorm:"default:''"`
 }
 
 func (AppSettings) TableName() string {

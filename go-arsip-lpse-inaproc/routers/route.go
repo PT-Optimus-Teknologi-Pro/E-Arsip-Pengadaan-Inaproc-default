@@ -340,10 +340,13 @@ func SetupRoutes(app *fiber.App) {
 	cetak.Get("/templates/:id", handlers.PreviewImage)
 	cetak.Get("/sk-pp/:id", handlers.PreviewSkPp)
 	cetak.Get("/sk-pp/:id/print", handlers.CetakSkPp)
+	cetak.Post("/sk-pp/:id/print", handlers.CetakSkPpProcess)
 	cetak.Get("/sk-pokja/:id", handlers.PreviewSkPokja)
 	cetak.Get("/sk-pokja/:id/print", handlers.CetakSkPokja)
+	cetak.Post("/sk-pokja/:id/print", handlers.CetakSkPokjaProcess)
 	cetak.Get("/ba-kajiulang/:id", handlers.PreviewBAKajiUlang)
 	cetak.Get("/ba-kajiulang/:id/print", handlers.CetakBAKajiUlang)
+	cetak.Post("/ba-kajiulang/:id/print", handlers.CetakBAKajiUlangProcess)
 	cetak.Get("/ba-kajiulang/:id/verify/:pegId", handlers.VerifyTte)
 	cetak.Get("/ba-nego/:id", handlers.PreviewBANego)
 	cetak.Get("/ba-nego/:id/print", handlers.CetakBANego)
@@ -369,6 +372,9 @@ func SetupRoutes(app *fiber.App) {
 	home.Get("/json-beban-personel", handlers.GetJsonBebanPersonel)
 	home.Get("/json-rekap-paket-per-satker", handlers.GetJsonRekapPaketPerSatker)
 	home.Get("/json-rekap-paket-ppk", handlers.GetJsonRekapPaketPPK)
+
+	// Validasi Dokumen Tercetak Endpoint (Publicly Accessible)
+	app.Get("/validasi/dokumen/:hash", handlers.ValidasiDokumenTercetak)
 
 	itkp := app.Group("/itkp")
 	itkp.Get("/", handlers.Itkp)

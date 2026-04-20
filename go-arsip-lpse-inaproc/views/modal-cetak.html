@@ -1,0 +1,65 @@
+<div class="modal fade" id="modalCetakValidasi" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="formCetakValidasi" method="POST" action="" target="_blank">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><span style="width:16px;" data-feather="printer"></span> Informasi Berkas Cetak</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info small">
+                        Silakan lengkapi atribut dokumen di bawah ini. Dokumen akan dilengkapi dengan TTE dan Barcode Keamanan MD5.
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Nomor Surat</label>
+                        <input type="text" name="nomor_surat" class="form-control form-control-sm" placeholder="Contoh: 027/01/SK/2026" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Tahun Surat</label>
+                        <input type="number" name="tahun_surat" class="form-control form-control-sm" placeholder="Contoh: 2026" required value="{{ currentYear }}">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Tentang Surat (Opsional)</label>
+                        <input type="text" name="tentang_surat" class="form-control form-control-sm" placeholder="Contoh: Pembentukan Panitia Kerja">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label small fw-bold">Tempat Penetapan</label>
+                            <input type="text" name="tempat_penetapan" class="form-control form-control-sm" placeholder="Banjarmasin" required>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label small fw-bold">Tanggal Penetapan</label>
+                            <input type="date" name="tanggal_penetapan" class="form-control form-control-sm" required>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <h6 class="text-secondary small fw-bold">Pengesahan / Keputusan Sekda (Bila Ada)</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label small fw-bold">Nomor Keputusan</label>
+                            <input type="text" name="nomor_kep_sekda" class="form-control form-control-sm" placeholder="No. Kep Sekda">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label small fw-bold">Tgl Terbit Keputusan</label>
+                            <input type="date" name="tanggal_terbit_kep" class="form-control form-control-sm">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success" onclick="$('#modalCetakValidasi').modal('hide');">Generate & Cetak PDF</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function triggerCetakModal(actionUrl) {
+        document.getElementById('formCetakValidasi').action = actionUrl;
+        var myModal = new bootstrap.Modal(document.getElementById('modalCetakValidasi'));
+        myModal.show();
+    }
+</script>

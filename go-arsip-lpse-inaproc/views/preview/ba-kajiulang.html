@@ -6,8 +6,23 @@ Berita Acara Reviu Dokumen
 
 {% block content %}
 <div class="ba-preview-wrap" style="color: #000; font-family: 'Times New Roman', Times, serif; line-height: 1.5;">
-    <h3 class="text-center" style="font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">BERITA ACARA REVIU DOKUMEN PERSIAPAN PENGADAAN</h3>
-    <h4 class="text-center" style="font-weight: 700; margin-bottom: 5px;">Nomor: {{ ba.Nomor|default:'................................' }}</h4>
+    <table style="width: 100%; border: none; margin-bottom: 5px;">
+        <tr>
+            <td style="width: 25%;"></td>
+            <td style="width: 50%; text-align: center;">
+                <h3 class="text-center" style="font-weight: 700; text-transform: uppercase; margin-bottom: 5px; font-size: 1.5rem;">BERITA ACARA REVIU DOKUMEN PERSIAPAN PENGADAAN</h3>
+                <h4 class="text-center" style="font-weight: 700; margin-bottom: 5px; font-size: 1.25rem;">Nomor: {% if dokTercetak.NomorSurat %}{{ dokTercetak.NomorSurat }}{% else %}{{ ba.Nomor|default:'................................' }}{% endif %}</h4>
+            </td>
+            <td style="width: 25%; text-align: right; vertical-align: top;">
+                {% if qrValidasi %}
+                <div style="border:1px solid #ccc; padding:3px; display:inline-block; text-align:center;">
+                    <img src="data:image/png;base64,{{ qrValidasi }}" style="width:75px;"><br>
+                    <div style="font-size:6pt; text-align:center; font-weight:bold;">Scan Verifikasi</div>
+                </div>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
     
     <div style="margin: 2rem 0; font-size: 1.1rem;">
         <table class="table-borderless w-100">
@@ -34,12 +49,12 @@ Berita Acara Reviu Dokumen
             <tr>
                 <td style="width: 15rem;">Hari / Tanggal</td>
                 <td style="width: 1rem;">:</td>
-                <td>{{ ba.Hari|default:'........' }} / {{ ba.Tanggal.Time.Format("02-01-2006")|default:'........' }}</td>
+                <td>{% if dokTercetak.TanggalPenetapan %}{{ dokTercetak.TanggalPenetapan.Format("Monday") }} / {{ dokTercetak.TanggalPenetapan.Format("02-01-2006") }}{% else %}{{ ba.Hari|default:'........' }} / {{ ba.Tanggal.Time.Format("02-01-2006") }}{% endif %}</td>
             </tr>
             <tr>
                 <td>Tempat</td>
                 <td>:</td>
-                <td>{{ ba.Tempat|default:'........' }}</td>
+                <td>{% if dokTercetak.TempatPenetapan %}{{ dokTercetak.TempatPenetapan }}{% else %}{{ ba.Tempat|default:'........' }}{% endif %}</td>
             </tr>
             <tr>
                 <td>Waktu (Jam)</td>

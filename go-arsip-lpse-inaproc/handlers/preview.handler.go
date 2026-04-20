@@ -50,39 +50,80 @@ func PreviewSkPp(c *fiber.Ctx) error {
 	sk := models.GetPejabatPengadaan(ppSatker.PpId)
 	mp["sk"] = sk
 
-	// Full URL for QR Code Verification
-	mp["full_url"] = fmt.Sprintf("%s://%s/preview/sk-pp/%d", c.Protocol(), c.Hostname(), id)
+	hash := c.Query("hash")
+	if hash != "" {
+		var dok models.DokumenTercetak
+		models.GetDB().Where("md5_hash = ?", hash).First(&dok)
+		mp["dokTercetak"] = dok
+
+		valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), hash)
+		mp["qrValidasi"] = generateQrBase64(valUrl)
+	}
+
+	appSettings := services.GetSettings()
+	mp["appSettings"] = appSettings
 
 	return c.Render("preview/surat-penunjukan-pp", mp)
 }
 
 func CetakSkPp(c *fiber.Ctx) error {
 	id := c.Params("id")
-	log.Infof("cetak sk pp id: %s", id)
-
-	// Persiapkan semua data
 	paket := services.GetPaket(utils.StringToUint(id))
 	pegawai := paket.Pp()
 	ppSatker := models.GetPejabatPengadaanSatker(paket.SatkerId)
 	sk := models.GetPejabatPengadaan(ppSatker.PpId)
 	appSettings := services.GetSettings()
 	satker := paket.Satker()
-
 	fullUrl := fmt.Sprintf("%s://%s/preview/sk-pp/%s", c.Protocol(), c.Hostname(), id)
 
-	// Build HTML langsung di Go (tidak pakai Django template engine untuk menghindari masalah layout)
-	htmlContent := buildSkPpHtml(sk, pegawai, satker, appSettings, fullUrl)
-
+	htmlContent := buildSkPpHtml(sk, pegawai, satker, appSettings, models.DokumenTercetak{}, fullUrl)
 	result := utils.ExportHtmlToPdf(htmlContent, "")
-	if len(result) == 0 {
-		log.Error("PDF generation returned empty/nil result")
-		return flashError(c, "Gagal membuat PDF", "/paket/"+id)
-	}
-
 	reader := bytes.NewReader(result)
 	c.Set("Content-Type", "application/pdf")
 	c.Set("Content-Disposition", "attachment; filename=\"SK-pejabat-pengadaan.pdf\"")
 	return c.SendStream(reader)
+}
+
+func CetakSkPpProcess(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	dok := processFormDokumen(c, id, "SK_PENUNJUKAN_PP")
+
+	paket := services.GetPaket(id)
+	pegawai := paket.Pp()
+	ppSatker := models.GetPejabatPengadaanSatker(paket.SatkerId)
+	sk := models.GetPejabatPengadaan(ppSatker.PpId)
+	appSettings := services.GetSettings()
+	satker := paket.Satker()
+	fullUrl := fmt.Sprintf("%s://%s/preview/sk-pp/%d?hash=%s", c.Protocol(), c.Hostname(), id, dok.Md5Hash)
+
+	htmlContent := buildSkPpHtml(sk, pegawai, satker, appSettings, dok, fullUrl)
+	result := utils.ExportHtmlToPdf(htmlContent, "")
+	reader := bytes.NewReader(result)
+	c.Set("Content-Type", "application/pdf")
+	c.Set("Content-Disposition", "attachment; filename=\"SK-pejabat-pengadaan.pdf\"")
+	return c.SendStream(reader)
+}
+
+func processFormDokumen(c *fiber.Ctx, paketID uint, jenis string) models.DokumenTercetak {
+	dok := models.DokumenTercetak{
+		PaketID:      paketID,
+		JenisDokumen: jenis,
+		NomorSurat:   c.FormValue("nomor_surat"),
+		TentangSurat: c.FormValue("tentang_surat"),
+		TahunSurat:   c.FormValue("tahun_surat"),
+		TempatPenetapan: c.FormValue("tempat_penetapan"),
+		NomorKeputusanSekda: c.FormValue("nomor_kep_sekda"),
+	}
+
+	tglPenetapan := c.FormValue("tanggal_penetapan")
+	if tglPenetapan != "" { pt, _ := time.Parse("2006-01-02", tglPenetapan); dok.TanggalPenetapan = pt }
+	tglTerbit := c.FormValue("tanggal_terbit_kep")
+	if tglTerbit != "" { tt, _ := time.Parse("2006-01-02", tglTerbit); dok.TanggalTerbitKeputusan = tt }
+
+	session := getUserSession(c)
+	if session.Pegawai().ID > 0 { dok.PembuatPegawaiID = session.Pegawai().ID }
+	models.GetDB().Create(&dok)
+	return dok
 }
 
 func renderToString(templateName string, data fiber.Map) (string, error) {
@@ -98,7 +139,7 @@ func renderToString(templateName string, data fiber.Map) (string, error) {
 	return buf.String(), err
 }
 
-func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, satker models.SatkerSirup, settings models.AppSettings, fullUrl string) string {
+func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, satker models.SatkerSirup, settings models.AppSettings, dokTercetak models.DokumenTercetak, fullUrl string) string {
 	docInstansi := settings.DocInstansi
 	if docInstansi == "" { docInstansi = "PEMERINTAH KOTA BANJARMASIN" }
 	docSub := settings.DocSubInstansi
@@ -111,16 +152,32 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, satker mo
 	if docPejabatJabatan == "" { docPejabatJabatan = "SEKRETARIS DAERAH" }
 
 	tahunAng := sk.Tahun + 1
+	noSurat := sk.NoSk
+	if dokTercetak.NomorSurat != "" {
+		noSurat = dokTercetak.NomorSurat
+	}
+	tahunSurat := sk.Tahun
+	if dokTercetak.TahunSurat != "" {
+		tahunSurat = int(utils.StringToUint(dokTercetak.TahunSurat))
+	}
+	
+	tempatPenetapan := "Banjarmasin"
+	if sk.TempatSk != "" { tempatPenetapan = sk.TempatSk }
+	if dokTercetak.TempatPenetapan != "" { tempatPenetapan = dokTercetak.TempatPenetapan }
+	
+	tglPenetapan := "..."
+	if !sk.TglSk.IsZero() { tglPenetapan = sk.TglSk.Format("02-01-2006") }
+	if !dokTercetak.TanggalPenetapan.IsZero() { tglPenetapan = dokTercetak.TanggalPenetapan.Format("02-01-2006") }
 
 	// Generate QR Code sebagai base64 PNG (tanpa internet)
 	qrPng, qrErr := qrcode.Encode(fullUrl, qrcode.Medium, 128)
 	qrCell := `<div style="font-size:7pt; border:1px solid #ccc; padding:3px; text-align:center;">` +
 		"<small>Scan Verifikasi</small></div>"
-	if qrErr == nil {
+	if qrErr == nil && dokTercetak.Md5Hash != "" {
 		qrB64 := base64.StdEncoding.EncodeToString(qrPng)
 		qrCell = fmt.Sprintf(
-			`<img src="data:image/png;base64,%s" style="width:85px;"><div style="font-size:6pt;text-align:center;">Verifikasi Dokumen</div>`,
-			qrB64,
+			`<img src="data:image/png;base64,%s" style="width:85px;"><div style="font-size:6pt;text-align:center;">Kode Verifikasi: %s</div>`,
+			qrB64, dokTercetak.Md5Hash[:8],
 		)
 	}
 
@@ -165,6 +222,31 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, satker mo
 		} else {
 			log.Warnf("Logo TIDAK ditemukan. Percobaan terakhir di: %s. Error: %v", finalPath, err)
 		}
+	}
+
+	docSignatureHtml := ""
+	if (settings.DocSignatureMode == "digital" || settings.DocSignatureMode == "canvas") && settings.DocSignaturePath != "" {
+		cwd, _ := os.Getwd()
+		sigWebPath := strings.TrimPrefix(settings.DocSignaturePath, "/")
+		pathsToTry := []string{
+			filepath.Join(cwd, "public", sigWebPath),
+			filepath.Join(cwd, sigWebPath),
+			filepath.Join("public", sigWebPath),
+		}
+		for _, p := range pathsToTry {
+			sigData, err := os.ReadFile(p)
+			if err == nil {
+				ext := strings.ToLower(filepath.Ext(p))
+				mime := "image/png"
+				if ext == ".webp" { mime = "image/webp" }
+				b64 := base64.StdEncoding.EncodeToString(sigData)
+				docSignatureHtml = fmt.Sprintf(`<img src="data:%s;base64,%s" style="max-height:60px; margin-top:10px;">`, mime, b64)
+				break
+			}
+		}
+	}
+	if docSignatureHtml == "" {
+		docSignatureHtml = "<br><br><br><br>" // Fallback if no signature
 	}
 
 	golStr := ""
@@ -300,7 +382,7 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, satker mo
     <p style="margin:0;">pada tanggal %s</p>
     <p style="margin-top:10px; font-weight:bold; text-transform:uppercase;">%s</p>
     <p style="margin:0; font-weight:bold; text-transform:uppercase;">%s</p>
-    <br><br><br><br>
+    %s
     <p style="margin:0; font-weight:bold; text-decoration:underline; text-transform:uppercase;">%s</p>
     <p style="margin:0;">NIP. %s</p>
   </div>
@@ -320,7 +402,7 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, satker mo
 		// Verifikasi box (kanan atas)
 		qrCell,
 		// Judul
-		docPejabatJabatan, sk.NoSk, sk.Tahun,
+		docPejabatJabatan, noSurat, tahunSurat,
 		docSub, docInstansi, tahunAng, docPejabatJabatan,
 		// Menimbang
 		docSub, docInstansi, tahunAng,
@@ -335,9 +417,11 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, satker mo
 		// Keempat
 		docPejabatJabatan,
 		// TTD
-		func() string { if sk.TempatSk != "" { return sk.TempatSk }; return "Banjarmasin" }(),
-		func() string { if !sk.TglSk.IsZero() { return sk.TglSk.Format("02-01-2006") }; return "..." }(),
-		docPejabatJabatan, docInstansi, docPejabatNama, settings.DocPejabatNip,
+		tempatPenetapan,
+		tglPenetapan,
+		docPejabatJabatan, func() string { if settings.DocRegion != "" { return settings.DocRegion } else { return "KOTA BANJARMASIN" } }(),
+		docSignatureHtml,
+		docPejabatNama, settings.DocPejabatNip,
 	)
 }
 
@@ -348,12 +432,32 @@ func PreviewSkPokja(c *fiber.Ctx) error {
 	paket := services.GetPaket(uint(id))
 	mp["paket"] = paket
 	mp["pokja"] = paket.Pokja()
+
+	appSettings := services.GetSettings()
+	mp["appSettings"] = appSettings
+
+	hash := c.Query("hash")
+	if hash != "" {
+		var dok models.DokumenTercetak
+		models.GetDB().Where("md5_hash = ?", hash).First(&dok)
+		mp["dokTercetak"] = dok
+		valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), hash)
+		mp["qrValidasi"] = generateQrBase64(valUrl)
+	}
+
 	return c.Render("preview/surat-penunjukan-pokja", mp)
 }
 
 func CetakSkPokja(c *fiber.Ctx) error {
-	log.Info("cetak sk pokja")
-	url := fmt.Sprintf("http://localhost:%s/preview/sk-pokja/%s",config.Port(), c.Params("id"))
+	log.Info("cetak sk pokja fallback")
+	url := fmt.Sprintf("http://localhost:%s/preview/sk-pokja/%s", config.Port(), c.Params("id"))
+	return print(c, url, "SK-pokja.pdf")
+}
+
+func CetakSkPokjaProcess(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	dok := processFormDokumen(c, id, "SK_PENUNJUKAN_POKJA")
+	url := fmt.Sprintf("http://localhost:%s/preview/sk-pokja/%d?hash=%s", config.Port(), id, dok.Md5Hash)
 	return print(c, url, "SK-pokja.pdf")
 }
 func PreviewBAKajiUlang(c *fiber.Ctx) error {
@@ -480,6 +584,18 @@ func PreviewBAKajiUlang(c *fiber.Ctx) error {
 		}
 	}
 
+	appSettings := services.GetSettings()
+	mp["appSettings"] = appSettings
+
+	hash := c.Query("hash")
+	if hash != "" {
+		var dok models.DokumenTercetak
+		models.GetDB().Where("md5_hash = ?", hash).First(&dok)
+		mp["dokTercetak"] = dok
+		valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), hash)
+		mp["qrValidasi"] = generateQrBase64(valUrl)
+	}
+
 	mp["ba"] = ba
 	mp["reviuMaster"] = reviuMaster
 	mp["reviuResults"] = resMap
@@ -500,14 +616,25 @@ func generateQrBase64(content string) string {
 
 
 func CetakBAKajiUlang(c *fiber.Ctx) error {
-	log.Info("cetak BA Reviu Dokumen")
+	log.Info("cetak BA Reviu Dokumen fallback")
 	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+	if paket.ID > 0 { paket.IsLockedReview = true; models.SavePaket(&paket) }
+	url := fmt.Sprintf("http://localhost:%s/preview/ba-kajiulang/%s", config.Port(), c.Params("id"))
+	return print(c, url, "BA-kajiulang.pdf")
+}
+
+func CetakBAKajiUlangProcess(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	dok := processFormDokumen(c, id, "BA_KAJIULANG")
+	
 	paket := services.GetPaket(id)
 	if paket.ID > 0 {
 		paket.IsLockedReview = true
 		models.SavePaket(&paket)
 	}
-	url := fmt.Sprintf("http://localhost:%s/preview/ba-kajiulang/%s", config.Port(), c.Params("id"))
+
+	url := fmt.Sprintf("http://localhost:%s/preview/ba-kajiulang/%d?hash=%s", config.Port(), id, dok.Md5Hash)
 	return print(c, url, "BA-kajiulang.pdf")
 }
 
@@ -580,4 +707,44 @@ func print(c *fiber.Ctx, url string, filename string) error {
 	c.Set("Content-Type", "application/pdf")
 	c.Set("Content-Disposition", "attachment; filename=\""+filename+"\"")
 	return c.SendStream(reader)
+}
+
+func ValidasiDokumenTercetak(c *fiber.Ctx) error {
+	hash := c.Params("hash")
+	var dok models.DokumenTercetak
+	models.GetDB().Where("md5_hash = ?", hash).First(&dok)
+
+	if dok.ID == 0 {
+		return c.Status(404).SendString("Peringatan: Dokumen tidak valid atau tidak terdeteksi di server kami! Hati-hati pemalsuan.")
+	}
+
+	paket := services.GetPaket(dok.PaketID)
+	// Build simple JSON response or simple HTML
+	html := fmt.Sprintf(`
+	<!DOCTYPE html>
+	<html>
+	<head><title>Validasi Dokumen</title><style>body{font-family:Arial,sans-serif;background:#eee;margin:0;padding:50px;} .card{background:#fff;padding:30px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.1);max-width:600px;margin:auto;} h2{color:#28a745;} p{font-size:16px;} .badge{background:#007bff;color:white;padding:5px 10px;border-radius:20px;font-size:12px;}</style></head>
+	<body>
+		<div class="card">
+			<center>
+				<h2 style="margin-top:0;">DOKUMEN TERVALIDASI <i data-feather="check-circle"></i></h2>
+				<p>Dokumen ini telah disahkan dan di-generate oleh Sistem Informasi Pengadaan Daerah pada tanggal <strong>%s</strong>.</p>
+			</center>
+			<hr>
+			<table cellpadding="5">
+				<tr><td><strong>Jenis Surat:</strong></td><td><span class="badge">%s</span></td></tr>
+				<tr><td><strong>Nomor Surat:</strong></td><td>%s</td></tr>
+				<tr><td><strong>Paket Terkait:</strong></td><td>%s (ID: %d)</td></tr>
+				<tr><td><strong>Tahun/Tanggal:</strong></td><td>%s / %s</td></tr>
+				<tr><td><strong>Barcode Hash:</strong></td><td><code>%s</code></td></tr>
+			</table>
+			<br>
+			<div style="background:#e9f7ef;color:#155724;padding:10px;border-radius:5px;border:1px solid #c3e6cb;text-align:center;font-size:14px;">Checksum Valid. Integritas Data Dinyatakan Aman.</div>
+		</div>
+	</body>
+	</html>
+	`, dok.CreatedAt.Format("02 Jan 2006 15:04:05"), dok.JenisDokumen, dok.NomorSurat, paket.Nama, paket.ID, dok.TahunSurat, dok.TanggalPenetapan.Format("02-01-2006"), hash)
+
+	c.Set("Content-Type", "text/html")
+	return c.SendString(html)
 }
