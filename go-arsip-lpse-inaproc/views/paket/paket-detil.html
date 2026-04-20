@@ -233,7 +233,11 @@
                         {% if isPPK and allowAjukan %}
                         {% if paket.Metode != 8 and paket.Metode != 9 %}
                         <form method="post" action="/paket/send-ukpbj/{{ paket.ID }}">
+                        {% if paket.Hps <= 0 %}
+                        <button type="button" class="btn btn-primary" onclick="alert('Gagal: HPS wajib diisi dan tidak boleh Rp0 sebelum mengirim ke UKPBJ!');"><span style="width: 16px;" data-feather="send"></span>Kirim ke UKPBJ</button>
+                        {% else %}
                         <button type="submit" name="kirim" class="btn btn-primary"><span style="width: 16px;" data-feather="send"></span>Kirim ke UKPBJ</button>
+                        {% endif %}
                         <a href="{{ backUrl }}" class="btn btn-secondary"><span style="width: 16px;" data-feather="arrow-left-circle"></span> Kembali</a>
                         </form>
                         {% elif paket.Metode == 8 or paket.Metode == 9 %}

@@ -1,32 +1,148 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Inbox
 {% endblock %}
 
+{% block css %}
+<style>
+    :root {
+        --navy:       #11215D;
+        --navy-light: #e8ecf7;
+        --accent:     #2563eb;
+        --border:     #c7d0e8;
+        --text-muted: #64748b;
+        --white:      #ffffff;
+    }
+
+    .reg-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+    .reg-page-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+        letter-spacing: -.02em;
+        position: relative;
+        padding-bottom: .45rem;
+    }
+    .reg-page-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 36px; height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    .reg-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        color: var(--text-muted);
+        list-style: none;
+        margin: 0; padding: 0;
+        background: transparent;
+    }
+    .reg-breadcrumb li + li::before { content: '/'; margin-right: .4rem; color: #cbd5e1; }
+    .reg-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .reg-breadcrumb a:hover { text-decoration: underline; }
+
+    .reg-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(17,33,93,0.08);
+        overflow: hidden;
+    }
+    .reg-card-body { padding: 1.75rem; }
+
+    /* Table Modernization */
+    #table-data_wrapper .dataTables_filter input {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 12px;
+        outline: none;
+    }
+    #table-data thead th {
+        background: #f8fafc;
+        color: var(--navy);
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        border-bottom: 2px solid var(--navy-light);
+        padding: 12px 16px;
+    }
+    #table-data tbody td {
+        padding: 14px 16px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: .88rem;
+        color: #334155;
+    }
+    #table-data tbody tr:hover { background-color: #fcfdfe; }
+
+    .subject-link {
+        color: var(--navy);
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: color .15s;
+    }
+    .subject-link:hover { color: var(--accent); }
+    .subject-icon { color: var(--accent); opacity: .7; }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .02em;
+    }
+    .status-sent { background: #dcfce7; color: #15803d; }
+    .status-pending { background: #fef9c3; color: #a16207; }
+    .status-default { background: #f1f5f9; color: #475569; }
+
+    .date-text { color: var(--text-muted); font-size: .8rem; font-weight: 500; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row align-items-center">
-    <div class="col">
-        <h2 class="page-title">Inbox</h2>
-    </div>
-    <div class="col-auto">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item active">Inbox</li>
+<div class="reg-header">
+    <h2 class="reg-page-title">Inbox</h2>
+    <nav aria-label="breadcrumb">
+        <ol class="reg-breadcrumb">
+            <li><a href="/home">Home</a></li>
+            <li aria-current="page">Inbox</li>
         </ol>
-    </div>
+    </nav>
 </div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            <div class="card-body">
-                {% include "alert.html" %}
-                <table class="table table-bordered table-striped" id="table-data">
+
+<div class="col-12 pt-2">
+    <div class="reg-card">
+        <div class="reg-card-body">
+            {% include "alert.html" %}
+            <div class="table-responsive">
+                <table class="table" id="table-data" style="width: 100%;">
                     <thead>
-                    <tr>
-                        <th>Subject</th>
-                        <th>Status</th>
-                        <th>Tanggal</th>
-                    </tr>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Status</th>
+                            <th>Tanggal</th>
+                        </tr>
                     </thead>
                     <tbody>
                     </tbody>
@@ -34,6 +150,7 @@ Inbox
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block script %}
@@ -44,19 +161,38 @@ Inbox
         serverSide: true,
         columns: [
             {data : "Subject", render : function(data, type, row){
-                    return '<a href="/inbox/'+row["ID"]+'">'+data+'</a>'
+                    return `<a href="/inbox/${row["ID"]}" class="subject-link">
+                                <svg class="subject-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                                ${data}
+                            </a>`;
                 }
             },
-            {data : "Status"},
+            {data : "Status", render: function(data) {
+                let cls = "status-default";
+                let icon = "circle";
+                if(data && data.toLowerCase().includes("sent")) { cls = "status-sent"; icon = "check-circle"; }
+                else if(data && data.toLowerCase().includes("pending")) { cls = "status-pending"; icon = "clock"; }
+                
+                return `<span class="status-badge ${cls}">
+                            <i data-feather="${icon}" style="width: 10px; height: 10px;"></i>
+                            ${data}
+                        </span>`;
+            }},
             {data : "EnqueueDate", render: function(data, type, row) {
                     if(type === "sort" || type === "type"){
                         return data;
                     }
-                    return moment(data).format("MM-DD-YYYY HH:mm");
+                    return `<span class="date-text">${moment(data).format("DD MMM YYYY HH:mm")}</span>`;
                 }
             },
         ],
-        aaSorting: [[0, 'desc']]
+        aaSorting: [[2, 'desc']], // Sort by Date by default
+        drawCallback: function() {
+            if(typeof feather !== 'undefined') feather.replace();
+        }
     });
 </script>
 {% endblock %}
