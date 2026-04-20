@@ -2,7 +2,7 @@
      <li class="nav-item">
          <a class="nav-link {%if StartWith(path, '/paket/') %} active {% endif %}" href="/paket/{{ paket.ID }}">Informasi Paket</a>
      </li>
-     {% if !paket.IsDraft and !paket.IsPengajuan and paket.IsAssigned %}
+     {% if paket.Status >= 2 and paket.IsAssigned %}
      {% if !paket.IsOnlyPpk %}
      <li class="nav-item">
          <a class="nav-link {%if StartWith(path, '/kajiulang/') %} active {% endif %}" href="/kajiulang/{{ paket.ID }}">Reviu Dokumen</a>

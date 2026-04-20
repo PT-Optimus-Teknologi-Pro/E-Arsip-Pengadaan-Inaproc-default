@@ -278,10 +278,19 @@ func (obj Paket) IsAllowAjukan() bool {
 }
 
 func (obj Paket) IsOnlyPpk() bool {
-	if obj.Metode == 7 || obj.Metode == 8 || obj.Metode == 9 { // PL, pengadaan langsung , e-purchasing
+	// Tender, Tender Cepat, Seleksi (13, 14, 15) must ALWAYS go to UKPBJ
+	if obj.Metode == 13 || obj.Metode == 14 || obj.Metode == 15 {
+		return false
+	}
+
+	// For Direct Procurement (Pengadaan Langsung - 8), Penunjukan Langsung (7), and e-Purchasing (9)
+	if obj.Metode == 7 || obj.Metode == 8 || obj.Metode == 9 {
+		// Rule for Construction (Pekerjaan Konstruksi - 2)
 		if obj.KgrId == 2 {
+			// > 400jt stays in PPK
 			return obj.Hps > HPS_BATAS_KONSTRUKSI
 		}
+		// For other types (Barang, Jasa, etc.), > 200jt stays in PPK (e-procurement / internal)
 		return obj.Hps > HPS_BATAS
 	}
 	return false

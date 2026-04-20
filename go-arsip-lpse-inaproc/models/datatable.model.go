@@ -179,18 +179,16 @@ func GetDataTablePaket(c *fiber.Ctx, id uint, isPPK, isUkpbj, isPokja, isPp, isA
 	}
 	metode := c.Query("metode")
 	if metode != "" && metode != "all" {
-		if strings.Contains(metode, ",") {
-			metodeStrArr := strings.Split(metode, ",")
-			var metodeArr []int
-			for _, mStr := range metodeStrArr {
-				mId, err := strconv.Atoi(mStr)
-				if err == nil {
-					metodeArr = append(metodeArr, mId)
-				}
+		metodeStrArr := strings.Split(metode, ",")
+		var metodeArr []int
+		for _, mStr := range metodeStrArr {
+			mId, err := strconv.Atoi(mStr)
+			if err == nil {
+				metodeArr = append(metodeArr, mId)
 			}
+		}
+		if len(metodeArr) > 0 {
 			orm = orm.Where("paket.metode IN (?)", metodeArr)
-		} else {
-			orm = orm.Where("paket.metode = ?", metode)
 		}
 	}
 

@@ -296,6 +296,32 @@ Daftar Paket
 </div>
 
 <div class="col-12">
+    <div class="dp-card mb-4">
+        <div class="dp-card-body">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="fw-bold text-navy"><i data-feather="filter" style="width:16px; margin-right:5px;"></i> Filter Metode:</span>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input filter-metode" type="checkbox" value="1,2,3,12,13,14" id="f-tender" checked>
+                    <label class="form-check-label" for="f-tender">Tender</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input filter-metode" type="checkbox" value="7,8" id="f-nontender" checked>
+                    <label class="form-check-label" for="f-nontender">Non-Tender</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input filter-metode" type="checkbox" value="9" id="f-epur" checked>
+                    <label class="form-check-label" for="f-epur">E-Purchasing</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input filter-metode" type="checkbox" value="4,5,15" id="f-seleksi" checked>
+                    <label class="form-check-label" for="f-seleksi">Seleksi</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12">
     <div class="dp-card">
         <div class="dp-card-body">
             {% include "alert.html" %}
@@ -350,8 +376,17 @@ Daftar Paket
         return met[id] || "Tender";
     }
 
-    new DataTable("#table-data", {
-        ajax: '/paket/data',
+    var table = new DataTable("#table-data", {
+        ajax: {
+            url: '/paket/data',
+            data: function(d) {
+                let selectedMethods = [];
+                $('.filter-metode:checked').each(function() {
+                    selectedMethods.push($(this).val());
+                });
+                d.metode = selectedMethods.join(',');
+            }
+        },
         processing: true,
         serverSide: true,
         language: {
@@ -429,6 +464,10 @@ Daftar Paket
         drawCallback: function(settings) {
             feather.replace();
         }
+    });
+
+    $('.filter-metode').on('change', function() {
+        table.ajax.reload();
     });
 
     window.statusPaket = getStatusLabel;
