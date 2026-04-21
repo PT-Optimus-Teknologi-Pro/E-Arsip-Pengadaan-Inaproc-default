@@ -469,7 +469,7 @@ Daftar Paket
 
 {% block script %}
 <script>
-    var isPPK_Local = ("{{ isPPK|default:false }}" === "true");
+    var isPPK_Local = ("{{ isPPK }}" === "True" || "{{ isPPK }}" === "true");
 
     function getStatusLabel(status) {
         const labels = ["Draft", "Pengajuan", "Disetujui", "Tolak", "Reviu Dokumen", "Proses", "Selesai"];
@@ -486,7 +486,7 @@ Daftar Paket
         return met[id] || "Tender";
     }
 
-    var isArsiparis_Local = ("{{ isArsiparis|default:false }}" === "true");
+    var isArsiparis_Local = ("{{ isArsiparis }}" === "True" || "{{ isArsiparis }}" === "true");
 
     if (isArsiparis_Local) {
     var dtConfig = {
