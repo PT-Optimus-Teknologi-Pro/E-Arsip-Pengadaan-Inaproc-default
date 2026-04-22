@@ -874,19 +874,21 @@ func HasilPengadanPaket(c *fiber.Ctx) error {
 	mp["paket"] = paket
 
 	// Try to get from Tender Selesai
-	realisasi := paket.GetTender().GetRealisasi()
-	if len(realisasi) == 0 {
+	realisasiTender := paket.GetTender().GetRealisasi()
+	if len(realisasiTender) > 0 {
+		mp["realisasi"] = realisasiTender[0]
+	} else {
 		// Try to get from Non-Tender Selesai
-		realisasi = paket.GetNontender().GetRealisasi()
-	}
-
-	if len(realisasi) > 0 {
-		mp["realisasi"] = realisasi[0]
+		realisasiNontender := paket.GetNontender().GetRealisasi()
+		if len(realisasiNontender) > 0 {
+			// Map NontenderSelesai to a generic interface or use it directly
+			mp["realisasi"] = realisasiNontender[0]
+		}
 	}
 
 	// Also fetch purchase data just in case
 	purchase := paket.GetPurchase()
-	if purchase.KdPaket != 0 {
+	if purchase.OrderId != "" {
 		mp["purchase"] = purchase
 	}
 
