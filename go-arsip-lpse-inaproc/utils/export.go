@@ -2,6 +2,7 @@ package utils
 
 import (
 	"log"
+	"os"
 	"runtime"
 	"strings"
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
@@ -11,10 +12,25 @@ import (
  * example using
  * utils.ExportToPdf("https://google.com")
  */
-func ExportToPdf(url string) []byte {
+func setWkhtmlPath() {
 	if runtime.GOOS == "windows" {
-		wkhtmltopdf.SetPath("C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
+		// Try several common paths
+		paths := []string{
+			"C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe",
+			"C:/Program Files (x86)/wkhtmltopdf/bin/wkhtmltopdf.exe",
+		}
+		for _, p := range paths {
+			if _, err := os.Stat(p); err == nil {
+				wkhtmltopdf.SetPath(p)
+				return
+			}
+		}
+		// If not found in common paths, assume it's in system PATH or let it fail with default error
 	}
+}
+
+func ExportToPdf(url string) []byte {
+	setWkhtmlPath()
 	// Create new PDF generator
 	pdfg, err := wkhtmltopdf.NewPDFGenerator()
 	if err != nil {
@@ -41,9 +57,7 @@ func ExportToPdf(url string) []byte {
 }
 
 func ExportHtmlToPdf(html string, basePath string) []byte {
-	if runtime.GOOS == "windows" {
-		wkhtmltopdf.SetPath("C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
-	}
+	setWkhtmlPath()
 	pdfg, err := wkhtmltopdf.NewPDFGenerator()
 	if err != nil {
 		log.Println("Error creating PDF generator:", err)
