@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 
 <head>
@@ -33,18 +33,26 @@
           <div class="container-xl">
               <table class="table-borderless">
                   <tr>
-                      <td width="40%" class="text-end">
-                           <img src="/images/logo-instansi.jpeg" width="150" />
+                      <td width="15%" class="text-center">
+                           {% if appSettings.DocLogoPath %}
+                           <img src="{{ appSettings.DocLogoPath }}" width="80" />
+                           {% else %}
+                           <img src="/images/logo-instansi.jpeg" width="80" />
+                           {% endif %}
                       </td>
-                      <td>
-                          <h1>PEMERINTAH KOTA BANJARMASIN
-                          <br />S E K R E T A R I A T D A E R A H</h1>
-                          <h3>J . RE. Martadinata No.1 Banjarmasin 70111  (0511) 4368142 4368145
-                            <br />  Fax. 3353933 http://www.banjarmasinkota.go.id/</h3>
+                      <td class="text-center">
+                          <h1 style="text-transform: uppercase; margin-bottom: 0;">{{ appSettings.DocInstansi|default:'PEMERINTAH KABUPATEN SERANG' }}</h1>
+                          <h2 style="text-transform: uppercase; margin-top: 0;">{{ appSettings.DocSubInstansi|default:'SEKRETARIAT DAERAH' }}</h2>
+                          <p style="font-size: 10pt; margin-bottom: 0;">{{ appSettings.DocAddress|default:'Jl. Veteran No. 1 Serang' }}</p>
+                          <p style="font-size: 10pt; margin-top: 0;">
+                            {% if appSettings.DocPhone %} Telp: {{ appSettings.DocPhone }} {% endif %}
+                            {% if appSettings.DocFax %} Fax: {{ appSettings.DocFax }} {% endif %}
+                            {% if appSettings.DocWebsite %} Website: {{ appSettings.DocWebsite }} {% endif %}
+                          </p>
                       </td>
                   </tr>
               </table>
-              <hr />
+              <hr style="border: 2px solid #000; margin-top: 5px;" />
               {% block content %}{% endblock %}
           </div>
         </div>
