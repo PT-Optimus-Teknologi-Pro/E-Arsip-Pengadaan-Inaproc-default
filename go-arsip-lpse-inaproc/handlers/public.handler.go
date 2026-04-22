@@ -130,11 +130,19 @@ func DownloadAll(c *fiber.Ctx) error {
 	var files []string
 	isPPK := mp["isPPK"].(bool)
 	for _,v := range paket.GetAllDocument(isPPK) {
-		files = append(files, v.Filepath)
+		if v.Filepath != "" {
+			files = append(files, v.Filepath)
+		}
 	}
+
+	if len(files) == 0 {
+		return flashError(c, "Paket tidak memiliki dokumen (lampiran) untuk didownload", c.Get("Referer"))
+	}
+
 	zipFile, err := utils.CreateZip(files, "download-all.zip")
 	if err != nil {
 		log.Error("Error creating ", zipFile, " : ", err)
+		return flashError(c, "Gagal membuat file ZIP: " + err.Error(), c.Get("Referer"))
 	}
 	return c.Download(zipFile, "download-all.zip")
 }

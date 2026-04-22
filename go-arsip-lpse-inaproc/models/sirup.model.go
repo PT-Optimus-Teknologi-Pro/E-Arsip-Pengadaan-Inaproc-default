@@ -19,6 +19,22 @@ var metodePengadaan = []string{"Belum Ditentukan", "Lelang Umum", "Lelang Sederh
 	"Seleksi Sederhana","Pemilihan Langsung", "Penunjukan Langsung", "Pengadaan Langsung", "e-Purchasing","Sayembara",
 	"Kontes","Lelang Cepat", "Tender", "Tender Cepat", "Seleksi", "Dikecualikan"}
 
+func GetMetodeLabel(id interface{}) string {
+	idx := utils.InterfaceToInt(id)
+	if idx >= 0 && idx < len(metodePengadaan) {
+		return metodePengadaan[idx]
+	}
+	return "Belum Ditentukan"
+}
+
+func GetAllMetodePengadaan() []string {
+	return metodePengadaan
+}
+
+func GetAllJenisPengadaan() []string {
+	return jenisPengadaan
+}
+
 type Provinsi struct {
 	ID 		uint 	`gorm:"autoIncrement:false" json:"prp_id"`
 	Nama 	string 	`json:"prp_nama"`
@@ -425,13 +441,7 @@ type PaketJenisSirup struct {
 
 
 
-func GetAllJenisPengadaan() []string {
-	return jenisPengadaan
-}
 
-func GetAllMetodePengadaan() []string {
-	return metodePengadaan
-}
 
 type StrukturAnggaran struct {
 	ID 						uint 			`gorm:"primaryKey"`

@@ -1,0 +1,64 @@
+{% extends "border.html" %}
+
+{% block pagetitle %}Manajemen Reviu (Daftar Paket){% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col">
+        <h2 class="page-title">Manajemen Reviu</h2>
+        <div class="text-muted mt-1">Daftar paket yang sedang dalam proses reviu dokumen persiapan pengadaan.</div>
+    </div>
+</div>
+
+<div class="col-12">
+    <div class="card">
+        <div class="card-body">
+            {% include "alert.html" %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="table-reviu-paket">
+                    <thead>
+                        <tr>
+                            <th width="5%">No</th>
+                            <th>Nama Paket</th>
+                            <th>Tahun</th>
+                            <th>Pagu</th>
+                            <th>HPS</th>
+                            <th width="15%">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in pakets %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>
+                                <strong>{{ p.Nama }}</strong><br>
+                                <small class="text-muted">ID: {{ p.ID }}</small>
+                            </td>
+                            <td>{{ p.Tahun }}</td>
+                            <td>{{ rupiah(p.Pagu) }}</td>
+                            <td>{{ rupiah(p.Hps) }}</td>
+                            <td>
+                                <a href="/kajiulang/manage-ba/{{ p.ID }}" class="btn btn-sm btn-indigo">
+                                    <span style="width: 14px;" data-feather="edit-3"></span> Kelola Reviu
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function() {
+        $('#table-reviu-paket').DataTable({
+            "pageLength": 25,
+            "order": [[0, "asc"]]
+        });
+    });
+</script>
+{% endblock %}

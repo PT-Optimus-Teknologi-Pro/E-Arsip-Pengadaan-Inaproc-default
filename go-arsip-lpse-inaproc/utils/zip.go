@@ -17,14 +17,17 @@ func CreateZip(filesToZip []string, filename string) (string, error) {
 	defer outFile.Close()
 
 	zipWriter := zip.NewWriter(outFile)
-	defer zipWriter.Close() // Ensure the zip writer is closed to write the central directory
-
+	
 	for _, fileName := range filesToZip {
 		err := AddFileToZip(zipWriter, fileName)
 		if err != nil {
+			zipWriter.Close()
 			return "",fmt.Errorf("adding file %s to temp file: %w", fileName, err)
 		}
 	}
+	
+	// Explicitly close to ensure central directory is written
+	zipWriter.Close()
 
 	return outFile.Name(), nil
 }

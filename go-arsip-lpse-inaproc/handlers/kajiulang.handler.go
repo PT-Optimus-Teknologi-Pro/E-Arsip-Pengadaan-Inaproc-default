@@ -174,11 +174,19 @@ func GetManageBAReviu(c *fiber.Ctx) error {
 		resMap[r.RevId] = r
 	}
 
+	// 3. Fetch dynamic BA templates for default content
+	tplDasar := models.GetTemplateByVariable("reviu_dasar")
+	tplPembahasan := models.GetTemplateByVariable("reviu_pembahasan")
+	tplKesimpulan := models.GetTemplateByVariable("reviu_kesimpulan")
+
 	mp["ba"] = ba
 	mp["paket"] = paket
 	mp["reviuMaster"] = reviuMaster
 	mp["reviuResults"] = resMap
-	
+	mp["tplDasar"] = tplDasar.Content
+	mp["tplPembahasan"] = tplPembahasan.Content
+	mp["tplKesimpulan"] = tplKesimpulan.Content
+
 	// Helper for date formatting in form inputs
 	if ba.Tanggal.Valid {
 		mp["baTanggalStr"] = ba.Tanggal.Time.Format("2006-01-02")

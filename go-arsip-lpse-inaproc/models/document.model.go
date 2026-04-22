@@ -86,15 +86,15 @@ func GetDocument(id uint) Document {
 	return rest
 }
 
-func GetDocumentByJenis(id uint, jenis string) Document {
+func GetDocumentByJenis(pegId uint, jenis string) Document {
 	var document Document
-	db.Where("id = ? and jenis = ? and deleted_at IS NULL", id, jenis).First(&document)
+	db.Where("peg_id = ? and jenis = ? and deleted_at IS NULL", pegId, jenis).First(&document)
 	return document
 }
 
 func GetDocumentPegawai(pegId uint) []Document {
 	var rest []Document
-	db.Find(&rest, "peg_id = ?", pegId)
+	db.Where("peg_id = ? AND jenis IN ?", pegId, []string{KTP, SK, TTD, SERTIFIKAT}).Find(&rest)
 	return rest
 }
 

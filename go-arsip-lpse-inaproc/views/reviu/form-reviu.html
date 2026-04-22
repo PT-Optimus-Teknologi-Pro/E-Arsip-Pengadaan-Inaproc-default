@@ -1,7 +1,72 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Form Reviu
+{% endblock %}
+
+{% block css %}
+<style>
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+    .modern-form-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+    .form-header {
+        background: #f9fafb;
+        padding: 1.25rem 2rem;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .form-header h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+    }
+    .form-body {
+        padding: 2rem;
+    }
+    .form-label-premium {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        margin-bottom: 0.5rem;
+    }
+    .modern-select, .modern-input, .modern-textarea {
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+    .modern-select:focus, .modern-input:focus, .modern-textarea:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        outline: none;
+    }
+    .btn-save {
+        background: #4f46e5;
+        color: #fff;
+        padding: 0.6rem 2rem;
+        border-radius: 8px;
+        font-weight: 700;
+        border: none;
+        transition: all 0.2s;
+    }
+    .btn-save:hover { background: #4338ca; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79,70,229,0.2); }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -29,9 +94,10 @@ Form Reviu
                         <label class="col-sm-2  text-end control-label col-form-label">Bidang</label>
                         <div class="col-sm-9">
                             <select name="bidang" class="form-control" required>
-                            {% for obj in bidanglist %}
-                            <option value="{{ obj }}" {% if obj == reviu.Bidang %} selected {% endif %}">{{ obj }}</option>
-                            {% endfor %}
+                                <option value="">-- Pilih Bidang --</option>
+                                {% for obj in bidanglist %}
+                                <option value="{{ obj.Nama }}" {% if obj.Nama == reviu.Bidang %} selected {% endif %}>{{ obj.Nama }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -44,13 +110,13 @@ Form Reviu
                     <div class="form-group mb-3 row">
                         <label class="col-sm-2  text-end control-label col-form-label">Opsi 1</label>
                         <div class="col-sm-9">
-                            <input type="text" name="opsi1" class="form-control"  value="{{ reviu.Opsi1 }}" required/>
+                            <input type="text" name="opsi1" class="form-control" value="{{ reviu.Opsi1|default:'Sesuai / Tersedia' }}" required/>
                         </div>
                     </div>
                     <div class="form-group mb-3 row">
                         <label class="col-sm-2  text-end control-label col-form-label">Opsi 2</label>
                         <div class="col-sm-9">
-                            <input type="text" name="opsi2" class="form-control"  value="{{ reviu.Opsi2 }}" required/>
+                            <input type="text" name="opsi2" class="form-control" value="{{ reviu.Opsi2|default:'Tidak Sesuai' }}" required/>
                         </div>
                     </div>
                     <div class="form-group mb-3 row">

@@ -5,7 +5,7 @@ import (
 	_ "arsip/config"
 	_ "arsip/cache"
 	"arsip/handlers"
-	_ "arsip/models"
+	"arsip/models"
 	"arsip/routers"
 	"arsip/services"
 	"arsip/utils"
@@ -28,6 +28,9 @@ func main() {
 	engine := django.New("./views", ".html")
 	engine.SetAutoEscape(false)
 	utils.Setup(engine)
+	engine.AddFunc("metode", func(id interface{}) string {
+		return models.GetMetodeLabel(id)
+	})
 	engine.AddFunc("GetFooterSocials", handlers.GetFooterSocials)
 	engine.AddFunc("GetFooterQuicks", handlers.GetFooterQuicks)
 	engine.AddFunc("GetFooterServices", handlers.GetFooterServices)
@@ -40,7 +43,7 @@ func main() {
 	}
 	app := fiber.New(fiber.Config{
 		Views: engine,
-		StreamRequestBody: true,
+		StreamRequestBody: false,
 	})
 	handlers.Sessions = session.New()
 	routers.SetupRoutes(app)

@@ -83,13 +83,13 @@ type ChecklistPaket struct {
 	ChkId      	uint          `json:"chk_id" form:"chk_id"`
 	Jenis 	   	string 		  `json:"jenis" form:"jenis"`
 	DokTemplate	uint 		  `json:"dok_template" form:"dok_template"`
-	CreatedBy  	sql.NullInt64 `json:"created_by" form:"created_by"`
+	CreatedBy  	sql.NullInt64 `json:"created_by"`
 	DokId      	uint          `json:"dok_id" form:"dok_id"`
 	Status     	uint          `json:"status" form:"status"` // 0 : diajukan, 1: diapprove, 2: direvisi, 3:ditolak
-	TglAjukan  	sql.NullTime  `json:"tgl_ajukan" form:"tgl_ajukan"`
-	TglApprove 	sql.NullTime  `json:"tgl_approve" form:"tgl_approve"`
-	TglRevisi  	sql.NullTime  `json:"tgl_revisi" form:"tgl_revisi"`
-	TglTolak   	sql.NullTime  `json:"tgl_tolak" form:"tgl_tolak"`
+	TglAjukan  	sql.NullTime  `json:"tgl_ajukan"`
+	TglApprove 	sql.NullTime  `json:"tgl_approve"`
+	TglRevisi  	sql.NullTime  `json:"tgl_revisi"`
+	TglTolak   	sql.NullTime  `json:"tgl_tolak"`
 }
 
 func (c ChecklistPaket) Dokumen() Document {
@@ -114,7 +114,7 @@ func (ChecklistPaket) TableName() string {
 
 type ChecklistPaketHistory struct {
 	gorm.Model
-	CreatedBy sql.NullInt64 `json:"created_by" form:"created_by"`
+	CreatedBy sql.NullInt64 `json:"created_by"`
 	CheckId   uint          `json:"check_id" form:"check_id"` // refer to ID ChecklistPaket
 	DokId     uint          `json:"dok_id" form:"dok_id"`
 }
@@ -127,7 +127,7 @@ type DokPersiapan struct {
 	gorm.Model
 	PktId      uint          `json:"pkt_id" form:"pkt_id"`
 	ChkId      uint          `json:"chk_id" form:"chk_id"`
-	CreatedBy  sql.NullInt64 `json:"created_by" form:"created_by"`
+	CreatedBy  sql.NullInt64 `json:"created_by"`
 	DokId      uint          `json:"dok_id" form:"dok_id"`
 }
 

@@ -34,8 +34,10 @@ func init() {
 		&PejabatPengadaan{}, &PejabatPengadaanSatker{}, &PejabatPengadaanPegawai{},
 		&Tender{}, &Nontender{}, &Pencatatan{}, &Swakelola{})
 	db.AutoMigrate(&Anggaran{}, &Paket{}, &PaketAnggaran{}, &PaketSatker{}, &PaketLokasi{}, &ChecklistPaket{}, &ChecklistPaketHistory{}, &DokPaket{},
-		&BeritaAcara{}, &Reviu{}, &ReviuPaket{}, &KajiUlang{}, &DokPersiapan{}, &PerubahanData{}, &PersetujuanDokPersiapan{}, &PaketPPk{})
+		&BeritaAcara{}, &Reviu{}, &ReviuPaket{}, &KajiUlang{}, &DokPersiapan{}, &PerubahanData{}, &PersetujuanDokPersiapan{}, &PaketPPk{}, &ReviuBidang{})
 	db.AutoMigrate(&Itkp{}, &AppSettings{}, &HeroSlider{}, &FooterSocialLink{}, &FooterQuickLink{}, &FooterService{}, &DokumenTercetak{})
+
+	AutoCreateReviuMaster()
 
 	fmt.Println("Connected to database...")
 }

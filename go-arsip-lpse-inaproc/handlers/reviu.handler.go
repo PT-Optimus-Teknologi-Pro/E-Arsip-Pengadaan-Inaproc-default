@@ -21,7 +21,7 @@ func EditReviu(c *fiber.Ctx) error {
 		mp["reviu"] = reviu
 		mp["url"] = "/reviu/" + utils.IntToString(id)
 	}
-	mp["bidanglist"] = models.BidangList
+	mp["bidanglist"] = models.GetAllReviuBidang()
 	return c.Render("reviu/form-reviu", mp)
 }
 
@@ -89,4 +89,56 @@ func DeleteReviu(c *fiber.Ctx) error {
 
 func GetJsonReviu(c *fiber.Ctx) error {
 	return services.GetDataTableReviu(c)
+}
+
+// NEW HANDLERS
+
+func GetReviuPaketList(c *fiber.Ctx) error {
+    mp := currentMap(c)
+    // Filter for packages in Review Document status (Status 4)
+    var pakets []models.Paket
+    models.GetDB().Where("status = 4").Find(&pakets)
+    mp["pakets"] = pakets
+    return c.Render("reviu/reviu-paket", mp)
+}
+
+func GetAllReviuBidang(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	mp["bidangs"] = models.GetAllReviuBidang()
+	return c.Render("reviu/bidang-list", mp)
+}
+
+func EditReviuBidang(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id, _ := c.ParamsInt("id")
+	var bidang models.ReviuBidang
+	if id != 0 {
+		bidang = models.GetReviuBidang(uint(id))
+	}
+	mp["bidang"] = bidang
+	return c.Render("reviu/bidang-form", mp)
+}
+
+func SaveReviuBidang(c *fiber.Ctx) error {
+	id, _ := c.ParamsInt("id")
+	var bidang models.ReviuBidang
+	if id != 0 {
+		bidang = models.GetReviuBidang(uint(id))
+	}
+	if err := c.BodyParser(&bidang); err != nil {
+		return flashError(c, "Gagal memproses data", "/reviu/bidang")
+	}
+	if err := models.SaveReviuBidang(&bidang); err != nil {
+		return flashError(c, "Gagal menyimpan data", "/reviu/bidang")
+	}
+	return flashSuccess(c, "Berhasil menyimpan Kategori", "/reviu/bidang")
+}
+
+func DeleteReviuBidang(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	bidang := models.GetReviuBidang(id)
+	if err := models.DeleteReviuBidang(&bidang); err != nil {
+		return flashError(c, "Gagal menghapus data", "/reviu/bidang")
+	}
+	return flashSuccess(c, "Berhasil menghapus Kategori", "/reviu/bidang")
 }

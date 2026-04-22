@@ -3,164 +3,41 @@
 {% block pagetitle %}Kelola Berita Acara Reviu{% endblock %}
 
 {% block css %}
-<style>
-    :root {
-        --primary-indigo: #4f46e5;
-        --secondary-indigo: #4338ca;
-        --glass-bg: rgba(255, 255, 255, 0.9);
-        --glass-border: rgba(255, 255, 255, 0.4);
-    }
-
-    .ba-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding-bottom: 5rem;
-    }
-
-    .glass-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--glass-border);
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-        margin-bottom: 2rem;
-        overflow: hidden;
-    }
-
-    .card-header-premium {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        color: white;
-        padding: 1.5rem;
-        border: none;
-    }
-
-    .card-title-premium {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .form-section-title {
-        font-size: 0.9rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--primary-indigo);
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #eef2ff;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .checklist-table th {
-        background: #f8fafc;
-        font-weight: 700;
-        color: #475569;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-    }
-
-    /* Modern Toggle Switches */
-    .switch-container {
-        display: flex;
-        gap: 15px;
-    }
-
-    .modern-radio {
-        display: none;
-    }
-
-    .modern-radio-label {
-        padding: 6px 16px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1.5px solid #e2e8f0;
-        color: #64748b;
-    }
-
-    .modern-radio:checked + .label-sesuai {
-        background: #dcfce7;
-        border-color: #22c55e;
-        color: #15803d;
-    }
-
-    .modern-radio:checked + .label-tidak {
-        background: #fee2e2;
-        border-color: #ef4444;
-        color: #b91c1c;
-    }
-
-    /* Signature Styles */
-    .sig-wrapper {
-        border: 2px dashed #cbd5e1;
-        border-radius: 12px;
-        background: #f8fafc;
-        position: relative;
-        touch-action: none;
-    }
-
-    .sig-canvas {
-        width: 100%;
-        height: 200px;
-        cursor: crosshair;
-    }
-
-    .sig-actions {
-        padding: 10px;
-        border-top: 1px solid #e2e8f0;
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-
-    .signer-card {
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1rem;
-        background: white;
-    }
-</style>
 {% endblock %}
 
 {% block content %}
-<div class="ba-container">
-    <div class="row align-items-center mb-4">
-        <div class="col">
-            <h2 class="page-title">Management Berita Acara Reviu</h2>
-            <div class="text-muted mt-1">Lengkapi data reviu dan lakukan tanda tangan digital.</div>
-        </div>
-        <div class="col-auto">
-            <a href="/kajiulang/{{ paket.ID }}" class="btn btn-outline-secondary">
-                <i data-feather="arrow-left" class="me-2"></i> Kembali
-            </a>
-        </div>
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="page-title">Reviu Dokumen</h2>
     </div>
+    <div class="col-auto">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="/paket">Daftar Paket</a></li>
+            <li class="breadcrumb-item"><a href="/paket/{{ paket.ID }}">Detil Paket</a></li>
+            <li class="breadcrumb-item active">Reviu Dokumen</li>
+        </ol>
+    </div>
+</div>
 
-    {% include "alert.html" %}
-
-    <form action="/kajiulang/save-ba/{{ paket.ID }}" method="POST" id="baForm">
-        <!-- SECTION 1: HEADER DATA -->
-        <div class="glass-card">
-            <div class="card-header-premium">
-                <h3 class="card-title-premium"><i data-feather="file-text"></i> Data Umum Berita Acara</h3>
-            </div>
-            <div class="card-body p-4">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label required">Nomor Berita Acara</label>
-                        <input type="text" name="nomor" class="form-control" value="{{ ba.Nomor }}" placeholder="Contoh: 027/01/BA-REVIU/2026" required>
+<div class="col-lg-12 pt-2">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Data Berita Acara Reviu</h3>
+        </div>
+        <div class="card-body">
+            {% include "alert.html" %}
+            <form action="/kajiulang/save-ba/{{ paket.ID }}" method="POST">
+                <div class="row mb-3">
+                    <label class="col-sm-2 text-end col-form-label">Nomor BA</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="nomor" class="form-control" value="{{ ba.Nomor }}" required>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label required">Hari</label>
-                        <select name="hari" class="form-select" required>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 text-end col-form-label">Hari / Tanggal</label>
+                    <div class="col-sm-5">
+                        <select name="hari" class="form-control" required>
                             <option value="Senin" {% if ba.Hari == "Senin" %}selected{% endif %}>Senin</option>
                             <option value="Selasa" {% if ba.Hari == "Selasa" %}selected{% endif %}>Selasa</option>
                             <option value="Rabu" {% if ba.Hari == "Rabu" %}selected{% endif %}>Rabu</option>
@@ -170,120 +47,122 @@
                             <option value="Minggu" {% if ba.Hari == "Minggu" %}selected{% endif %}>Minggu</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label required">Tanggal Rapat</label>
+                    <div class="col-sm-5">
                         <input type="date" name="tanggal" class="form-control" value="{{ baTanggalStr }}" required>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Tempat Rapat</label>
-                        <input type="text" name="tempat" class="form-control" value="{{ ba.Tempat }}" placeholder="Contoh: Ruang Rapat UKPBJ">
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 text-end col-form-label">Tempat / Waktu</label>
+                    <div class="col-sm-5">
+                        <input type="text" name="tempat" class="form-control" value="{{ ba.Tempat }}" placeholder="Tempat Rapat">
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Waktu Rapat</label>
-                        <input type="text" name="waktu" class="form-control" value="{{ ba.Waktu }}" placeholder="Contoh: 09:00 WIB s/d Selesai">
-                    </div>
-
-                    <div class="col-12">
-                        <hr class="my-2">
-                        <h4 class="form-section-title mt-3"><i data-feather="info"></i> Informasi Paket (Otomatis)</h4>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Kode Paket</label>
-                        <input type="text" class="form-control" value="{{ paket.ID }}" readonly disabled>
-                    </div>
-                    <div class="col-md-8">
-                        <label class="form-label">Nama Paket</label>
-                        <input type="text" name="pengadaan" class="form-control" value="{{ ba.Pengadaan }}" readonly>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Sub Kegiatan / OPD</label>
-                        <input type="text" name="sub_keg" class="form-control" value="{{ ba.SubKeg }}">
+                    <div class="col-sm-5">
+                        <input type="text" name="waktu" class="form-control" value="{{ ba.Waktu }}" placeholder="Waktu Rapat">
                     </div>
                 </div>
-            </div>
-        </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 text-end col-form-label">Nama Paket</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="pengadaan" class="form-control" value="{{ ba.Pengadaan }}" readonly>
+                    </div>
+                </div>
 
-        <!-- SECTION 2: CHECKLIST REVIU -->
-        <div class="glass-card">
-            <div class="card-header-premium">
-                <h3 class="card-title-premium"><i data-feather="check-square"></i> Checklist Reviu Dokumen Persiapan</h3>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-vcenter table-mobile-md card-table checklist-table">
+                <hr>
+                <h4>Checklist Reviu</h4>
+                <table class="table table-bordered table-vcenter">
                     <thead>
                         <tr>
-                            <th width="30%">Bidang Reviu</th>
-                            <th width="40%">Uraian / Hasil</th>
-                            <th width="30%" class="text-center">Kesimpulan (Sesuai/Tersedia)</th>
+                            <th>Bidang / Uraian</th>
+                            <th width="30%">Kesimpulan</th>
+                            <th>Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% set lastBidang = "" %}
                         {% for m in reviuMaster %}
                         {% set res = reviuResults[m.ID] %}
                         <tr>
-                            <td data-label="Bidang">
-                                <div class="font-weight-bold">{{ m.Bidang }}</div>
-                                <div class="text-muted small">{{ m.Content }}</div>
+                            <td>
+                                {% if m.Bidang != lastBidang %}
+                                    <strong>{{ m.Bidang }}</strong><br>
+                                    {% set lastBidang = m.Bidang %}
+                                {% endif %}
+                                {{ m.Content }}
                             </td>
-                            <td data-label="Keterangan">
-                                <textarea name="ket_{{ m.ID }}" class="form-control form-control-sm" rows="2" placeholder="Tambahkan keterangan/uraian jika perlu...">{{ res.Keterangan }}</textarea>
-                            </td>
-                            <td data-label="Status" class="text-center">
-                                <div class="switch-container justify-content-center">
-                                    <input type="radio" name="status_{{ m.ID }}" value="1" id="s1_{{ m.ID }}" class="modern-radio" {% if res.Status == 1 %}checked{% endif %}>
-                                    <label for="s1_{{ m.ID }}" class="modern-radio-label label-sesuai">YA / Tersedia</label>
-
-                                    <input type="radio" name="status_{{ m.ID }}" value="2" id="s2_{{ m.ID }}" class="modern-radio" {% if res.Status == 2 %}checked{% endif %}>
-                                    <label for="s2_{{ m.ID }}" class="modern-radio-label label-tidak">TIDAK</label>
+                            <td>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="status_{{ m.ID }}" id="s1_{{ m.ID }}" value="1" {% if res.Status == 1 %}checked{% endif %}>
+                                    <label class="form-check-label" for="s1_{{ m.ID }}">{{ m.Opsi1|default:'Sesuai' }}</label>
                                 </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="status_{{ m.ID }}" id="s2_{{ m.ID }}" value="2" {% if res.Status == 2 %}checked{% endif %}>
+                                    <label class="form-check-label" for="s2_{{ m.ID }}">{{ m.Opsi2|default:'Tidak Sesuai' }}</label>
+                                </div>
+                            </td>
+                            <td>
+                                <textarea name="ket_{{ m.ID }}" class="form-control" rows="1" placeholder="Keterangan">{{ res.Keterangan }}</textarea>
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-            </div>
-            <div class="card-footer bg-light p-3">
-                <div class="text-end">
-                    <button type="submit" class="btn btn-primary btn-lg px-5">
-                        <i data-feather="save" class="me-2"></i> Simpan Seluruh Data & Checklist
-                    </button>
+                
+				<div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary"><span style="width: 16px;" data-feather="save"></span> Simpan Data & Checklist</button>
                 </div>
-            </div>
-        </div>
-    </form>
 
-    <!-- SECTION 3: SIGNATURES -->
-    <div class="glass-card mt-4">
-        <div class="card-header-premium">
-            <h3 class="card-title-premium"><i data-feather="pen-tool"></i> Tanda Tangan Berita Acara</h3>
+                <hr class="my-4">
+                <h4>Isi Berita Acara</h4>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Dasar Pelaksanaan</label>
+                    <textarea id="dasar_pelaksanaan" name="dasar_pelaksanaan">{% if ba.DasarPelaksanaan %}{{ ba.DasarPelaksanaan }}{% else %}{{ tplDasar }}{% endif %}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Pembahasan</label>
+                    <textarea id="pembahasan" name="pembahasan">{% if ba.Pembahasan %}{{ ba.Pembahasan }}{% else %}{{ tplPembahasan }}{% endif %}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Kesimpulan</label>
+                    <textarea id="kesimpulan" name="kesimpulan">{% if ba.Kesimpulan %}{{ ba.Kesimpulan }}{% else %}{{ tplKesimpulan }}{% endif %}</textarea>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary"><span style="width: 16px;" data-feather="save"></span> Simpan Semua</button>
+                </div>
+            </form>
         </div>
-        <div class="card-body p-4">
-            <div class="row g-4">
+    </div>
+
+    <!-- Tanda Tangan Section -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <h3 class="card-title">Tanda Tangan Berita Acara</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
                 <div class="col-md-6">
-                    <div class="signer-card">
-                        <h4 class="mb-3">Tanda Tangan Saya ({{ name }})</h4>
-                        <div class="sig-wrapper">
-                            <canvas id="sigCanvas" class="sig-canvas"></canvas>
-                        </div>
-                        <div class="sig-actions">
-                            <button type="button" class="btn btn-sm btn-link text-danger" id="clearSig">Hapus</button>
-                            <button type="button" class="btn btn-dark" id="saveSigBtn">Simpan Tanda Tangan Saya</button>
-                        </div>
+                    <label class="form-label">Buat Tanda Tangan ({{ name }})</label>
+                    <div style="border: 1px solid #ccc; background: #f9f9f9;">
+                        <canvas id="sigCanvas" style="width:100%; height:200px;"></canvas>
+                    </div>
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-link text-danger" id="clearSig">Hapus</button>
+                        <button type="button" class="btn btn-sm btn-dark" id="saveSigBtn">Simpan Tanda Tangan Saya</button>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="signer-card h-100 bg-light-soft d-flex align-items-center justify-content-center flex-column text-center p-5">
-                        <i data-feather="user-check" style="width: 48px; height: 48px; color: #cbd5e1;" class="mb-3"></i>
-                        <h4 class="text-muted">Pihak Lain</h4>
-                        <p class="text-muted small">Pihak PPK / Pokja lainnya dapat melakukan tanda tangan dengan login ke akun masing-masing dan mengakses halaman ini.</p>
+                    <div class="alert alert-info">
+                        Pihak PPK / Pokja lainnya dapat melakukan tanda tangan dengan login ke akun masing-masing dan mengakses halaman ini.
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
 <!-- Modal Signature Success -->
 <div class="modal modal-blur fade" id="modal-success" tabindex="-1" role="dialog" aria-hidden="true">
@@ -306,20 +185,58 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
 {% block script %}
+<link href="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/css/suneditor.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Init Signature Pad
+
+        // ---- SunEditor Init ----
+        const editorButtonList = [
+            ['undo', 'redo'],
+            ['bold', 'underline', 'italic', 'strike'],
+            ['fontColor', 'hiliteColor'],
+            ['align', 'horizontalRule', 'list'],
+            ['table'],
+            ['fullScreen', 'codeView'],
+        ];
+
+        const editorDasar = SUNEDITOR.create('dasar_pelaksanaan', {
+            buttonList: editorButtonList,
+            width: '100%',
+            height: '180px',
+        });
+
+        const editorPembahasan = SUNEDITOR.create('pembahasan', {
+            buttonList: editorButtonList,
+            width: '100%',
+            height: '250px',
+        });
+
+        const editorKesimpulan = SUNEDITOR.create('kesimpulan', {
+            buttonList: editorButtonList,
+            width: '100%',
+            height: '180px',
+        });
+
+        // Sync SunEditor content to textarea before every form submit
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function() {
+                document.getElementById('dasar_pelaksanaan').value = editorDasar.getContents();
+                document.getElementById('pembahasan').value = editorPembahasan.getContents();
+                document.getElementById('kesimpulan').value = editorKesimpulan.getContents();
+            });
+        });
+
+        // ---- Signature Pad Init ----
         const canvas = document.getElementById('sigCanvas');
         const signaturePad = new SignaturePad(canvas, {
             backgroundColor: 'rgba(255, 255, 255, 0)',
             penColor: 'rgb(0, 0, 0)'
         });
 
-        // Resize function for signature pad
         function resizeCanvas() {
             const ratio = Math.max(window.devicePixelRatio || 1, 1);
             const parentWidth = canvas.offsetWidth;
@@ -333,7 +250,6 @@
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
 
-        // Button Listeners
         document.getElementById('clearSig').addEventListener('click', function() {
             signaturePad.clear();
         });
@@ -352,10 +268,8 @@
             $.ajax({
                 url: "/kajiulang/sign-ba/{{ paket.ID }}",
                 method: "POST",
-                data: {
-                    signature: dataURL
-                },
-                success: function(response) {
+                data: { signature: dataURL },
+                success: function() {
                     $('#modal-success').modal('show');
                     btn.disabled = false;
                     btn.innerHTML = 'Simpan Tanda Tangan Saya';
@@ -368,8 +282,8 @@
             });
         });
 
-        // Date Check
-        if(!$('input[name="tanggal"]').val()) {
+        // Auto-set today's date if empty
+        if (!$('input[name="tanggal"]').val()) {
             $('input[name="tanggal"]').val(new Date().toISOString().split('T')[0]);
         }
     });

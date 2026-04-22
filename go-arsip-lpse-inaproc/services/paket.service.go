@@ -107,7 +107,13 @@ func SimpanPaket(id uint, paket models.Paket) error {
 	if obj.ID == 0 {
 		return fmt.Errorf("Paket dengan kode %d tidak ditemukan", id)
 	}
+	obj.Nama = paket.Nama
+	obj.Tahun = paket.Tahun
+	obj.Pagu = paket.Pagu
 	obj.Hps = paket.Hps
+	obj.Metode = paket.Metode
+	obj.KgrId = paket.KgrId
+	obj.SatkerId = paket.SatkerId
 	obj.Status = paket.Status
 	if paket.PpId != 0 {
 		obj.PpId = paket.PpId

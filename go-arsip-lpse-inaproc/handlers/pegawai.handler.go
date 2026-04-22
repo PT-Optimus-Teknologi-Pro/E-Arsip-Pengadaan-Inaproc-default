@@ -55,7 +55,9 @@ func GetPegawai(c *fiber.Ctx) error {
 	if user.ID == 0 {
 		return c.SendStatus(404)
 	}
+	documents := services.GetDocumentPegawai(uint(id))
 	mp["pegawai"] = user
+	mp["documents"] = documents
 	return c.Render("pegawai/pegawai-detil", mp)
 }
 

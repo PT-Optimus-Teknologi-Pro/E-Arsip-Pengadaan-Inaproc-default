@@ -3,6 +3,7 @@ package models
 import (
 	"arsip/utils"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -350,6 +351,32 @@ func (obj Paket) GetAllDocument(isPPK bool) []Document {
 	return documents
 }
 
+func MapMetodeId(sirupMetode int, nama string) int {
+	// Normalisasi berdasarkan Nama Paket (Fallback terkuat)
+	namaLower := strings.ToLower(nama)
+	if strings.Contains(namaLower, "e-purchasing") || strings.Contains(namaLower, "katalog") {
+		return 9 // e-Purchasing di sistem kita
+	}
+	if strings.Contains(namaLower, "pengadaan langsung") {
+		return 8 // Pengadaan Langsung di sistem kita
+	}
+
+	// Mapping berdasarkan ID SiRUP (Standar SIRUP v2/v3)
+	switch sirupMetode {
+	case 1: // Lelang/Tender
+		return 13 // Tender di sistem kita
+	case 4: // Pengadaan Langsung
+		return 8
+	case 5: // e-Purchasing
+		return 9
+	case 7: // Penunjukan Langsung
+		return 7
+	}
+
+	// Jika tidak cocok, kembalikan apa adanya (atau bisa disesuaikan lagi)
+	return sirupMetode
+}
+
 func GetPaket(id uint) Paket {
 	var paket Paket
 	db.First(&paket, id)
@@ -366,7 +393,7 @@ func CreatePaket(sirup PaketSirup, userId uint) (uint, error) {
 		PpkId: userId,
 		RupId: sirup.ID,
 		SatkerId: sirup.IdSatker,
-		Metode: sirup.MetodePengadaan,
+		Metode: MapMetodeId(sirup.MetodePengadaan, sirup.Nama),
 	}
 	err := db.Save(&paket).Error
 	if err != nil {

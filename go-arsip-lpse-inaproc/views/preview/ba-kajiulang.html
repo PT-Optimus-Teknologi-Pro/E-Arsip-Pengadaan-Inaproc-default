@@ -49,7 +49,13 @@ Berita Acara Reviu Dokumen
             <tr>
                 <td style="width: 15rem;">Hari / Tanggal</td>
                 <td style="width: 1rem;">:</td>
-                <td>{% if dokTercetak.TanggalPenetapan %}{{ dokTercetak.TanggalPenetapan.Format("Monday") }} / {{ dokTercetak.TanggalPenetapan.Format("02-01-2006") }}{% else %}{{ ba.Hari|default:'........' }} / {{ ba.Tanggal.Time.Format("02-01-2006") }}{% endif %}</td>
+                <td>
+                    {% if dokTercetak.TanggalPenetapan %}
+                        {{ dokTercetak.TanggalPenetapan.Format("02-01-2006") }}
+                    {% else %}
+                        {{ ba.Hari|default:'........' }} / {% if ba.Tanggal.Valid %}{{ ba.Tanggal.Time.Format("02-01-2006") }}{% else %}........{% endif %}
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <td>Tempat</td>
@@ -65,7 +71,15 @@ Berita Acara Reviu Dokumen
     </div>
 
     <p style="margin-top: 2rem;">Pada tahap ini dilakukan reviu dokumen persiapan pengadaan sebagai berikut:</p>
-    
+
+    {% if ba.DasarPelaksanaan %}
+    <div style="margin: 1.5rem 0;">
+        <div style="font-weight: 700; margin-bottom: 0.5rem;">I. DASAR PELAKSANAAN</div>
+        <div style="padding-left: 1.5rem; text-align: justify;">{{ ba.DasarPelaksanaan|safe }}</div>
+    </div>
+    {% endif %}
+
+    <div style="font-weight: 700; margin: 1.5rem 0 0.5rem 0;">II. HASIL REVIU DOKUMEN</div>
     <table class="table table-bordered" style="width: 100%; border: 1px solid #000;">
         <thead>
             <tr style="background: #f0f0f0;">
@@ -103,9 +117,9 @@ Berita Acara Reviu Dokumen
                     </td>
                     <td style="text-align: center; border: 1px solid #000; font-weight: 700;">
                         {% if res.Status == 1 %}
-                            Sesuai / Tersedia
+                            {{ m.Opsi1|default:'Sesuai / Tersedia' }}
                         {% elif res.Status == 2 %}
-                            Tidak Sesuai
+                            {{ m.Opsi2|default:'Tidak Sesuai' }}
                         {% else %}
                             -
                         {% endif %}
@@ -114,6 +128,20 @@ Berita Acara Reviu Dokumen
             {% endfor %}
         </tbody>
     </table>
+
+    {% if ba.Pembahasan %}
+    <div style="margin: 2rem 0 1rem 0;">
+        <div style="font-weight: 700; margin-bottom: 0.5rem;">III. PEMBAHASAN</div>
+        <div style="padding-left: 1.5rem; text-align: justify;">{{ ba.Pembahasan|safe }}</div>
+    </div>
+    {% endif %}
+
+    {% if ba.Kesimpulan %}
+    <div style="margin: 1.5rem 0;">
+        <div style="font-weight: 700; margin-bottom: 0.5rem;">IV. KESIMPULAN</div>
+        <div style="padding-left: 1.5rem; text-align: justify;">{{ ba.Kesimpulan|safe }}</div>
+    </div>
+    {% endif %}
 
     <div style="margin-top: 3rem;">
         <table class="table-borderless w-100" style="table-layout: fixed;">
@@ -156,6 +184,7 @@ Berita Acara Reviu Dokumen
         </table>
     </div>
 </div>
+
 
 <style>
     @media print {

@@ -1,7 +1,73 @@
-﻿{% extends "border.html" %}
+{% extends "border.html" %}
 
 {% block pagetitle %}
 Daftar Reviu
+{% endblock %}
+
+{% block css %}
+<style>
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #111827;
+        margin: 0;
+        letter-spacing: -0.02em;
+    }
+    .modern-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+    .card-header-premium {
+        background: #f9fafb;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .card-title-premium {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .table-reviu thead th {
+        background: #f8fafc;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #475569;
+        padding: 1rem;
+    }
+    .bidang-badge {
+        background: #eef2ff;
+        color: #4f46e5;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.75rem;
+    }
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    .btn-edit { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
+    .btn-edit:hover { background: #16a34a; color: #fff; }
+    .btn-delete { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+    .btn-delete:hover { background: #dc2626; color: #fff; }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -16,27 +82,26 @@ Daftar Reviu
         </ol>
     </div>
 </div>
-    <div class="col-12 pt-2">
-        <div class="card">
-            <div class="card-body">
-                {% include "alert.html" %}
-                <table class="table table-bordered table-striped" id="table-data">
-                    <thead>
-                    <tr>
-                        <th>Bidang</th>
-                        <th>Content</th>
-                        <th>Opsi 1</th>
-                        <th>Opsi 2</th>
-                        <th width="5%">action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <a href="/reviu/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
-            </div>
+<div class="col-12 pt-2">
+    <div class="card">
+        <div class="card-body">
+            {% include "alert.html" %}
+            <table class="table table-bordered table-striped" id="table-data">
+                <thead>
+                <tr>
+                    <th>Bidang</th>
+                    <th>Content</th>
+                    <th>Opsi 1</th>
+                    <th>Opsi 2</th>
+                    <th width="5%">action</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <a href="/reviu/edit" class="btn btn-sm btn-success"><span style="width: 16px;" data-feather="plus-circle"></span> Tambah</a>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block script %}
@@ -45,6 +110,7 @@ Daftar Reviu
         ajax: '/reviu/data',
         processing: true,
         serverSide: true,
+        pageLength: 25,
         columns: [
             {data : "bidang"},
             {data : "content", render : function(data, type, row){

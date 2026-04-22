@@ -235,6 +235,14 @@ func EditPaket(c *fiber.Ctx) error {
 		}
 		mp["paket"] = paket
 		mp["url"] = "/paket/" + utils.UintToString(id)
+		mp["metodelist"] = models.GetAllMetodePengadaan()
+		mp["jenislist"] = models.GetAllJenisPengadaan()
+		// Get all satkers for the current package year (or current year)
+		tahun := paket.Tahun
+		if tahun == 0 {
+			tahun = time.Now().Year()
+		}
+		mp["satkers"] = models.GetAllSatkerSirup(tahun)
 		return c.Render("paket/form-paket", mp)
 	} else {
 		now := time.Now().Year()
@@ -316,6 +324,8 @@ func GetPaket(c *fiber.Ctx) error {
 	mp["panitias"] = services.GetPanitias()
 	mp["pps"] = services.GetPPs(paket.SatkerId)
 	mp["ppks"] = services.GetPPKs()
+	mp["metodelist"] = models.GetAllMetodePengadaan()
+	mp["jenislist"] = models.GetAllJenisPengadaan()
 	mp["prosesOnlyPpk"] = paket.IsOnlyPpk()
 	mp["bukti"] = models.GetDokPaketJenis(paket.ID, "Bukti Manual")
 	// For manual packages, also pass the bukti document details directly
@@ -346,7 +356,7 @@ func GetPaket(c *fiber.Ctx) error {
 // update a user in db
 func UpdatePaket(c *fiber.Ctx) error {
 	var formPaket models.Paket
-	log.Info(c.FormValue("Hps"))
+	
 	// get id params
 	id := utils.StringToUint(c.Params("id"))
 	err := c.BodyParser(&formPaket)
@@ -355,9 +365,51 @@ func UpdatePaket(c *fiber.Ctx) error {
 		res := fmt.Sprintf("%d", id)
 		return flashError(c, "Edit Paket Gagal", "/paket/" + res)
 	}
+
+	// Manual parsing for formatted currency strings
+	paguStr := c.FormValue("pagu_str")
+	if paguStr != "" {
+		paguStr = strings.ReplaceAll(paguStr, ".", "")
+		f, _ := strconv.ParseFloat(paguStr, 64)
+		formPaket.Pagu = f
+	}
+
+	hpsStr := c.FormValue("hps_str")
+	if hpsStr != "" {
+		hpsStr = strings.ReplaceAll(hpsStr, ".", "")
+		f, _ := strconv.ParseFloat(hpsStr, 64)
+		formPaket.Hps = f
+	}
+
+	// Update the rest of the fields that BodyParser might miss or we want to be explicit about
+	formPaket.Metode = utils.StringToInt(c.FormValue("metode"))
+	formPaket.KgrId = utils.StringToInt(c.FormValue("kgr_id"))
+	formPaket.SatkerId = uint(utils.StringToInt(c.FormValue("satker_id")))
+
 	services.SimpanPaket(id, formPaket)
 	// Return the updated user
 	return flashSuccess(c, "Edit Paket Sukses", "/paket")
+}
+
+func UpdateMetodePaket(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	metode := utils.StringToInt(c.FormValue("metode"))
+	
+	paket := services.GetPaket(id)
+	if paket.ID == 0 {
+		return c.SendStatus(404)
+	}
+	
+	paket.Metode = metode
+	err := models.SavePaket(&paket)
+	if err != nil {
+		return flashError(c, "Koreksi Gagal: "+err.Error(), "/paket/"+utils.UintToString(id))
+	}
+	
+	// Re-generate checklist if needed
+	_ = paket.GeneratePersyaratan()
+	
+	return flashSuccess(c, "Metode berhasil dikoreksi", "/paket/"+utils.UintToString(id))
 }
 
 // delete user in db by ID
@@ -769,13 +821,22 @@ func SimpanDokumenPersiapanPaketPersetujuan(c *fiber.Ctx) error {
 	dokPersiapan := services.GetDokPersiapan(uint(dokId));
 	if dokPersiapan.ID == 0 {
 		log.Error("Dok final tidak ditemukan")
+		if c.XHR() {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "error", "message": "Dok final tidak ditemukan"})
+		}
 		return flashError(c, "Simpan Dokumen Persiapan gagal", "/dok-final/" + c.Params("id"))
 	}
 	userid := utils.InterfaceToUint(mp["id"])
 	err := dokPersiapan.SavePersetujuanPegawai(userid, setuju)
 	if err != nil {
 		log.Error(err)
+		if c.XHR() {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": err.Error()})
+		}
 		return flashError(c, "Simpan Dokumen Persiapan gagal", "/dok-final/" + c.Params("id"))
+	}
+	if c.XHR() {
+		return c.JSON(fiber.Map{"status": "success", "message": "Persetujuan berhasil disimpan"})
 	}
 	return flashSuccess(c, "Simpan Dokumen Persiapan Sukses","/dok-final/"+c.Params("id"))
 }

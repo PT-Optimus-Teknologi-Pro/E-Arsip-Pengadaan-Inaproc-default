@@ -42,11 +42,11 @@ type Pegawai struct {
 	PegNamauser       string        `form:"peg_namauser" json:"peg_namauser"`
 	PegNoSk           string        `form:"peg_no_sk" json:"peg_no_sk"`
 	PegMasaBerlaku    time.Time     `form:"peg_masa_berlaku" json:"peg_masa_berlaku"`
-	AgcId             sql.NullInt64 `form:"agc_id"`
+	AgcId             sql.NullInt64 `json:"agc_id"`
 	PegNoPbj          string        `form:"peg_no_pbj" json:"peg_no_pbj"`
 	Passw             string        `form:"passw"`
 	ResetPassword     string        `form:"reset_password"`
-	UkpbjId           sql.NullInt64 `form:"ukpbj_id"`
+	UkpbjId           sql.NullInt64 `json:"ukpbj_id"`
 	PegNik            string        `form:"peg_nik" json:"peg_nik"`
 	Usrgroup          string        `form:"usrgroup" json:"usrgroup"`
 	PegTipeSertifikat int           `form:"peg_tipe_sertifikat" json:"peg_tipe_sertifikat"`
@@ -290,18 +290,18 @@ func DeletePerubahanData(data *PerubahanData) error {
 	return db.Delete(data).Error
 }
 
-func AutoCreateAdmin()  {
+func AutoCreateAdmin() {
 	if !AnyAdmin() {
 		log.Info("setup user admin with password 123456")
 		pegawai := Pegawai{
-			PegNip: "-",
-			PegNama: "Admin",
-			PegEmail: "admin@domain.com",
-			PegIsactive: 1,
-			PegNamauser: "ADMIN",
-			Usrgroup: "ADMIN",
-			PegStatus: 1,
-			Passw: utils.HashPassword("123456"), // default password admin
+			PegNip:            "-",
+			PegNama:           "Admin",
+			PegEmail:          "admin@domain.com",
+			PegIsactive:       1,
+			PegNamauser:       "ADMIN",
+			Usrgroup:          "ADMIN",
+			PegStatus:         1,
+			Passw:             utils.HashPassword("123456"),
 		}
 		db.Save(&pegawai)
 	}
@@ -311,15 +311,48 @@ func AutoCreateAdmin()  {
 	db.Where("peg_namauser = ?", "MANDOR").First(&mandor)
 	if mandor.ID == 0 {
 		pegawai := Pegawai{
-			PegNip: "-",
-			PegNama: "arsip paris",
-			PegEmail: "arsipparis@domain.com",
-			PegIsactive: 1,
-			PegNamauser: "MANDOR",
-			Usrgroup: ARSIPARIS,
-			PegStatus: 1,
-			Passw: utils.HashPassword("MANDORoptimus2026#"),
+			PegNip:            "-",
+			PegNama:           "arsip paris",
+			PegEmail:          "arsipparis@domain.com",
+			PegIsactive:       1,
+			PegNamauser:       "MANDOR",
+			Usrgroup:          ARSIPARIS,
+			PegStatus:         1,
+			Passw:             utils.HashPassword("MANDORoptimus2026#"),
 		}
 		db.Save(&pegawai)
+	}
+
+	// New Test Accounts
+	testAccounts := []struct {
+		Username string
+		Password string
+		Group    string
+		Nama     string
+	}{
+		{"PPTEST", "N7@q!R9#Z$2m", PP, "Test Pejabat Pengadaan"},
+		{"POKJATEST", "T4$zN8@bQ1!Fw", POKJA, "Test Pokja"},
+		{"PPKTEST", "R7@Lp3!XvM9#K", PPK, "Test PPK"},
+		{"UKPBJTEST", "V9!kR2#pX7@Lm", UKPBJ, "Test Admin UKPBJ"},
+		{"TESTPPK", "R7@Lp3!XvM9#K", PPK, "Test PPK 2"},
+	}
+
+	for _, acc := range testAccounts {
+		var p Pegawai
+		db.Where("peg_namauser = ?", acc.Username).First(&p)
+		if p.ID == 0 {
+			log.Info("Seeding test account: " + acc.Username)
+			newAcc := Pegawai{
+				PegNip:            "-",
+				PegNama:           acc.Nama,
+				PegEmail:          acc.Username + "@test.com",
+				PegIsactive:       1,
+				PegNamauser:       acc.Username,
+				Usrgroup:          acc.Group,
+				PegStatus:         1,
+				Passw:             utils.HashPassword(acc.Password),
+			}
+			db.Save(&newAcc)
+		}
 	}
 }

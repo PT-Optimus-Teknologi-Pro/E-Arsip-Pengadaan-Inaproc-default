@@ -13,13 +13,15 @@ import (
 )
 
 func Otentikasi(userid, password string) (models.Pegawai, error) {
+	userIdClean := strings.TrimSpace(strings.ToUpper(userid))
+	passwordClean := strings.TrimSpace(password)
+	
 	var user models.Pegawai
-	if userid == "" || password == "" {
+	if userIdClean == "" || passwordClean == "" {
 		return user, errors.New("Invalid password or userid!")
 	}
-	hashedPassword := utils.HashPassword(password)
-	userid = strings.ToUpper(userid)
-	user = models.GetPegawaiByUserPass(userid, hashedPassword)
+	hashedPassword := utils.HashPassword(passwordClean)
+	user = models.GetPegawaiByUserPass(userIdClean, hashedPassword)
 	if user.ID == 0 {
 		return user, errors.New("Invalid password or userid!")
 	}

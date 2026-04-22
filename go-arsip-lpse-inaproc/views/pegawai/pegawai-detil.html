@@ -267,6 +267,32 @@ Detil Pegawai
                     </div>
                 </div>
                 
+                {% if documents %}
+                <div class="profile-body" style="border-top: 1px solid #e5e7eb; background: #fcfdfe;">
+                    <h4 class="section-title">Dokumen & Tanda Tangan</h4>
+                    <div class="row">
+                        {% for obj in documents %}
+                        <div class="col-md-6 mb-3">
+                            <div class="info-label" style="margin-bottom: 0.5rem;">{{ obj.Label }}</div>
+                            <div class="mt-1">
+                                {% if obj.Jenis == "TTD" %}
+                                    <div style="background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:10px; display:inline-block; max-width: 100%;">
+                                        <img src="/preview/image/{{ obj.ID }}" style="max-width:240px; border-radius:6px; display:block;"/>
+                                    </div>
+                                {% else %}
+                                    <a href="/download/{{ obj.ID }}" style="display: inline-flex; align-items: center; gap: 8px; padding: .5rem 1rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; color: #0026B4; font-weight: 600; font-size: .82rem; text-decoration: none; transition: 0.15s;">
+                                        <span style="width: 14px; height: 14px;" data-feather="download"></span>
+                                        {{ obj.Filename }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                
                 <div class="card-footer-actions">
                     {%if isAdmin or isUkpbj %}
                     <a href="/pegawai/edit/{{pegawai.ID}}" class="btn-modern btn-modern-primary">

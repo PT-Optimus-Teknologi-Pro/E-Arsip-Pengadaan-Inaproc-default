@@ -77,6 +77,10 @@ func InterfaceToUint(i interface{}) uint {
 	return 0
 }
 
+func InterfaceToInt(i interface{}) int {
+	return int(InterfaceToUint(i))
+}
+
 func InterfaceToString(i interface{}) string {
 	if i == nil {
 		return ""

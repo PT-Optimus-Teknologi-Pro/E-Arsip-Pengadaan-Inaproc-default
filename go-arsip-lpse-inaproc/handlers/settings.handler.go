@@ -118,7 +118,8 @@ func UpdateLogoSettings(c *fiber.Ctx) error {
 	}
 
 	// Handle upload signature (Tanda Tangan Pejabat Fisik atau Canvas)
-	if settings.DocSignatureMode == "canvas" {
+	switch settings.DocSignatureMode {
+	case "canvas":
 		canvasData := c.FormValue("doc_signature_canvas_data")
 		if canvasData != "" && strings.HasPrefix(canvasData, "data:image/png;base64,") {
 			base64Str := strings.TrimPrefix(canvasData, "data:image/png;base64,")
@@ -132,7 +133,7 @@ func UpdateLogoSettings(c *fiber.Ctx) error {
 				}
 			}
 		}
-	} else if settings.DocSignatureMode == "digital" {
+	case "digital":
 		sigFile, err := c.FormFile("doc_signature")
 		if err == nil && sigFile != nil {
 			ext := strings.ToLower(filepath.Ext(sigFile.Filename))

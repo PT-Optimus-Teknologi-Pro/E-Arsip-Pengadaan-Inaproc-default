@@ -125,11 +125,13 @@ Daftar Rencana Paket
     const isArsiparis = flags.isArsiparis === 'True' || flags.isArsiparis === 'true';
     const isApproved = flags.isApproved === 'True' || flags.isApproved === 'true';
 
-    function getMetodeLabel(id) {
-        const met = ["Pencatatan", "Tender", "Seleksi", "Tender Cepat", "Penunjukan Langsung", "E-Purchasing", "Pengadaan Langsung"];
-        return met[id] || id || "Tender";
-    }
-    window.metode = getMetodeLabel;
+    // Gunakan fungsi metode() dari app.js yang lebih lengkap
+    window.getMetodeLabel = function(id) {
+        if (typeof metode === 'function') {
+            return metode(id);
+        }
+        return id;
+    };
 
     // Bind static filters immediately
     $('select[name="tahun"], select[name="jenis"], select[name="metode"]').on('change', function() {

@@ -45,7 +45,7 @@
                         </div>
                         <label class="col-sm-2  text-end control-label col-form-label">Metode Pengadaan </label>
                         <div class="col-sm-4">
-                            <p class="form-control-plaintext">{{ paket.MetodePengadaan }}</p>
+                            <p class="form-control-plaintext">{{ metode(paket.Metode) }}</p>
                         </div>
                     </div>
                     <div class="form-group mb-3 row">
@@ -330,6 +330,7 @@
       </div>
     </div>
     {% endif %}
+    {% include "modal-cetak.html" %}
 {% endblock %}
 
 {% block script %}

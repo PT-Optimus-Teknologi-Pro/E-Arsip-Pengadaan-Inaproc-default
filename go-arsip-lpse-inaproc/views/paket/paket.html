@@ -482,8 +482,10 @@ Daftar Paket
     }
 
     function getMetodeLabel(id) {
-        const met = ["Pencatatan","Tender","Seleksi","Tender Cepat","Penunjukan Langsung","E-Purchasing","Pengadaan Langsung"];
-        return met[id] || "Tender";
+        if (typeof metode === 'function') {
+            return metode(id);
+        }
+        return id;
     }
 
     var isArsiparis_Local = ("{{ isArsiparis }}" === "True" || "{{ isArsiparis }}" === "true");
@@ -659,21 +661,14 @@ Daftar Paket
                 render: function(data, type, row) {
                     let html = '<div style="display:flex;align-items:center;justify-content:center; gap: 8px;">';
                     
-                    let editUrl = (!row["rup_id"] || row["rup_id"] == 0) ? `/paket/edit-manual/${data}` : `/paket/edit/${data}`;
-                    
-                    html += `<a href="${editUrl}" class="action-icon warning" title="Edit Paket">
-                                <span style="width:15px;height:15px;" data-feather="edit"></span>
+                    html += `<a href="/download-all/${data}" class="action-icon info" title="Download Semua Dokumen">
+                                <span style="width:15px;height:15px;" data-feather="download"></span>
                              </a>`;
                              
                     html += `<a href="/paket/hapus/${data}?redirect=/paket" class="action-icon danger" title="Hapus Paket" onclick="return confirm('Apakah Anda yakin ingin menghapus paket ini secara permanen?')">
                                 <span style="width:15px;height:15px;" data-feather="trash-2"></span>
                              </a>`;
 
-                    if (row["status"] > 2) {
-                        html += `<a href="/download-all/${data}" class="action-icon info" title="Download Semua Dokumen">
-                                    <span style="width:15px;height:15px;" data-feather="download"></span>
-                                 </a>`;
-                    }
                     html += '</div>';
                     return html;
                 }
