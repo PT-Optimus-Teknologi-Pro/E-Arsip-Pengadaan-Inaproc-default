@@ -290,11 +290,29 @@ func SimpanPersetujuanDokPersiapan(dokId uint, pegId uint, status bool) error {
 
 func SimpanKodeTender(id uint, kode uint) error {
 	paket := GetPaket(id)
-	if paket.Status < 4  && !paket.IsOnlyPpk() {
+	if paket.Status < 4 && !paket.IsOnlyPpk() {
 		return fmt.Errorf("Paket Gagal assign ke Pokja dikarenakan status paket belum proses pengadaan")
 	}
 	paket.KodeTender = kode
-	return models.SavePaket(&paket)
+	err := models.SavePaket(&paket)
+	if err != nil {
+		return err
+	}
+
+	// Trigger Sync from LPSE
+	go func() {
+		if paket.IsPaketPokja() {
+			FetchTenderByCode(kode)
+		} else if paket.IsPaketPp() {
+			FetchNontenderByCode(kode)
+		} else {
+			// Fallback try both or just Tender
+			FetchTenderByCode(kode)
+			FetchNontenderByCode(kode)
+		}
+	}()
+
+	return nil
 }
 
 

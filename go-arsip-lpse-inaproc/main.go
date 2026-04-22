@@ -18,11 +18,13 @@ import (
 
 func main() {
 	go services.SyncSirup()
+	go services.SyncLpse()
 	services.AutoCreateAdminIfNoExist()
 	c := cron.New()
 	cronjob := config.CronJob()
 	c.AddFunc(cronjob, func() {
 		services.SyncSirup()
+		services.SyncLpse()
 	})
 	c.Start()
 	engine := django.New("./views", ".html")

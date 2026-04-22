@@ -32,7 +32,7 @@ func init() {
 	db.AutoMigrate(&Inbox{}, &HakAkses{}, &Checklist{}, &ChecklistDok{}, &DokTemplate{}, &Provinsi{}, &Kabupaten{}, &BukuTamu{}, &Feedback{}, &FeedbackKategori{}, &Templates{}, &Document{})
 	db.AutoMigrate(&Agency{}, &Ukpbj{}, &Pegawai{}, &SatkerSirup{}, &StrukturAnggaran{}, &PaketSirup{}, &RupSwakelola{}, &SwakelolaSirup{}, &Panitia{}, &AnggotaPanitia{},
 		&PejabatPengadaan{}, &PejabatPengadaanSatker{}, &PejabatPengadaanPegawai{},
-		&Tender{}, &Nontender{}, &Pencatatan{}, &Swakelola{})
+		&Tender{}, &Nontender{}, &Pencatatan{}, &Swakelola{}, &TenderSelesai{}, &NontenderSelesai{}, &Katalog{}, &Jadwal{}, &Peserta{}, &Kontrak{}, &KontrakNontender{})
 	db.AutoMigrate(&Anggaran{}, &Paket{}, &PaketAnggaran{}, &PaketSatker{}, &PaketLokasi{}, &ChecklistPaket{}, &ChecklistPaketHistory{}, &DokPaket{},
 		&BeritaAcara{}, &Reviu{}, &ReviuPaket{}, &KajiUlang{}, &DokPersiapan{}, &PerubahanData{}, &PersetujuanDokPersiapan{}, &PaketPPk{}, &ReviuBidang{})
 	db.AutoMigrate(&Itkp{}, &AppSettings{}, &HeroSlider{}, &FooterSocialLink{}, &FooterQuickLink{}, &FooterService{}, &DokumenTercetak{})

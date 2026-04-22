@@ -799,3 +799,23 @@ type KontrakNontender struct {
 func (c KontrakNontender) TableName() string {
 	return "kontrak_nontender"
 }
+
+func SaveTender(data *[]Tender) error {
+	return db.Save(data).Error
+}
+
+func SaveTenderSelesai(data *[]TenderSelesai) error {
+	return db.Save(data).Error
+}
+
+func SaveNontender(data *[]Nontender) error {
+	return db.Save(data).Error
+}
+
+func SaveNontenderSelesai(data *[]NontenderSelesai) error {
+	return db.Save(data).Error
+}
+
+func SaveKatalogArchive(data *[]Katalog) error {
+	return db.Save(data).Error
+}
