@@ -69,29 +69,32 @@ Hasil Pengadaan
                     </p>
                 </div>
             </div>
-            {% if paket.Metode == 9 %}
             <div class="form-group mb-3 row">
                 <label class="col-sm-2  text-end control-label col-form-label">Pemenang</label>
                 <div class="col-sm-4">
-                    <p class="form-control-plaintext">{{ purchase.Penyedia().NamaPenyedia }}</p>
+                    <p class="form-control-plaintext">
+                        {% if realisasi.NamaPenyedia != "" %}
+                            {{ realisasi.NamaPenyedia }}
+                        {% elif purchase.OrderId != "" %}
+                            {{ purchase.Penyedia().NamaPenyedia }}
+                        {% else %}
+                            <span class="text-muted">Data tidak ditemukan</span>
+                        {% endif %}
+                    </p>
                 </div>
-                <label class="col-sm-2  text-end control-label col-form-label">Nilai hasil</label>
+                <label class="col-sm-2  text-end control-label col-form-label">Nilai Hasil</label>
                 <div class="col-sm-4">
-                    <p class="form-control-plaintext">{% if purchase.Total > 0 %} {{ rupiah(purchase.Total) }} {% endif %} </p>
+                    <p class="form-control-plaintext">
+                        {% if realisasi.NilaiKontrak > 0 %}
+                            {{ rupiah(realisasi.NilaiKontrak) }}
+                        {% elif purchase.Total > 0 %}
+                            {{ rupiah(purchase.Total) }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </p>
                 </div>
             </div>
-            {% else %}
-            <div class="form-group mb-3 row">
-                <label class="col-sm-2  text-end control-label col-form-label">Pemenang</label>
-                <div class="col-sm-4">
-                    <p class="form-control-plaintext">{{ realisasi.NamaPenyedia }}</p>
-                </div>
-                <label class="col-sm-2  text-end control-label col-form-label">Nilai hasil Tender</label>
-                <div class="col-sm-4">
-                    <p class="form-control-plaintext">{% if realisasi.NilaiKontrak > 0 %} {{ rupiah(realisasi.NilaiKontrak) }} {% endif %} </p>
-                </div>
-            </div>
-            {% endif %}
             <div class="form-group mb-3 row">
                 <label class="col-sm-2  text-end control-label col-form-label">Status</label>
                 <div class="col-sm-4">

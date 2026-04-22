@@ -59,7 +59,6 @@
 <script>
     function triggerCetakModal(actionUrl) {
         document.getElementById('formCetakValidasi').action = actionUrl;
-        var myModal = new bootstrap.Modal(document.getElementById('modalCetakValidasi'));
-        myModal.show();
+        $('#modalCetakValidasi').modal('show');
     }
 </script>

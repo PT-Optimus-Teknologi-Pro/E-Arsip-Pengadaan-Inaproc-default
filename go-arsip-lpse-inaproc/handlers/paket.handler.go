@@ -872,22 +872,24 @@ func HasilPengadanPaket(c *fiber.Ctx) error {
 		return Forbiden(c)
 	}
 	mp["paket"] = paket
-	switch paket.Metode {
-	case 8:
-		realisasi := paket.GetNontender().GetRealisasi()
-		if len(realisasi) > 0 {
-			log.Info("realisi ", realisasi[0])
-			mp["realisasi"] = realisasi[0]
-		}
-	case 9:
-		mp["purchase"] = paket.GetPurchase()
-	default:
-		realisasi := paket.GetTender().GetRealisasi()
-		if len(realisasi) > 0 {
-			log.Info("realisi ", realisasi[0])
-			mp["realisasi"] = realisasi[0]
-		}
+
+	// Try to get from Tender Selesai
+	realisasi := paket.GetTender().GetRealisasi()
+	if len(realisasi) == 0 {
+		// Try to get from Non-Tender Selesai
+		realisasi = paket.GetNontender().GetRealisasi()
 	}
+
+	if len(realisasi) > 0 {
+		mp["realisasi"] = realisasi[0]
+	}
+
+	// Also fetch purchase data just in case
+	purchase := paket.GetPurchase()
+	if purchase.KdPaket != 0 {
+		mp["purchase"] = purchase
+	}
+
 	return c.Render("paket/hasil-pengadaan", mp)
 }
 

@@ -52,10 +52,10 @@ func DeleteReviuBidang(obj *ReviuBidang) error {
 type BeritaAcara struct {
 	gorm.Model
 	PktId            uint         `gorm:"pkt_id" json:"pkt_id"` // Link to Paket
-	Nomor            string       `gorm:"nomor"`
+	Nomor            string       `gorm:"nomor" form:"nomor"`
 	Jenis            string       `form:"jenis"`
 	Hari             string       `form:"hari"`
-	Tanggal          sql.NullTime `json:"tanggal"`
+	Tanggal          sql.NullTime `json:"tanggal" form:"-"`
 	Tempat           string       `form:"tempat"`
 	Waktu            string       `form:"waktu"`
 	SubKeg           string       `form:"sub_keg"`
