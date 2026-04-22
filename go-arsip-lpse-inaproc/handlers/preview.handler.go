@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"arsip/config"
 	"arsip/models"
 	"arsip/services"
 	"arsip/utils"
@@ -427,14 +426,11 @@ func buildSkPpHtml(sk models.PejabatPengadaan, pegawai models.Pegawai, satker mo
 
 func PreviewSkPokja(c *fiber.Ctx) error {
 	id, _ := c.ParamsInt("id")
-	log.Info("priview sk pokja")
 	mp := currentMap(c)
 	paket := services.GetPaket(uint(id))
 	mp["paket"] = paket
 	mp["pokja"] = paket.Pokja()
-
-	appSettings := services.GetSettings()
-	mp["appSettings"] = appSettings
+	mp["appSettings"] = services.GetSettings()
 
 	hash := c.Query("hash")
 	if hash != "" {
@@ -444,27 +440,46 @@ func PreviewSkPokja(c *fiber.Ctx) error {
 		valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), hash)
 		mp["qrValidasi"] = generateQrBase64(valUrl)
 	}
-
 	return c.Render("preview/surat-penunjukan-pokja", mp)
 }
 
 func CetakSkPokja(c *fiber.Ctx) error {
-	log.Info("cetak sk pokja fallback")
-	url := fmt.Sprintf("http://localhost:%s/preview/sk-pokja/%s", config.Port(), c.Params("id"))
-	return print(c, url, "SK-pokja.pdf")
+	id := utils.StringToUint(c.Params("id"))
+	mp := currentMap(c)
+	paket := services.GetPaket(id)
+	mp["paket"] = paket
+	mp["pokja"] = paket.Pokja()
+	mp["appSettings"] = services.GetSettings()
+
+	html, _ := renderToString("preview/surat-penunjukan-pokja", mp)
+	result := utils.ExportHtmlToPdf(html, "")
+	c.Set("Content-Type", "application/pdf")
+	c.Set("Content-Disposition", "attachment; filename=\"SK-pokja.pdf\"")
+	return c.SendStream(bytes.NewReader(result))
 }
 
 func CetakSkPokjaProcess(c *fiber.Ctx) error {
 	id := utils.StringToUint(c.Params("id"))
 	dok := processFormDokumen(c, id, "SK_PENUNJUKAN_POKJA")
-	url := fmt.Sprintf("http://localhost:%s/preview/sk-pokja/%d?hash=%s", config.Port(), id, dok.Md5Hash)
-	return print(c, url, "SK-pokja.pdf")
-}
-func PreviewBAKajiUlang(c *fiber.Ctx) error {
-	id, _ := c.ParamsInt("id")
-	log.Info("priview BA Reviu Dokumen")
 	mp := currentMap(c)
-	paket := services.GetPaket(uint(id))
+	paket := services.GetPaket(id)
+	mp["paket"] = paket
+	mp["pokja"] = paket.Pokja()
+	mp["appSettings"] = services.GetSettings()
+	mp["dokTercetak"] = dok
+	valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), dok.Md5Hash)
+	mp["qrValidasi"] = generateQrBase64(valUrl)
+
+	html, _ := renderToString("preview/surat-penunjukan-pokja", mp)
+	result := utils.ExportHtmlToPdf(html, "")
+	c.Set("Content-Type", "application/pdf")
+	c.Set("Content-Disposition", "attachment; filename=\"SK-pokja.pdf\"")
+	return c.SendStream(bytes.NewReader(result))
+}
+func prepareBAKajiUlangData(c *fiber.Ctx) fiber.Map {
+	id := utils.StringToUint(c.Params("id"))
+	mp := currentMap(c)
+	paket := services.GetPaket(id)
 	mp["paket"] = paket
 	
 	// Data Signers (TTE)
@@ -473,7 +488,7 @@ func PreviewBAKajiUlang(c *fiber.Ctx) error {
 		Jabatan  string
 		IsSigned bool
 		QrCode   string
-		SigImg   string // NEW: Base64 signature image
+		SigImg   string 
 		Nip      string
 	}
 
@@ -484,10 +499,8 @@ func PreviewBAKajiUlang(c *fiber.Ctx) error {
 	ppk := paket.Ppk()
 	if ppk.ID > 0 {
 		isSigned := false
-		// Cek apakah PPK sudah menyetujui dokumen persiapan
 		dokPersiapans := paket.DokPersiapan()
 		if len(dokPersiapans) > 0 {
-			// Jika ada setidaknya satu dokumen dan sudah disetujui PPK
 			p := dokPersiapans[0].PersetujuanPegawai(ppk.ID)
 			isSigned = p.Status
 		}
@@ -551,9 +564,16 @@ func PreviewBAKajiUlang(c *fiber.Ctx) error {
 		}
 	}
 
-	// 3. New: Fetch BA Metadata and Checklist Results
+	// 3. Metadata
 	var ba models.BeritaAcara
-	models.GetDB().Where("pkt_id = ? AND jenis = 'REVIU'", id).First(&ba)
+	resultBA := models.GetDB().Where("pkt_id = ? AND jenis = 'REVIU'", id).First(&ba)
+	if resultBA.Error != nil {
+		// If not found, we still provide an empty object with basic info to avoid template errors
+		ba = models.BeritaAcara{
+			PktId: id,
+			Jenis: "REVIU",
+		}
+	}
 	
 	reviuMaster := services.GetAllReviu()
 	var reviuResults []models.ReviuPaket
@@ -564,45 +584,33 @@ func PreviewBAKajiUlang(c *fiber.Ctx) error {
 		resMap[r.RevId] = r
 	}
 
-	// 4. Fetch Actual Signature Images (PNG) for each signer
+	// 4. Signatures
 	for i := range signersPPK {
-		doc := models.GetDocumentByJenis(ppk.ID, models.TTD) // Simplified: assuming one TTD per user
-		if doc.ID > 0 {
-			signersPPK[i].SigImg = services.GetBase64FromFile(doc.Filepath)
-		}
+		doc := models.GetDocumentByJenis(ppk.ID, models.TTD)
+		if doc.ID > 0 { signersPPK[i].SigImg = services.GetBase64FromFile(doc.Filepath) }
 	}
-	
-	// For process signers (PP/Pokja)
 	for i := range signersProses {
-		// We need to find the PegId for this signer to get their SigImg
 		var pid uint
-		if paket.PpId > 0 { pid = paket.PpId } else { pid = paket.Pokja().AnggotaList()[i].ID }
+		if paket.PpId > 0 { 
+			pid = paket.PpId 
+		} else if paket.PntId > 0 && len(paket.Pokja().AnggotaList()) > i {
+			pid = paket.Pokja().AnggotaList()[i].ID 
+		}
 		
-		doc := models.GetDocumentByJenis(pid, models.TTD)
-		if doc.ID > 0 {
-			signersProses[i].SigImg = services.GetBase64FromFile(doc.Filepath)
+		if pid > 0 {
+			doc := models.GetDocumentByJenis(pid, models.TTD)
+			if doc.ID > 0 { signersProses[i].SigImg = services.GetBase64FromFile(doc.Filepath) }
 		}
 	}
 
 	appSettings := services.GetSettings()
 	mp["appSettings"] = appSettings
-
-	hash := c.Query("hash")
-	if hash != "" {
-		var dok models.DokumenTercetak
-		models.GetDB().Where("md5_hash = ?", hash).First(&dok)
-		mp["dokTercetak"] = dok
-		valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), hash)
-		mp["qrValidasi"] = generateQrBase64(valUrl)
-	}
-
 	mp["ba"] = ba
 	mp["reviuMaster"] = reviuMaster
 	mp["reviuResults"] = resMap
 	mp["signersPPK"] = signersPPK
 	mp["signersProses"] = signersProses
-
-	return c.Render("preview/ba-kajiulang", mp)
+	return mp
 }
 
 func generateQrBase64(content string) string {
@@ -614,28 +622,51 @@ func generateQrBase64(content string) string {
 	return base64.StdEncoding.EncodeToString(qrPng)
 }
 
+func PreviewBAKajiUlang(c *fiber.Ctx) error {
+	mp := prepareBAKajiUlangData(c)
+	hash := c.Query("hash")
+	if hash != "" {
+		var dok models.DokumenTercetak
+		models.GetDB().Where("md5_hash = ?", hash).First(&dok)
+		mp["dokTercetak"] = dok
+		valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), hash)
+		mp["qrValidasi"] = generateQrBase64(valUrl)
+	}
+	return c.Render("preview/ba-kajiulang", mp)
+}
 
 func CetakBAKajiUlang(c *fiber.Ctx) error {
-	log.Info("cetak BA Reviu Dokumen fallback")
 	id := utils.StringToUint(c.Params("id"))
 	paket := services.GetPaket(id)
-	if paket.ID > 0 { paket.IsLockedReview = true; models.SavePaket(&paket) }
-	url := fmt.Sprintf("http://localhost:%s/preview/ba-kajiulang/%s", config.Port(), c.Params("id"))
-	return print(c, url, "BA-kajiulang.pdf")
+	if paket.ID > 0 { 
+		paket.IsLockedReview = true
+		models.SavePaket(&paket) 
+	}
+	mp := prepareBAKajiUlangData(c)
+	html, _ := renderToString("preview/ba-kajiulang", mp)
+	result := utils.ExportHtmlToPdf(html, "")
+	c.Set("Content-Type", "application/pdf")
+	c.Set("Content-Disposition", "attachment; filename=\"BA-kajiulang.pdf\"")
+	return c.SendStream(bytes.NewReader(result))
 }
 
 func CetakBAKajiUlangProcess(c *fiber.Ctx) error {
 	id := utils.StringToUint(c.Params("id"))
 	dok := processFormDokumen(c, id, "BA_KAJIULANG")
-	
 	paket := services.GetPaket(id)
 	if paket.ID > 0 {
 		paket.IsLockedReview = true
 		models.SavePaket(&paket)
 	}
-
-	url := fmt.Sprintf("http://localhost:%s/preview/ba-kajiulang/%d?hash=%s", config.Port(), id, dok.Md5Hash)
-	return print(c, url, "BA-kajiulang.pdf")
+	mp := prepareBAKajiUlangData(c)
+	mp["dokTercetak"] = dok
+	valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), dok.Md5Hash)
+	mp["qrValidasi"] = generateQrBase64(valUrl)
+	html, _ := renderToString("preview/ba-kajiulang", mp)
+	result := utils.ExportHtmlToPdf(html, "")
+	c.Set("Content-Type", "application/pdf")
+	c.Set("Content-Disposition", "attachment; filename=\"BA-kajiulang.pdf\"")
+	return c.SendStream(bytes.NewReader(result))
 }
 
 
@@ -644,14 +675,23 @@ func PreviewBANego(c *fiber.Ctx)  error {
 	id := utils.StringToUint(c.Params("id"))
 	berita_acara := services.GetBeritaAcara(id)
 	mp["berita_acara"] = berita_acara
+	mp["appSettings"] = services.GetSettings()
 	return c.Render("preview/ba-nego", mp)
 }
 
 
 func CetakBANego(c *fiber.Ctx) error {
-	log.Info("cetak BA Nego")
-	url := fmt.Sprintf("http://localhost:%s/preview/ba-nego/%s", config.Port(), c.Params("id"))
-	return print(c, url, "BA-Nego.pdf")
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	berita_acara := services.GetBeritaAcara(id)
+	mp["berita_acara"] = berita_acara
+	mp["appSettings"] = services.GetSettings()
+
+	html, _ := renderToString("preview/ba-nego", mp)
+	result := utils.ExportHtmlToPdf(html, "")
+	c.Set("Content-Type", "application/pdf")
+	c.Set("Content-Disposition", "attachment; filename=\"BA-Nego.pdf\"")
+	return c.SendStream(bytes.NewReader(result))
 }
 
 
@@ -660,13 +700,22 @@ func PreviewBAPenetapan(c *fiber.Ctx)  error {
 	id := utils.StringToUint(c.Params("id"))
 	berita_acara := services.GetBeritaAcara(id)
 	mp["berita_acara"] = berita_acara
+	mp["appSettings"] = services.GetSettings()
 	return c.Render("preview/ba-penetapan", mp)
 }
 
 func CetakBAPenetapan(c *fiber.Ctx) error {
-	log.Info("cetak BA Penetapan")
-	url := fmt.Sprintf("http://localhost:%s/preview/ba-penetapan/%s", config.Port(), c.Params("id"))
-	return print(c, url, "BA-Penetapan-Pemenang.pdf")
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	berita_acara := services.GetBeritaAcara(id)
+	mp["berita_acara"] = berita_acara
+	mp["appSettings"] = services.GetSettings()
+
+	html, _ := renderToString("preview/ba-penetapan", mp)
+	result := utils.ExportHtmlToPdf(html, "")
+	c.Set("Content-Type", "application/pdf")
+	c.Set("Content-Disposition", "attachment; filename=\"BA-Penetapan-Pemenang.pdf\"")
+	return c.SendStream(bytes.NewReader(result))
 }
 
 func VerifyTte(c *fiber.Ctx) error {
