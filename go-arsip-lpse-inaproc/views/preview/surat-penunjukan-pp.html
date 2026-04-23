@@ -29,13 +29,13 @@ Surat Penunjukan Pejabat Pengadaan
 
     <!-- Judul SK -->
     <div style="text-align: center; margin-bottom: 25px;">
-        <h3 style="margin: 0; font-size: 12pt; font-weight: bold; text-transform: uppercase;">KEPUTUSAN {{ app_settings.DocPejabatJabata }} KOTA BANJARMASIN</h3>
-        <h3 style="margin: 0; font-size: 12pt; font-weight: bold; text-transform: uppercase;">NOMOR {{ sk.NoSk }} TAHUN {{ sk.Tahun }}</h3>
+        <h3 style="margin: 0; font-size: 12pt; font-weight: bold; text-transform: uppercase;">KEPUTUSAN {{ app_settings.DocPejabatJabata }} {{ app_settings.DocRegion }}</h3>
+        <h3 style="margin: 0; font-size: 12pt; font-weight: bold; text-transform: uppercase;">NOMOR {% if dokTercetak.NomorSurat %}{{ dokTercetak.NomorSurat }}{% else %}{{ sk.NoSk }}{% endif %} TAHUN {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ sk.Tahun }}{% endif %}</h3>
         <p style="margin: 5px 0; font-weight: bold;">TENTANG</p>
         <h3 style="margin: 0; font-size: 12pt; font-weight: bold; text-transform: uppercase;">PENETAPAN PEJABAT PENGADAAN BARANG/JASA</h3>
         <h3 style="margin: 0; font-size: 12pt; font-weight: bold; text-transform: uppercase;">PADA {{ app_settings.DocSubInstansi }}</h3>
         <h3 style="margin: 0; font-size: 12pt; font-weight: bold; text-transform: uppercase;">{{ app_settings.DocInstansi }}</h3>
-        <h3 style="margin: 0; font-size: 12pt; font-weight: bold; text-transform: uppercase;">TAHUN ANGGARAN {{ sk.Tahun + 1 }}</h3>
+        <h3 style="margin: 0; font-size: 12pt; font-weight: bold; text-transform: uppercase;">TAHUN ANGGARAN {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ sk.Tahun + 1 }}{% endif %}</h3>
         <h3 style="margin: 10px 0 0 0; font-size: 12pt; font-weight: bold; text-transform: uppercase;">{{ app_settings.DocPejabatJabata }} KOTA BANJARMASIN</h3>
     </div>
 
@@ -46,8 +46,8 @@ Surat Penunjukan Pejabat Pengadaan
             <td style="width: 3%; vertical-align: top;">:</td>
             <td style="vertical-align: top;">
                 <ol type="a" style="margin-top: 0; padding-left: 20px;">
-                    <li style="text-align: justify; margin-bottom: 10px;">Bahwa untuk tertib dan lancarnya pelaksanaan pengadaan barang/jasa di {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }} Tahun {{ sk.Tahun + 1 }} dipandang perlu menetapkan Pejabat Pengadaan Barang/Jasa.</li>
-                    <li style="text-align: justify;">bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a, perlu menetapkan Keputusan {{ app_settings.DocPejabatJabata }} tentang Penetapan Pejabat Pengadaan Barang/Jasa pada {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }} Tahun Anggaran {{ sk.Tahun + 1 }};</li>
+                    <li style="text-align: justify; margin-bottom: 10px;">Bahwa untuk tertib dan lancarnya pelaksanaan pengadaan barang/jasa di {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }} Tahun {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ sk.Tahun + 1 }}{% endif %} dipandang perlu menetapkan Pejabat Pengadaan Barang/Jasa.</li>
+                    <li style="text-align: justify;">bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a, perlu menetapkan Keputusan {{ app_settings.DocPejabatJabata }} tentang Penetapan Pejabat Pengadaan Barang/Jasa pada {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }} Tahun Anggaran {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ sk.Tahun + 1 }}{% endif %};</li>
                 </ol>
             </td>
         </tr>
@@ -68,8 +68,8 @@ Surat Penunjukan Pejabat Pengadaan
                     <li style="text-align: justify; margin-bottom: 5px;">Peraturan Menteri Dalam Negeri Nomor 80 Tahun 2015 tentang Pembentukan Produk Hukum Daerah sebagaimana telah diubah dengan Peraturan Menteri Dalam Negeri Nomor 120 Tahun 2018;</li>
                     <li style="text-align: justify; margin-bottom: 5px;">Peraturan Menteri Dalam Negeri Nomor 77 Tahun 2020 tentang Pedoman Teknis Pengelolaan Keuangan Daerah;</li>
                     <li style="text-align: justify; margin-bottom: 5px;">Peraturan Lembaga Kebijakan Pengadaan Barang/Jasa Pemerintah Nomor 11 Tahun 2021 tentang Pedoman Perencanaan Pengadaan Barang/Jasa Pemerintah;</li>
-                    <li style="text-align: justify; margin-bottom: 5px;">Peraturan Daerah Kota Banjarmasin Nomor 7 Tahun 2016 tentang Pembentukan dan Susunan Perangkat Daerah Kota Banjarmasin sebagaimana telah diubah dengan Peraturan Daerah Kota Banjarmasin Nomor 3 Tahun 2021;</li>
-                    <li style="text-align: justify; margin-bottom: 5px;">Peraturan Daerah Kota Banjarmasin Nomor 7 Tahun tentang Keuangan Daerah;</li>
+                    <li style="text-align: justify; margin-bottom: 5px;">Peraturan Daerah {{ app_settings.DocRegion }} Nomor 7 Tahun 2016 tentang Pembentukan dan Susunan Perangkat Daerah {{ app_settings.DocRegion }} sebagaimana telah diubah dengan Peraturan Daerah {{ app_settings.DocRegion }} Nomor 3 Tahun 2021;</li>
+                    <li style="text-align: justify; margin-bottom: 5px;">Peraturan Daerah {{ app_settings.DocRegion }} Nomor 7 Tahun tentang Keuangan Daerah;</li>
                 </ol>
             </td>
         </tr>
@@ -78,7 +78,7 @@ Surat Penunjukan Pejabat Pengadaan
             <td style="vertical-align: top; font-weight: bold;">Memperhatikan</td>
             <td style="vertical-align: top;">:</td>
             <td style="vertical-align: top; text-align: justify;">
-                Dokumen Pelaksanaan Anggaran Satuan Kerja Perangkat Daerah {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }} Tahun Anggaran {{ sk.Tahun + 1 }}
+                Dokumen Pelaksanaan Anggaran Satuan Kerja Perangkat Daerah {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }} Tahun Anggaran {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ sk.Tahun + 1 }}{% endif %}
             </td>
         </tr>
     </table>
@@ -95,7 +95,7 @@ Surat Penunjukan Pejabat Pengadaan
             <td style="vertical-align: top; font-weight: bold;">KESATU</td>
             <td style="vertical-align: top;">:</td>
             <td style="vertical-align: top; text-align: justify;">
-                Pejabat Pengadaan Barang/Jasa Pada {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }} Tahun Anggaran {{ sk.Tahun + 1 }} sebagai berikut:<br>
+                Pejabat Pengadaan Barang/Jasa Pada {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }} Tahun Anggaran {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ sk.Tahun + 1 }}{% endif %} sebagai berikut:<br>
                 <table style="margin-top: 10px; border-collapse: collapse;">
                     <tr><td style="width: 100px;">Nama</td><td>: {{ pegawai.PegNama }}</td></tr>
                     <tr><td>NIP</td><td>: {{ pegawai.PegNip }}</td></tr>
@@ -125,7 +125,7 @@ Surat Penunjukan Pejabat Pengadaan
             <td style="vertical-align: top; font-weight: bold;">KETIGA</td>
             <td style="vertical-align: top;">:</td>
             <td style="vertical-align: top; text-align: justify;">
-                Segala biaya yang timbul akibat ditetapkannya Keputusan {{ app_settings.DocPejabatJabata }} ini dibebankan pada Anggaran Pendapatan dan Belanja Daerah Banjarmasin Tahun Anggaran {{ sk.Tahun + 1 }} pada {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }}.
+                Segala biaya yang timbul akibat ditetapkannya Keputusan {{ app_settings.DocPejabatJabata }} ini dibebankan pada Anggaran Pendapatan dan Belanja Daerah {{ app_settings.DocRegion }} Tahun Anggaran {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ sk.Tahun + 1 }}{% endif %} pada {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }}.
             </td>
         </tr>
         <tr><td colspan="3" style="height: 10px;"></td></tr>
@@ -140,8 +140,8 @@ Surat Penunjukan Pejabat Pengadaan
 
     <!-- Tanda Tangan -->
     <div style="float: right; width: 40%; margin-top: 30px; text-align: left;">
-        <p style="margin: 0;">Ditetapkan di Banjarmasin</p>
-        <p style="margin: 0;">pada tanggal 9 Desember 2024</p>
+        <p style="margin: 0;">Ditetapkan di {{ app_settings.DocRegion }}</p>
+        <p style="margin: 0;">pada tanggal {% if tglPenetapan %}{{ tglPenetapan }}{% else %}................{% endif %}</p>
         <p style="margin: 10px 0 0 0; font-weight: bold; text-transform: uppercase;">{{ app_settings.DocPejabatJabata }}</p>
         <p style="margin: 0; font-weight: bold; text-transform: uppercase;">{{ app_settings.DocInstansi }}</p>
         <br><br><br><br>

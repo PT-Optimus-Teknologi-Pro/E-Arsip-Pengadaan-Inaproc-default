@@ -321,7 +321,7 @@
             <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
           </svg>
         </div>
-        <span>Identitas Instansi (Kop Surat)</span>
+        <span>Identitas Instansi (Surat Penunjukan / Surat Resmi)</span>
       </div>
       <div class="logo-card-body" style="flex-direction: column; gap: 1.5rem;">
         
@@ -444,6 +444,84 @@
              <p class="hint" style="font-size: 0.78rem; color: #9ca3af; margin-top: 0.4rem;">Tanda tangan yang Anda buat di sini akan disimpan dan dicetak sebagai cap basah.</p>
           </div>
           
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== IDENTITAS INSTANSI (KOP SURAT BERITA ACARA) ===== -->
+    <div class="logo-card">
+      <div class="logo-card-header">
+        <div class="s-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
+        <span>Identitas Instansi (Khusus Berita Acara)</span>
+      </div>
+      <div class="logo-card-body" style="flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Logo Kop Surat BA -->
+        <div style="display: flex; gap: 2rem; align-items: flex-start; width: 100%; border-bottom: 1px solid #f0f2f5; padding-bottom: 1.5rem;">
+          <div class="preview-box" id="baLogoPreviewBox">
+            <img id="baLogoPreviewImg" src="{% if settings.BaLogoPath %}{{ settings.BaLogoPath }}{% else %}/images/logo-instansi.jpeg{% endif %}" alt="Preview Logo Berita Acara"/>
+            <span class="preview-label">Logo BA</span>
+          </div>
+          <div class="upload-area">
+            <label>Upload Logo Khusus Berita Acara</label>
+            <div class="file-row" onclick="document.getElementById('fileBaLogo').click()" style="cursor:pointer;">
+              <button type="button" class="btn-pick">Pilih File</button>
+              <span class="fname" id="baLogoName">Tidak ada file dipilih</span>
+              <input type="file" id="fileBaLogo" name="ba_logo" class="file-real" accept=".png,.jpg,.jpeg,.svg,.webp"
+                onchange="previewImage(this,'baLogoPreviewImg','baLogoName')"/>
+            </div>
+            <p class="hint">Format: PNG (transparan disarankan), JPG. Muncul di Kop Surat Berita Acara.</p>
+          </div>
+        </div>
+
+        <!-- Teks Identitas BA -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%;">
+          <div class="upload-area">
+            <label>Nama Instansi Utama</label>
+            <input type="text" name="ba_instansi" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.BaInstansi }}" placeholder="PEMERINTAH KOTA BANJARMASIN"/>
+          </div>
+          <div class="upload-area">
+            <label>Sub Instansi / Bagian</label>
+            <input type="text" name="ba_sub_instansi" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.BaSubInstansi }}" placeholder="S E K R E T A R I A T D A E R A H"/>
+          </div>
+          <div class="upload-area" style="grid-column: span 2;">
+            <label>Nama Daerah Penetapan (Kotak Validasi / Tanda Tangan)</label>
+            <input type="text" name="ba_region" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.BaRegion }}" placeholder="KOTA BANJARMASIN"/>
+          </div>
+          <div class="upload-area" style="grid-column: span 2;">
+            <label>Alamat Lengkap (Kop)</label>
+            <input type="text" name="ba_address" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.BaAddress }}" placeholder="J . RE. Martadinata No.1 Banjarmasin 70111"/>
+          </div>
+          <div class="upload-area">
+            <label>Nomor Telepon</label>
+            <input type="text" name="ba_phone" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.BaPhone }}" placeholder="(0511) 4368142"/>
+          </div>
+          <div class="upload-area">
+            <label>Nomor Fax</label>
+            <input type="text" name="ba_fax" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.BaFax }}" placeholder="3353933"/>
+          </div>
+          <div class="upload-area">
+            <label>Website</label>
+            <input type="text" name="ba_website" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.BaWebsite }}" placeholder="http://www.banjarmasinkota.go.id/"/>
+          </div>
+          <div class="upload-area">
+            <label>Email Official</label>
+            <input type="text" name="ba_email" class="form-control" style="width: 100%; border-radius: 8px; border: 1.5px solid #d1d5db; padding: 0.65rem 0.85rem; font-size: 0.875rem;"
+                   value="{{ settings.BaEmail }}" placeholder="admin@banjarmasinkota.go.id"/>
+          </div>
         </div>
       </div>
     </div>

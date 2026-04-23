@@ -1,4 +1,4 @@
-﻿{% extends "border-preview.html" %}
+{% extends "border-preview.html" %}
 
 {% block pagetitle %}
 Surat Penunjukan Pokja
@@ -6,14 +6,14 @@ Surat Penunjukan Pokja
 
 {% block content %}
 <h3 class="text-center pt-3" data-pdfmake="{'alignment' : 'center'}">
-      KEPUTUSAN SEKRETARIS DAERAH KOTA BANJARMASIN<br />
-      NOMOR 102 TAHUN 2024 <br />
+      KEPUTUSAN {{ app_settings.DocPejabatJabata }} {{ app_settings.DocRegion }}<br />
+      NOMOR {% if dokTercetak.NomorSurat %}{{ dokTercetak.NomorSurat }}{% else %}................{% endif %} TAHUN {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ pokja.Tahun }}{% endif %} <br />
       TENTANG <br />
       PENETAPAN POKJA PENGADAAN BARANG/JASA <br />
-      PADA BAGIAN PENGADAAN BARANG DAN JASA <br />
-      SEKRETARIAT DAERAH KOTA BANJARMASIN <br />
-      TAHUN ANGGARAN 2025 <br />
-      SEKRETARIS DAERAH KOTA BANJARMASIN
+      PADA {{ app_settings.DocSubInstansi }} <br />
+      {{ app_settings.DocInstansi }} <br />
+      TAHUN ANGGARAN {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ pokja.Tahun }}{% endif %} <br />
+      {{ app_settings.DocPejabatJabata }} {{ app_settings.DocRegion }}
 </h3>
 <div class="mx-auto pt-3">
   <table class="table table-borderless" data-pdfmake="{'widths': [150, '*'], 'layout': 'noBorders'}">
@@ -21,12 +21,11 @@ Surat Penunjukan Pokja
           <td width="300">Menimbang</td>
           <td valign="top">
               <ol type="a">
-                  <li>Bahwa untuk tertib dan lancarnya pelaksanaan pengadaan barang/jasa di Bagian Pengadaan Barang dan Jasa
-                      Sekretariat Daerah Kota Banjarmasin Tahun 2025 dipandang perlu menetapkan Pokja Pengadaan Barang/Jasa</li>
+                  <li>Bahwa untuk tertib dan lancarnya pelaksanaan pengadaan barang/jasa di {{ app_settings.DocSubInstansi }}
+                      {{ app_settings.DocInstansi }} Tahun {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ pokja.Tahun }}{% endif %} dipandang perlu menetapkan Pokja Pengadaan Barang/Jasa</li>
                   <li>bahwa berdasarkan pertimbangan sebagaimana dimaksud dalam huruf a,
-                      perlu menetapkan Keputusan Sekretaris Daerah tentang Penetapan Pokja Pengadaan Barang/Jasa pada Bagian
-                      Pengadaan Barang dan Jasa Sekretariat Daerah Kota
-                      Banjarmasin Tahun Anggaran 2025;
+                      perlu menetapkan Keputusan {{ app_settings.DocPejabatJabata }} tentang Penetapan Pokja Pengadaan Barang/Jasa pada {{ app_settings.DocSubInstansi }}
+                      {{ app_settings.DocInstansi }} Tahun Anggaran {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ pokja.Tahun }}{% endif %};
                   </li>
               </ol>
           </td>
@@ -74,21 +73,21 @@ Surat Penunjukan Pokja
               <li>Peraturan Lembaga Kebijakan Pengadaan Barang/Jasa Pemerintah Nomor 11 Tahun 2021
               tentang Pedoman Perencanaan Pengadaan Barang/Jasa Pemerintah (Berita Negara Republik
               Indonesia Tahun 2021 Nomor 512);</li>
-              <li>Peraturan Daerah Kota Banjarmasin Nomor 7 Tahun 2016 tentang Pembentukan dan Susunan Perangkat
-              Daerah Kota Banjarmasin (Lembaran Daerah Kota Banjarmasin Tahun 2016 Nomor 7, Tambahan
-              Lembaran Daerah Kota Banjarmasin Nomor 40) sebagaimana telah diubah dengan Peraturan Daerah
-              Kota Banjarmasin Nomor 3 Tahun 2021 tentang Perubahan atas Peraturan Daerah Kota Banjarmasin
-              Nomor 7 Tahun 2016 tentang Pembentukan dan Susunan Perangkat Daerah Kota Banjarmasin
-              (Lembaran Daerah Kota Banjarmasin Tahun 2021 Nomor 3, Tambahan Lembaran Daerah Kota
-              Banjarmasin Nomor 63);</li>
-              <li>Peraturan Daerah Kota Banjarmasin Nomor 7 Tahun
-              tentang Keuangan Daerah (Lembaran Daerah Kota Banjarmasin Tahun 2021
-              Nomor 7, Tambahan Lembaran Daerah Kota Banjarmasin Nomor 66);</li>
+              <li>Peraturan Daerah {{ app_settings.DocRegion }} Nomor 7 Tahun 2016 tentang Pembentukan dan Susunan Perangkat
+              Daerah {{ app_settings.DocRegion }} (Lembaran Daerah {{ app_settings.DocRegion }} Tahun 2016 Nomor 7, Tambahan
+              Lembaran Daerah {{ app_settings.DocRegion }} Nomor 40) sebagaimana telah diubah dengan Peraturan Daerah
+              {{ app_settings.DocRegion }} Nomor 3 Tahun 2021 tentang Perubahan atas Peraturan Daerah {{ app_settings.DocRegion }}
+              Nomor 7 Tahun 2016 tentang Pembentukan dan Susunan Perangkat Daerah {{ app_settings.DocRegion }}
+              (Lembaran Daerah {{ app_settings.DocRegion }} Tahun 2021 Nomor 3, Tambahan Lembaran Daerah {{ app_settings.DocRegion }}
+              Nomor 63);</li>
+              <li>Peraturan Daerah {{ app_settings.DocRegion }} Nomor 7 Tahun
+              tentang Keuangan Daerah (Lembaran Daerah {{ app_settings.DocRegion }} Tahun 2021
+              Nomor 7, Tambahan Lembaran Daerah {{ app_settings.DocRegion }} Nomor 66);</li>
           </ol></td>
       </tr>
       <tr>
           <td valign="top">Memperhatikan</td>
-          <td>Dokumen Pelaksanaan Anggaran Satuan Kerja Perangkat Daerah Bagian Pengadaan Barang dan Jasa Sekretariat Daerah Kota Banjarmasin Tahun Anggaran 2025</td>
+          <td>Dokumen Pelaksanaan Anggaran Satuan Kerja Perangkat Daerah {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }} Tahun Anggaran {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ pokja.Tahun }}{% endif %}</td>
       </tr>
   </table>
       <h3 class="text-center pt-3" data-pdfmake="{'alignment' : 'center', 'fontSize' : 10 }">Memutuskan</h3>
@@ -96,13 +95,12 @@ Surat Penunjukan Pokja
       <table class="table-borderless" data-pdfmake="{'widths': [150, '*'], 'layout': 'noBorders', 'fontSize' : 10}">
           <tr>
               <td width="30%" valign="top">KESATU</td>
-              <td>Pokja Pengadaan Barang/Jasa Pada Bagian Pengadaan Barang Dan Jasa Sekretariat Daerah Kota
-                  Banjarmasin Tahun Anggaran 2025 sebagai berikut: <br /><br />
+              <td>Pokja Pengadaan Barang/Jasa Pada {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }} Tahun Anggaran {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ pokja.Tahun }}{% endif %} sebagai berikut: <br /><br />
                   {% for obj in pokja.AnggotaList %}
                   Nama        : {{ obj.PegNama }} <br />
                   NIP         : {{ obj.PegNip }} <br />
                   Pangkat/Gol : {%if obj.PegPangkat %} {{ obj.PegPangkat }} ({{ obj.PegGolongan }}) {% endif %} <br />
-                  Unit Kerja  : Bagian Pengadaan Barang dan Jasa<br /><br />
+                  Unit Kerja  : {{ app_settings.DocSubInstansi }}<br /><br />
                   {% endfor %}
               </td>
           </tr>
@@ -130,24 +128,24 @@ Surat Penunjukan Pokja
           </tr>
           <tr>
               <td valign="top">KETIGA</td>
-              <td>Segala biaya yang timbul akibat ditetapkanny Keputusan Sekretaris Daerah ini dibebankan pada Anggaran Pendapatan dan Belanja Daerah
-              Banjarmasin Tahun Anggaran 2025 pada Bagian Pengadaan Barang dan Jasa Sekretariat Daerah Kota Banjarmasin.</td>
+              <td>Segala biaya yang timbul akibat ditetapkannya Keputusan {{ app_settings.DocPejabatJabata }} ini dibebankan pada Anggaran Pendapatan dan Belanja Daerah
+              {{ app_settings.DocRegion }} Tahun Anggaran {% if dokTercetak.TahunSurat %}{{ dokTercetak.TahunSurat }}{% else %}{{ pokja.Tahun }}{% endif %} pada {{ app_settings.DocSubInstansi }} {{ app_settings.DocInstansi }}.</td>
           </tr>
           <tr>
               <td valign="top">KEEMPAT</td>
-              <td>Keputusan Sekretaris Daerah ini mulai berlaku pada tanggal ditetapkan.</td>
+              <td>Keputusan {{ app_settings.DocPejabatJabata }} ini mulai berlaku pada tanggal ditetapkan.</td>
           </tr>
       </table>
       <p class="pt-3" data-pdfmake="{'marginLeft': 5, 'fontSize' : 10}" style="padding-left: 70%;">
-          Ditetapkan di Banjarmasin <br />
-          pada tanggal 9 Desember 2024 <br />
-          SEKRETARIS DAERAH <br />
-          KOTA BANJARMASIN <br />
+          Ditetapkan di {{ app_settings.DocRegion }} <br />
+          pada tanggal {% if tglPenetapan %}{{ tglPenetapan }}{% else %}................{% endif %} <br />
+          {{ app_settings.DocPejabatJabata }} <br />
+          {{ app_settings.DocInstansi }} <br />
           <br />
           <br />
           <br />
           <br />
-          AHSAN BUDIMAN
+          {{ app_settings.DocPejabatNama }}
       </p>
 </div>
 {% endblock %}

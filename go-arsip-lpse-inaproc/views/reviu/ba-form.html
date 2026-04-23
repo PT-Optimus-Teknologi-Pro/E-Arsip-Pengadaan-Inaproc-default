@@ -3,14 +3,11 @@
 {% block pagetitle %}Kelola Berita Acara Reviu{% endblock %}
 
 {% block css %}
-<link href="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/css/suneditor.min.css" rel="stylesheet">
 <style>
     .reviu-table th { background-color: #f8fbff; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; color: #495057; }
     .reviu-table td { vertical-align: middle; }
     .form-check-inline { margin-right: 1.5rem; }
     .bidang-header { background-color: #f1f5f9; padding: 8px 12px; border-radius: 4px; margin-bottom: 5px; color: #334155; }
-    .sun-editor { border-color: #e2e8f0 !important; border-radius: 6px !important; }
-    .se-resizing-bar { display: none !important; }
     .card-title { font-weight: 700; color: #1e293b; }
     .form-label.required:after { content: " *"; color: red; }
 </style>
@@ -145,17 +142,17 @@
                     <div class="card-body">
                         <div class="mb-4">
                             <label class="form-label fw-bold mb-2">I. Dasar Pelaksanaan</label>
-                            <textarea id="dasar_pelaksanaan" name="dasar_pelaksanaan" style="display:none">{% if ba.DasarPelaksanaan %}{{ ba.DasarPelaksanaan }}{% else %}{{ tplDasar }}{% endif %}</textarea>
+                            <textarea id="dasar_pelaksanaan" name="dasar_pelaksanaan">{% if ba.DasarPelaksanaan %}{{ ba.DasarPelaksanaan }}{% else %}{{ tplDasar }}{% endif %}</textarea>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold mb-2">II. Pembahasan Reviu</label>
-                            <textarea id="pembahasan" name="pembahasan" style="display:none">{% if ba.Pembahasan %}{{ ba.Pembahasan }}{% else %}{{ tplPembahasan }}{% endif %}</textarea>
+                            <textarea id="pembahasan" name="pembahasan">{% if ba.Pembahasan %}{{ ba.Pembahasan }}{% else %}{{ tplPembahasan }}{% endif %}</textarea>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold mb-2">III. Kesimpulan Akhir</label>
-                            <textarea id="kesimpulan" name="kesimpulan" style="display:none">{% if ba.Kesimpulan %}{{ ba.Kesimpulan }}{% else %}{{ tplKesimpulan }}{% endif %}</textarea>
+                            <textarea id="kesimpulan" name="kesimpulan">{% if ba.Kesimpulan %}{{ ba.Kesimpulan }}{% else %}{{ tplKesimpulan }}{% endif %}</textarea>
                         </div>
                     </div>
                     <div class="card-footer text-end">
@@ -232,55 +229,13 @@
 {% endblock %}
 
 {% block script %}
-<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // ---- 1. SunEditor Initialization (with safety check) ----
-        const editorConfig = {
-            buttonList: [
-                ['undo', 'redo'],
-                ['bold', 'underline', 'italic', 'strike'],
-                ['fontColor', 'hiliteColor'],
-                ['align', 'horizontalRule', 'list'],
-                ['table', 'fullScreen', 'codeView']
-            ],
-            width: '100%',
-            mode: 'classic',
-            lang: 'en'
-        };
-
-        let editorDasar, editorPembahasan, editorKesimpulan;
-
-        try {
-            if (typeof SUNEDITOR !== 'undefined') {
-                editorDasar = SUNEDITOR.create('dasar_pelaksanaan', { ...editorConfig, height: '180px' });
-                editorPembahasan = SUNEDITOR.create('pembahasan', { ...editorConfig, height: '250px' });
-                editorKesimpulan = SUNEDITOR.create('kesimpulan', { ...editorConfig, height: '180px' });
-            } else {
-                throw new Error('SunEditor library not loaded');
-            }
-        } catch (e) {
-            console.warn("Rich text editor failed to load. Falling back to standard textareas.");
-            const textareas = ['dasar_pelaksanaan', 'pembahasan', 'kesimpulan'];
-            textareas.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.style.display = 'block';
-                    el.classList.add('form-control');
-                    el.rows = 8;
-                }
-            });
-        }
-
-        // Sync contents before submit
-        document.querySelectorAll('form').forEach(function(f) {
-            f.addEventListener('submit', function() {
-                if (editorDasar) document.getElementById('dasar_pelaksanaan').value = editorDasar.getContents();
-                if (editorPembahasan) document.getElementById('pembahasan').value = editorPembahasan.getContents();
-                if (editorKesimpulan) document.getElementById('kesimpulan').value = editorKesimpulan.getContents();
-            });
-        });
+        // ---- 1. Trumbowyg Initialization ----
+        $('#dasar_pelaksanaan').trumbowyg();
+        $('#pembahasan').trumbowyg();
+        $('#kesimpulan').trumbowyg();
 
         // ---- 2. Signature Pad Initialization ----
         const canvas = document.getElementById('sigCanvas');

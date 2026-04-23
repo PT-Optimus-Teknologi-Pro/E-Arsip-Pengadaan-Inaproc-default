@@ -119,9 +119,34 @@ func PreviewBA(c *fiber.Ctx) error {
 	// Fetch foto rapat dari dok_paket
 	fotoRapat := models.GetDokPaketJenis(id, models.FOTO_RAPAT)
 	
+	// Fetch existing BA Metadata
+	var ba models.BeritaAcara
+	models.GetDB().Where("pkt_id = ? AND jenis = 'REVIU'", id).First(&ba)
+
+	// Get master review list and saved results
+	reviuMaster := services.GetAllReviu()
+	var reviuResults []models.ReviuPaket
+	models.GetDB().Where("pkt_id = ?", id).Find(&reviuResults)
+
+	resMap := make(map[uint]models.ReviuPaket)
+	for _, r := range reviuResults {
+		resMap[r.RevId] = r
+	}
+
+	mp["ba"] = ba
+	mp["reviuMaster"] = reviuMaster
+	mp["reviuResults"] = resMap
 	mp["datas"] = data
 	mp["paket"] = services.GetPaket(id)
 	mp["fotoRapat"] = fotoRapat
+	
+	// Helper for date formatting in template
+	if ba.Tanggal.Valid {
+		mp["baTanggalStr"] = ba.Tanggal.Time.Format("02 January 2006") // Default format, you can adjust
+	} else {
+		mp["baTanggalStr"] = "-"
+	}
+
 	return c.Render("ba/ba-kajiulang", mp)
 }
 

@@ -57,6 +57,9 @@ func PreviewSkPp(c *fiber.Ctx) error {
 
 		valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), hash)
 		mp["qrValidasi"] = generateQrBase64(valUrl)
+        if !dok.TanggalPenetapan.IsZero() {
+            mp["tglPenetapan"] = dok.TanggalPenetapan.Format("02-01-2006")
+        }
 	}
 
 	appSettings := services.GetSettings()
@@ -439,6 +442,9 @@ func PreviewSkPokja(c *fiber.Ctx) error {
 		mp["dokTercetak"] = dok
 		valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), hash)
 		mp["qrValidasi"] = generateQrBase64(valUrl)
+        if !dok.TanggalPenetapan.IsZero() {
+            mp["tglPenetapan"] = dok.TanggalPenetapan.Format("02-01-2006")
+        }
 	}
 	return c.Render("preview/surat-penunjukan-pokja", mp)
 }
@@ -469,6 +475,9 @@ func CetakSkPokjaProcess(c *fiber.Ctx) error {
 	mp["dokTercetak"] = dok
 	valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), dok.Md5Hash)
 	mp["qrValidasi"] = generateQrBase64(valUrl)
+    if !dok.TanggalPenetapan.IsZero() {
+        mp["tglPenetapan"] = dok.TanggalPenetapan.Format("02-01-2006")
+    }
 
 	html, _ := renderToString("preview/surat-penunjukan-pokja", mp)
 	result := utils.ExportHtmlToPdf(html, "")

@@ -89,6 +89,16 @@ func UpdateLogoSettings(c *fiber.Ctx) error {
 	if v := c.FormValue("doc_pejabat_jabata"); v != "" { settings.DocPejabatJabata = v }
 	if v := c.FormValue("doc_pejabat_nip"); v != "" { settings.DocPejabatNip = v }
 	if v := c.FormValue("doc_region"); v != "" { settings.DocRegion = v }
+
+	// Identitas Instansi Khusus Berita Acara
+	if v := c.FormValue("ba_instansi"); v != "" { settings.BaInstansi = v }
+	if v := c.FormValue("ba_sub_instansi"); v != "" { settings.BaSubInstansi = v }
+	if v := c.FormValue("ba_address"); v != "" { settings.BaAddress = v }
+	if v := c.FormValue("ba_phone"); v != "" { settings.BaPhone = v }
+	if v := c.FormValue("ba_fax"); v != "" { settings.BaFax = v }
+	if v := c.FormValue("ba_website"); v != "" { settings.BaWebsite = v }
+	if v := c.FormValue("ba_email"); v != "" { settings.BaEmail = v }
+	if v := c.FormValue("ba_region"); v != "" { settings.BaRegion = v }
 	
 	if v := c.FormValue("doc_signature_mode"); v != "" { 
 	    settings.DocSignatureMode = v 
@@ -115,6 +125,27 @@ func UpdateLogoSettings(c *fiber.Ctx) error {
 		}
 	} else if err != nil && !strings.Contains(err.Error(), "no such file") {
 		log.Errorf("Error receiving doc_logo file: %v", err)
+	}
+
+	// Handle upload logo berita acara
+	baLogoFile, err := c.FormFile("ba_logo")
+	if err == nil && baLogoFile != nil {
+		log.Infof("Receiving ba_logo upload: %s (%d bytes)", baLogoFile.Filename, baLogoFile.Size)
+		ext := strings.ToLower(filepath.Ext(baLogoFile.Filename))
+		if ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".svg" || ext == ".webp" {
+			filename := fmt.Sprintf("ba_logo_%d%s", time.Now().Unix(), ext)
+			dst := filepath.Join(settingsUploadDir, filename)
+			if err := c.SaveFile(baLogoFile, dst); err != nil {
+				log.Error("Gagal simpan logo BA: ", err)
+			} else {
+				settings.BaLogoPath = "/uploads/settings/" + filename
+				log.Infof("Logo BA berhasil disimpan: %s", settings.BaLogoPath)
+			}
+		} else {
+			log.Warnf("Extension logo BA tidak valid: %s", ext)
+		}
+	} else if err != nil && !strings.Contains(err.Error(), "no such file") {
+		log.Errorf("Error receiving ba_logo file: %v", err)
 	}
 
 	// Handle upload signature (Tanda Tangan Pejabat Fisik atau Canvas)

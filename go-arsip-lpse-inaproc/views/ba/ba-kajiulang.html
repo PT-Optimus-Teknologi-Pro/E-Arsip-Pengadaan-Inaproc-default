@@ -22,9 +22,106 @@ Berita Acara Reviu Dokumen
     {% include "tabmenu.html" %}
     <div class="card tab-content">
         <div class="card-body">
-            <div id="pdf">
-            <h4>Berita Acara Reviu Dokumen</h4>
-            <p>[template Berita Acara Reviu Dokumen]</p>
+            <div id="pdf" style="padding: 20px; color: #000;">
+                
+                <!-- Kop Surat -->
+                <table style="width: 100%; border-bottom: 3px solid #000; margin-bottom: 2px;">
+                    <tr>
+                        <td style="width: 15%; text-align: center; padding-bottom: 10px;">
+                            <img src="{% if app_settings.BaLogoPath %}{{ app_settings.BaLogoPath }}{% else %}/images/logo-instansi.jpeg{% endif %}" alt="Logo" style="max-width: 90px;">
+                        </td>
+                        <td style="width: 85%; text-align: center; padding-bottom: 10px; line-height: 1.2;">
+                            <div style="font-size: 16pt; font-weight: bold; margin-bottom: 5px;">{{ app_settings.BaInstansi }}</div>
+                            <div style="font-size: 14pt; font-weight: bold; letter-spacing: 2px; margin-bottom: 5px;">{{ app_settings.BaSubInstansi }}</div>
+                            <div style="font-size: 10pt;">
+                                {{ app_settings.BaAddress }}<br>
+                                {{ app_settings.BaPhone }} Fax. {{ app_settings.BaFax }}<br>
+                                {{ app_settings.BaWebsite }} {{ app_settings.BaEmail }}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div style="border-bottom: 1px solid #000; margin-bottom: 20px;"></div>
+
+                <!-- Judul -->
+                <div style="text-align: center; margin-bottom: 20px; line-height: 1.5;">
+                    <div style="font-size: 12pt; font-weight: bold;">BERITA ACARA REVIU DOKUMEN PERSIAPAN PENGADAAN LANGSUNG</div>
+                    <div style="font-size: 11pt; font-weight: bold;">Nomor: {{ ba.Nomor }}</div>
+                    
+                    <div style="font-size: 11pt; font-weight: bold; margin-top: 15px;">OPD/SKPD: {{ paket.Rup().NamaKLPD }}</div>
+                    <div style="font-size: 11pt; font-weight: bold;">TAHUN ANGGARAN {{ paket.Tahun() }}</div>
+                    <div style="font-size: 11pt; font-weight: bold;">SUB KEGIATAN : {{ ba.SubKeg }}</div>
+                    <div style="font-size: 11pt; font-weight: bold; margin-top: 10px;">Pengadaan : {{ ba.Pengadaan }}</div>
+                </div>
+
+                <!-- Info Pelaksanaan -->
+                <table style="width: 100%; max-width: 500px; margin-bottom: 20px; font-size: 11pt;">
+                    <tr>
+                        <td style="width: 30%;">Hari / Tanggal</td>
+                        <td style="width: 2%;">:</td>
+                        <td>{{ ba.Hari }} / {{ baTanggalStr }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tempat</td>
+                        <td>:</td>
+                        <td>{{ ba.Tempat }}</td>
+                    </tr>
+                    <tr>
+                        <td>Waktu (Jam)</td>
+                        <td>:</td>
+                        <td>{{ ba.Waktu }}</td>
+                    </tr>
+                    <tr>
+                        <td>Pengkaji</td>
+                        <td>:</td>
+                        <td>Absen Terlampir</td>
+                    </tr>
+                </table>
+
+                <div style="font-size: 11pt; margin-bottom: 15px;">Pada tahap ini dilakukan reviu dokumen persiapan pengadaan sebagai berikut:</div>
+
+                <!-- Tabel Reviu -->
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10pt;" border="1">
+                    <thead>
+                        <tr>
+                            <th style="padding: 8px; text-align: center; width: 5%;">No</th>
+                            <th style="padding: 8px; text-align: center; width: 25%;">Bidang Reviu</th>
+                            <th style="padding: 8px; text-align: center; width: 45%;">Hal-hal yang dikaji ulang</th>
+                            <th style="padding: 8px; text-align: center; width: 25%;">Kesimpulan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set lastBidang = "" %}
+                        {% set noBidang = 0 %}
+                        {% for m in reviuMaster %}
+                        {% set res = reviuResults[m.ID] %}
+                        <tr>
+                            <td style="padding: 8px; text-align: center; vertical-align: top;">
+                                {% if m.Bidang != lastBidang %}
+                                    {% set noBidang = noBidang + 1 %}
+                                    {{ noBidang }}
+                                {% endif %}
+                            </td>
+                            <td style="padding: 8px; vertical-align: top;">
+                                {% if m.Bidang != lastBidang %}
+                                    {{ m.Bidang }}
+                                    {% set lastBidang = m.Bidang %}
+                                {% endif %}
+                            </td>
+                            <td style="padding: 8px; vertical-align: top;">{{ m.Content }}</td>
+                            <td style="padding: 8px; text-align: center; vertical-align: top;">
+                                {% if res.Status == 1 %}
+                                    {{ m.Opsi1 }} / <span style="text-decoration: line-through;">{{ m.Opsi2 }}</span>
+                                {% elif res.Status == 2 %}
+                                    <span style="text-decoration: line-through;">{{ m.Opsi1 }}</span> / {{ m.Opsi2 }}
+                                {% else %}
+                                    {{ m.Opsi1 }} / {{ m.Opsi2 }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             
             {% if fotoRapat.ID != 0 %}
             <div class="mt-4">

@@ -34,6 +34,17 @@ type AppSettings struct {
 	DocSignatureMode string `json:"doc_signature_mode" gorm:"default:'barcode'"`
 	DocSignaturePath string `json:"doc_signature_path" gorm:"default:''"`
 	FooterLogoWhite  bool   `json:"footer_logo_white" gorm:"default:false"`
+
+	// Identitas Instansi Khusus untuk Berita Acara (Kop Surat BA)
+	BaInstansi      string `json:"ba_instansi" gorm:"default:'PEMERINTAH KOTA BANJARMASIN'"`
+	BaSubInstansi   string `json:"ba_sub_instansi" gorm:"default:'S E K R E T A R I A T D A E R A H'"`
+	BaAddress       string `json:"ba_address" gorm:"default:'J . RE. Martadinata No.1 Banjarmasin 70111'"`
+	BaPhone         string `json:"ba_phone" gorm:"default:'(0511) 4368142 4368145'"`
+	BaFax           string `json:"ba_fax" gorm:"default:'3353933'"`
+	BaWebsite       string `json:"ba_website" gorm:"default:'http://www.banjarmasinkota.go.id/'"`
+	BaEmail         string `json:"ba_email" gorm:"default:'admin@banjarmasinkota.go.id'"`
+	BaLogoPath      string `json:"ba_logo_path" gorm:"default:''"`
+	BaRegion        string `json:"ba_region" gorm:"default:'KOTA BANJARMASIN'"`
 }
 
 func (AppSettings) TableName() string {
