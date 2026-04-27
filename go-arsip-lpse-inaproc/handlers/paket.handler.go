@@ -711,7 +711,6 @@ func HapusDokPersiapanSnapshot(c *fiber.Ctx) error {
 	}
 	return c.Redirect("/dok-final/" + utils.UintToString(snap.PktId))
 }
-}
 
 func UnlockAddendumReview(c *fiber.Ctx) error {
 	id := utils.StringToUint(c.Params("id"))
@@ -814,34 +813,6 @@ func FinishAddendumReview(c *fiber.Ctx) error {
 	}
 
 	return flashSuccess(c, "Addendum Berhasil Diselesaikan. Dokumen telah difinalisasi.", "/dok-final/"+utils.UintToString(id))
-}
-
-	// Targets: PPK and Pokja/PP
-	var targets []uint
-	if paket.PpkId > 0 {
-		targets = append(targets, paket.PpkId)
-	}
-	if paket.PpId > 0 {
-		targets = append(targets, paket.PpId)
-	} else if paket.PntId > 0 {
-		pokja := paket.Pokja()
-		for _, m := range pokja.AnggotaList() {
-			targets = append(targets, m.ID)
-		}
-	}
-
-	for _, targetId := range targets {
-		inbox := models.Inbox{
-			PegId:       targetId,
-			Subject:     subject,
-			Content:     content,
-			Status:      "inbox",
-			EnqueueDate: time.Now(),
-		}
-		models.SaveInbox(&inbox)
-	}
-
-	return flashSuccess(c, "Addendum Berhasil Diaktifkan. Versi sebelumnya telah disimpan di riwayat dan notifikasi telah dikirim.", "/dok-final/"+utils.UintToString(id))
 }
 
 func DokPersiapanPaketPersetujuan(c *fiber.Ctx) error {

@@ -4,4 +4,5 @@
 go-arsip-lpse-inaproc/fileupload
 go-arsip-lpse-inaproc/theme
 sync-inaproc-main-scheduller/fileupload
+sync-inaproc-main-scheduller/.env
 sync-inaproc-main-scheduller/theme

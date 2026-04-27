@@ -159,16 +159,20 @@ func GetInbox(id uint) models.Inbox {
 func SendNotifikasi(user *models.Pegawai, plainPassw string) error {
 	content := `Proses Registrasi Akun berhasil dilakukan. Informasi akun : <br />
  					User ID : %s <br/>
-				    Password : %s <br />
-				Silahkan login dengan menggunakan Akun.`
-	email := models.Inbox{
-		Subject: "Notifikasi Registrasi Akun",
-		PegId: user.ID,
-		Content: fmt.Sprintf(content, user.PegNamauser, plainPassw),
-		Status: "inbox",
+ 				    Password : %s <br />
+ 				Silahkan login dengan menggunakan Akun.`
+	return SendNotification(user.ID, "Notifikasi Registrasi Akun", fmt.Sprintf(content, user.PegNamauser, plainPassw))
+}
+
+func SendNotification(pegId uint, subject string, content string) error {
+	notification := models.Inbox{
+		Subject:     subject,
+		PegId:       pegId,
+		Content:     content,
+		Status:      "inbox",
 		EnqueueDate: time.Now(),
 	}
-	return models.SaveInbox(&email)
+	return models.SaveInbox(&notification)
 }
 
 func Registrasi(c *fiber.Ctx, pegawai *models.Pegawai, plainPassw string) error {
