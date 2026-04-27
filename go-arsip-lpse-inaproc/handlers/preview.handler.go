@@ -628,7 +628,9 @@ func generateQrBase64(content string) string {
 		log.Error("Generate QR Code failed: ", qrErr)
 		return ""
 	}
-	return base64.StdEncoding.EncodeToString(qrPng)
+	b64 := base64.StdEncoding.EncodeToString(qrPng)
+	log.Infof("QR Code generated for %s (length: %d)", content, len(b64))
+	return b64
 }
 
 func PreviewBAKajiUlang(c *fiber.Ctx) error {
@@ -640,6 +642,12 @@ func PreviewBAKajiUlang(c *fiber.Ctx) error {
 		mp["dokTercetak"] = dok
 		valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), hash)
 		mp["qrValidasi"] = generateQrBase64(valUrl)
+	} else {
+		// Always provide a QR code even for draft preview
+		valUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%s", c.Protocol(), c.Hostname(), c.Params("id"))
+		qr := generateQrBase64(valUrl)
+		mp["qrValidasi"] = qr
+		mp["qr_validasi"] = qr
 	}
 	return c.Render("preview/ba-kajiulang", mp)
 }
@@ -652,6 +660,11 @@ func CetakBAKajiUlang(c *fiber.Ctx) error {
 		models.SavePaket(&paket) 
 	}
 	mp := prepareBAKajiUlangData(c)
+	valUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%s", c.Protocol(), c.Hostname(), c.Params("id"))
+	qr := generateQrBase64(valUrl)
+	mp["qrValidasi"] = qr
+	mp["qr_validasi"] = qr
+	
 	html, _ := renderToString("preview/ba-kajiulang", mp)
 	result := utils.ExportHtmlToPdf(html, "")
 	c.Set("Content-Type", "application/pdf")
@@ -670,7 +683,10 @@ func CetakBAKajiUlangProcess(c *fiber.Ctx) error {
 	mp := prepareBAKajiUlangData(c)
 	mp["dokTercetak"] = dok
 	valUrl := fmt.Sprintf("%s://%s/validasi/dokumen/%s", c.Protocol(), c.Hostname(), dok.Md5Hash)
-	mp["qrValidasi"] = generateQrBase64(valUrl)
+	qr := generateQrBase64(valUrl)
+	mp["qrValidasi"] = qr
+	mp["qr_validasi"] = qr
+	
 	html, _ := renderToString("preview/ba-kajiulang", mp)
 	result := utils.ExportHtmlToPdf(html, "")
 	c.Set("Content-Type", "application/pdf")

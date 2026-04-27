@@ -34,7 +34,8 @@ func init() {
 		&PejabatPengadaan{}, &PejabatPengadaanSatker{}, &PejabatPengadaanPegawai{},
 		&Tender{}, &Nontender{}, &Pencatatan{}, &Swakelola{}, &TenderSelesai{}, &NontenderSelesai{}, &Katalog{}, &Jadwal{}, &Peserta{}, &Kontrak{}, &KontrakNontender{})
 	db.AutoMigrate(&Anggaran{}, &Paket{}, &PaketAnggaran{}, &PaketSatker{}, &PaketLokasi{}, &ChecklistPaket{}, &ChecklistPaketHistory{}, &DokPaket{},
-		&BeritaAcara{}, &Reviu{}, &ReviuPaket{}, &KajiUlang{}, &DokPersiapan{}, &PerubahanData{}, &PersetujuanDokPersiapan{}, &PaketPPk{}, &ReviuBidang{})
+		&BeritaAcara{}, &Reviu{}, &ReviuPaket{}, &KajiUlang{}, &DokPersiapan{}, &PerubahanData{}, &PersetujuanDokPersiapan{}, &PaketPPk{}, &ReviuBidang{},
+		&ReviewAddendum{}, &ReviewAddendumSnapshot{})
 	db.AutoMigrate(&Itkp{}, &AppSettings{}, &HeroSlider{}, &FooterSocialLink{}, &FooterQuickLink{}, &FooterService{}, &DokumenTercetak{})
 
 	AutoCreateReviuMaster()

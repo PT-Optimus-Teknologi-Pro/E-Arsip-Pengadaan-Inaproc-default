@@ -5,37 +5,30 @@ Berita Acara Reviu Dokumen
 {% endblock %}
 
 {% block content %}
-<div class="ba-preview-wrap" style="color: #000; font-family: 'Times New Roman', Times, serif; line-height: 1.5;">
-    <table style="width: 100%; border: none; margin-bottom: 5px;">
-        <tr>
-            <td style="width: 25%;"></td>
-            <td style="width: 50%; text-align: center;">
-                <h3 class="text-center" style="font-weight: 700; text-transform: uppercase; margin-bottom: 5px; font-size: 1.5rem;">BERITA ACARA REVIU DOKUMEN PERSIAPAN PENGADAAN</h3>
-                <h4 class="text-center" style="font-weight: 700; margin-bottom: 5px; font-size: 1.25rem;">Nomor: {% if dokTercetak.NomorSurat %}{{ dokTercetak.NomorSurat }}{% else %}{{ ba.Nomor|default:'................................' }}{% endif %}</h4>
-            </td>
-            <td style="width: 25%; text-align: right; vertical-align: top;">
-                {% if qrValidasi %}
-                <div style="border:1px solid #ccc; padding:3px; display:inline-block; text-align:center;">
-                    <img src="data:image/png;base64,{{ qrValidasi }}" style="width:75px;"><br>
-                    <div style="font-size:6pt; text-align:center; font-weight:bold;">Scan Verifikasi</div>
-                </div>
-                {% endif %}
-            </td>
-        </tr>
-    </table>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h3 style="font-weight: 700; text-transform: uppercase; margin-bottom: 5px; font-size: 1.3rem;">BERITA ACARA REVIU DOKUMEN PERSIAPAN {{ metode(paket.Metode)|upper }}</h3>
+        <h4 style="font-weight: 700; margin-bottom: 5px; font-size: 1.1rem;">Nomor: {% if dokTercetak.NomorSurat %}{{ dokTercetak.NomorSurat }}{% else %}{{ ba.Nomor|default:'................................' }}{% endif %}</h4>
+    </div>
     
-    <div style="margin: 2rem 0; font-size: 1.1rem;">
+    <div style="margin: 1.5rem 0; font-size: 11pt;">
         <table class="table-borderless w-100">
             <tr>
                 <td style="width: 25%;">OPD/SKPD</td>
                 <td style="width: 2%;">:</td>
-                <td style="font-weight: 700; text-transform: uppercase;">{{ ba.SubKeg|default:paket.Satker().Nama }}</td>
+                <td style="font-weight: 700; text-transform: uppercase;">{{ paket.Rup().NamaKLPD|default:appSettings.DocSubInstansi }}</td>
             </tr>
             <tr>
                 <td>Tahun Anggaran</td>
                 <td>:</td>
-                <td>{{ paket.Rup().Tahun|default:'2026' }}</td>
+                <td>{{ paket.Tahun|default:'2026' }}</td>
             </tr>
+            {% if ba.SubKeg %}
+            <tr>
+                <td>Sub Kegiatan</td>
+                <td>:</td>
+                <td>{{ ba.SubKeg }}</td>
+            </tr>
+            {% endif %}
             <tr>
                 <td>Nama Pengadaan</td>
                 <td>:</td>
@@ -85,7 +78,7 @@ Berita Acara Reviu Dokumen
             <tr style="background: #f0f0f0;">
                 <th style="width: 5%; text-align: center; border: 1px solid #000;">No</th>
                 <th style="width: 20%; text-align: center; border: 1px solid #000;">Bidang Reviu</th>
-                <th style="text-align: center; border: 1px solid #000;">Hal-hal yang direviu</th>
+                <th style="text-align: center; border: 1px solid #000;">Hal-hal yang dikaji ulang</th>
                 <th style="width: 20%; text-align: center; border: 1px solid #000;">Kesimpulan</th>
             </tr>
         </thead>
@@ -117,11 +110,11 @@ Berita Acara Reviu Dokumen
                     </td>
                     <td style="text-align: center; border: 1px solid #000; font-weight: 700;">
                         {% if res.Status == 1 %}
-                            {{ m.Opsi1|default:'Sesuai / Tersedia' }}
+                            {{ m.Opsi1|default:'Sesuai' }} / <span style="text-decoration: line-through; color: #888;">{{ m.Opsi2|default:'Tidak Sesuai' }}</span>
                         {% elif res.Status == 2 %}
-                            {{ m.Opsi2|default:'Tidak Sesuai' }}
+                            <span style="text-decoration: line-through; color: #888;">{{ m.Opsi1|default:'Sesuai' }}</span> / {{ m.Opsi2|default:'Tidak Sesuai' }}
                         {% else %}
-                            -
+                            {{ m.Opsi1|default:'Sesuai' }} / {{ m.Opsi2|default:'Tidak Sesuai' }}
                         {% endif %}
                     </td>
                 </tr>

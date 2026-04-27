@@ -674,6 +674,12 @@ func DokPersiapanPaket(c *fiber.Ctx) error {
 	mp["allowUpload"] = (mp["isPPK"].(bool) || mp["isPokja"].(bool) || mp["isPP"].(bool)) && !isLocked
 	mp["fotoRapat"] = fotoRapat
 	mp["addendums"] = models.GetReviewAddendumList(id)
+	
+	// Fetch all snapshots for history
+	var historySnapshots []models.ReviewAddendumSnapshot
+	models.GetDB().Where("pkt_id = ?", id).Order("id DESC").Find(&historySnapshots)
+	mp["historySnapshots"] = historySnapshots
+
 	return c.Render("paket/dok-persiapan", mp)
 }
 
@@ -688,22 +694,23 @@ func SimpanDokumenPersiapanPaket(c *fiber.Ctx) error {
 	if paket.IsLockedReview && !paket.IsAddendum {
 		return flashError(c, "Dokumen sudah dikunci(Final). Silakan aktifkan Addendum untuk mengubah.", "/dok-final/"+utils.UintToString(id))
 	}
-	
-	// Extra check: if NOT in addendum mode, prevent upload if ANY approval exists
-	if !paket.IsAddendum {
-		for _, dp := range paket.DokPersiapan() {
-			if !dp.IsBelumAdaPersetujuan() {
-				return flashError(c, "Dokumen sudah mulai disetujui. Tidak dapat mengubah file kecuali melalui Addendum.", "/dok-final/"+utils.UintToString(id))
-			}
-		}
-	}
-	
 	err := services.SimpanDokPersiapanPaket(c, id, userid)
 	if err != nil {
 		log.Error(err)
 		return flashError(c, "Simpan Dokumen Persiapan gagal", "/dok-final/" + utils.UintToString(id))
 	}
 	return flashSuccess(c, "Simpan Dokumen Persiapan Sukses","/dok-final/"+utils.UintToString(id))
+}
+
+func HapusDokPersiapanSnapshot(c *fiber.Ctx) error {
+	id := utils.StringToUint(c.Params("id"))
+	var snap models.ReviewAddendumSnapshot
+	models.GetDB().First(&snap, id)
+	if snap.ID > 0 {
+		models.GetDB().Delete(&snap)
+	}
+	return c.Redirect("/dok-final/" + utils.UintToString(snap.PktId))
+}
 }
 
 func UnlockAddendumReview(c *fiber.Ctx) error {
@@ -772,6 +779,42 @@ func UnlockAddendumReview(c *fiber.Ctx) error {
 	// 5. Send Inbox Notifications to relevant parties
 	subject := "Pemberitahuan Addendum Reviu Dokumen: " + paket.Nama
 	content := fmt.Sprintf("Addendum telah diaktifkan untuk paket %s. Alasan: %s. Silakan lakukan peninjauan dan persetujuan ulang pada dokumen persiapan.", paket.Nama, c.FormValue("reason"))
+	
+	services.SendNotification(paket.PpkId, subject, content)
+	services.SendNotification(paket.PpId, subject, content)
+	for _, a := range paket.Pokja().AnggotaList() {
+		services.SendNotification(a.ID, subject, content)
+	}
+
+	return flashSuccess(c, "Addendum Berhasil Diaktifkan. Silakan upload revisi dokumen.", "/dok-final/"+utils.UintToString(id))
+}
+
+func FinishAddendumReview(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+	paket := services.GetPaket(id)
+
+	if !services.AuthorisasiPaket(paket, mp) {
+		return Forbiden(c)
+	}
+
+	// Set Status back to Locked
+	paket.IsAddendum = false
+	paket.IsLockedReview = true
+	models.SavePaket(&paket)
+
+	// Send Notifications
+	subject := "Penyelesaian Addendum Reviu Dokumen: " + paket.Nama
+	content := "Proses penyesuaian/addendum reviu dokumen telah selesai dan dokumen telah difinalisasi kembali."
+	
+	services.SendNotification(paket.PpkId, subject, content)
+	services.SendNotification(paket.PpId, subject, content)
+	for _, a := range paket.Pokja().AnggotaList() {
+		services.SendNotification(a.ID, subject, content)
+	}
+
+	return flashSuccess(c, "Addendum Berhasil Diselesaikan. Dokumen telah difinalisasi.", "/dok-final/"+utils.UintToString(id))
+}
 
 	// Targets: PPK and Pokja/PP
 	var targets []uint
@@ -954,6 +997,18 @@ func HapusDokPaket(c *fiber.Ctx) error {
 	}
 	
 	return flashSuccess(c, "Hapus Dokumen Sukses", "/paket/"+utils.UintToString(pktId))
+}
+
+func HapusDokPersiapan(c *fiber.Ctx) error {
+	log.Info("hapus dok persiapan")
+	id := utils.StringToUint(c.Params("id"))
+	pktId, err := services.HapusDokPersiapan(id)
+	if err != nil {
+		log.Error(err)
+		return flashError(c, "Hapus Dokumen Gagal", "/dok-final/"+utils.UintToString(pktId))
+	}
+
+	return flashSuccess(c, "Hapus Dokumen Sukses", "/dok-final/"+utils.UintToString(pktId))
 }
 
 func GantiPPK(c *fiber.Ctx) error {

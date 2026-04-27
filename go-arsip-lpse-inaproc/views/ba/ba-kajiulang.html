@@ -27,10 +27,10 @@ Berita Acara Reviu Dokumen
                 <!-- Kop Surat -->
                 <table style="width: 100%; border-bottom: 3px solid #000; margin-bottom: 2px;">
                     <tr>
-                        <td style="width: 15%; text-align: center; padding-bottom: 10px;">
+                        <td style="width: 15%; text-align: center; padding-bottom: 10px; vertical-align: middle;">
                             <img src="{% if app_settings.BaLogoPath %}{{ app_settings.BaLogoPath }}{% else %}/images/logo-instansi.jpeg{% endif %}" alt="Logo" style="max-width: 90px;">
                         </td>
-                        <td style="width: 85%; text-align: center; padding-bottom: 10px; line-height: 1.2;">
+                        <td style="width: 70%; text-align: center; padding-bottom: 10px; line-height: 1.2; vertical-align: middle;">
                             <div style="font-size: 16pt; font-weight: bold; margin-bottom: 5px;">{{ app_settings.BaInstansi }}</div>
                             <div style="font-size: 14pt; font-weight: bold; letter-spacing: 2px; margin-bottom: 5px;">{{ app_settings.BaSubInstansi }}</div>
                             <div style="font-size: 10pt;">
@@ -38,6 +38,10 @@ Berita Acara Reviu Dokumen
                                 {{ app_settings.BaPhone }} Fax. {{ app_settings.BaFax }}<br>
                                 {{ app_settings.BaWebsite }} {{ app_settings.BaEmail }}
                             </div>
+                        </td>
+                        <td style="width: 15%; text-align: center; padding-bottom: 10px; vertical-align: middle;">
+                            <div id="qrcode-kop" style="display: inline-block; padding: 5px; border: 1px solid #ccc; background: #fff;"></div>
+                            <div style="font-size: 6pt; margin-top: 4px; font-weight: bold; font-family: monospace;" id="md5-text"></div>
                         </td>
                     </tr>
                 </table>
@@ -152,16 +156,57 @@ Berita Acara Reviu Dokumen
 {% endblock %}
 
 {% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="text/javascript">
-        $("#btnPrint").on("click", function () {
-            var printDoc = new jsPDF();
-            printDoc.fromHTML($('#pdf').get(0), 10, 10, {
-                'width': 180
+        $(document).ready(function() {
+            // Generate MD5 hash for document authenticity
+            var docData = "BA-KAJIULANG-" + "{{ ba.Nomor }}" + "-" + "{{ paket.ID }}";
+            var hash = md5(docData).toUpperCase();
+            var shortHash = hash.substring(0, 8); // Display short hash for neatness
+            var verificationUrl = window.location.origin + "/verify?doc=" + hash;
+
+            // Render text
+            $("#md5-text").text("MD5: " + shortHash);
+
+            // Generate QR Code
+            new QRCode(document.getElementById("qrcode-kop"), {
+                text: verificationUrl,
+                width: 70,
+                height: 70,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
             });
-            printDoc.save('berita-acara-hasil-reviu.pdf');
-            // printDoc.autoPrint();
-            // printDoc.output("dataurlnewwindow");
-            // this opens a new popup,  after this the PDF opens the print window view but there are browser inconsistencies with how this is handled
+        });
+
+        $("#btnPrint").on("click", function () {
+            // Menggunakan fungsi print bawaan browser yang 100% lebih stabil untuk generate PDF
+            // dan akan menghasilkan text vector yang bisa di-copy, bukan sekadar gambar.
+            window.print();
         });
     </script>
+{% endblock %}
+
+{% block css %}
+<style>
+    /* Sembunyikan semua elemen kecuali #pdf saat mencetak ke PDF */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #pdf, #pdf * {
+            visibility: visible;
+        }
+        #pdf {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: white !important;
+        }
+    }
+</style>
 {% endblock %}

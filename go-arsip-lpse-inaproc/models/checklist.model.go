@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 	"gorm.io/gorm"
 )
-
+		
 const (
 	BELUM_SETUJU     = 0
 	SETUJU			 = 1
@@ -225,47 +225,67 @@ func SaveAllDokPersiapan(c *fiber.Ctx, id uint, userid uint) error {
 		log.Info("save document ", obj.ID)
 		dokId, err := SaveDocument(c, userid,  DOKFINAL, "checklist_"+utils.UintToString(obj.ID))
 		if err != nil {
-			log.Error("save dok persiapan", err)
 			continue
 		}
-		checklistpaket := DokPersiapan {
-			DokId: dokId,
-			PktId: paket.ID,
-			ChkId: obj.ID,
+		
+		var dp DokPersiapan
+		db.Where("pkt_id = ? AND chk_id = ?", paket.ID, obj.ID).Order("id DESC").First(&dp)
+		
+		if dp.ID > 0 {
+			// Save current state to history before updating
+			approvals := dp.Persetujuan()
+			type ApprovalState struct {
+				Name   string `json:"name"`
+				Status bool   `json:"status"`
+			}
+			var state []ApprovalState
+			for _, a := range approvals {
+				state = append(state, ApprovalState{
+					Name:   a.Pegawai().PegNama,
+					Status: a.Status,
+				})
+			}
+			stateJson, _ := json.Marshal(state)
+			
+			snapshot := ReviewAddendumSnapshot{
+				AddendumId: 0, // 0 means manual update history (not formal addendum)
+				ChkId:      dp.ChkId,
+				DokId:      dp.DokId,
+				PktId:      dp.PktId,
+				Approvals:  string(stateJson),
+			}
+			db.Save(&snapshot)
+
+			// Update existing record to keep one record per checklist item
+			dp.DokId = dokId
+			db.Save(&dp)
+			checks = append(checks, dp)
+		} else {
+			checklistpaket := DokPersiapan {
+				DokId: dokId,
+				PktId: paket.ID,
+				ChkId: obj.ID,
+			}
+			db.Save(&checklistpaket)
+			checks = append(checks, checklistpaket)
 		}
-		checks = append(checks, checklistpaket)
 	}
-	err := db.Save(&checks).Error
-	if err != nil {
-			log.Error("save cheklist dok persiapan failed ", err)
-		return err
-	}
+	
 	ppk := paket.Ppk()
 	pp := paket.Pp()
 	pokja := paket.Pokja()
 	anggota := pokja.AnggotaList()
 	for _, obj := range checks {
+		// Reset/Ensure approvals exist for the (updated) record
 		if ppk.ID > 0 {
-			err = obj.SavePersetujuanPegawai(ppk.ID, false)
-			if err != nil {
-					log.Error("save persetujuan cheklist dok persiapan failed ", err)
-				return err
-			}
+			obj.SavePersetujuanPegawai(ppk.ID, false)
 		}
 		if pp.ID > 0 {
-			err = obj.SavePersetujuanPegawai(pp.ID, false)
-			if err != nil {
-					log.Error("save persetujuan cheklist dok persiapan failed ", err)
-				return err
-			}
+			obj.SavePersetujuanPegawai(pp.ID, false)
 		}
 		if len(anggota) > 0 {
 			for _,a := range anggota {
-				err = obj.SavePersetujuanPegawai(a.ID, false)
-				if err != nil {
-						log.Error("save persetujuan cheklist dok persiapan failed ", err)
-					return err
-				}
+				obj.SavePersetujuanPegawai(a.ID, false)
 			}
 		}
 	}
@@ -387,6 +407,7 @@ func (c ReviewAddendum) Pegawai() Pegawai {
 type ReviewAddendumSnapshot struct {
 	gorm.Model
 	AddendumId uint   `json:"addendum_id"`
+	PktId      uint   `json:"pkt_id"`
 	ChkId      uint   `json:"chk_id"`
 	DokId      uint   `json:"dok_id"`
 	Approvals  string `json:"approvals"` // Store as JSON string [{pegawai: "Name", status: true}, ...]

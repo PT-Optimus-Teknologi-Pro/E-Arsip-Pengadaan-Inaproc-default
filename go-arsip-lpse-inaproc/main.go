@@ -9,6 +9,9 @@ import (
 	"arsip/routers"
 	"arsip/services"
 	"arsip/utils"
+	"encoding/json"
+	"fmt"
+	"strings"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -36,6 +39,23 @@ func main() {
 	engine.AddFunc("GetFooterSocials", handlers.GetFooterSocials)
 	engine.AddFunc("GetFooterQuicks", handlers.GetFooterQuicks)
 	engine.AddFunc("GetFooterServices", handlers.GetFooterServices)
+	engine.AddFunc("parseApprovals", func(s string) string {
+		type ApprovalState struct {
+			Name   string `json:"name"`
+			Status bool   `json:"status"`
+		}
+		var state []ApprovalState
+		json.Unmarshal([]byte(s), &state)
+		var res []string
+		for _, v := range state {
+			status := "❌"
+			if v.Status {
+				status = "✅"
+			}
+			res = append(res, fmt.Sprintf("%s %s", v.Name, status))
+		}
+		return strings.Join(res, ", ")
+	})
 
 	if config.IsModeDev(){
 		log.Info("application mode development")

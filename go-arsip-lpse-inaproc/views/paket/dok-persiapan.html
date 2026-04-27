@@ -32,11 +32,19 @@ Dokument Persiapan Pengadaan
             {% endif %}
 
             {% if isAddendum %}
-            <div class="alert alert-warning d-flex align-items-center mb-3">
+            <div class="alert alert-warning d-flex align-items-center mb-1">
                 <div class="me-2"><span style="width: 20px;" data-feather="alert-triangle"></span></div>
                 <div>
                    <b>Status Addendum Aktif:</b> Anda dapat mengunggah ulang dokumen. Persetujuan lama telah disimpan di riwayat dan di-reset untuk versi baru ini.
                 </div>
+            </div>
+            {% endif %}
+
+            {% if addendums %}
+            <div class="mb-3">
+                <a href="#riwayatSection" class="badge bg-azure-lt text-azure py-2 px-3">
+                    <span style="width:14px;" data-feather="clock"></span> Lihat {{ addendums|length }} Riwayat Perubahan (Addendum)
+                </a>
             </div>
             {% endif %}
 
@@ -51,73 +59,118 @@ Dokument Persiapan Pengadaan
             <tr>
                 <td class="align-top">{{ obj.Jenis }}</td>
                 <td> 
-                    {# Show Upload only if NO approvals yet OR Addendum is active, AND not locked #}
+                    {# Show Upload if not fully locked #}
                     {% if allowUpload %}
-                        {% set showInput = false %}
-                        {% if isAddendum %}
-                            {% set showInput = true %}
-                        {% else %}
-                            {# Check if THIS specific document has any approvals #}
+                        <input type="file" name="checklist_{{ obj.ID }}" class="form-control mt-3">
+                        {% if not isAddendum %}
+                            {# Show warning if there are already approvals #}
                             {% for doc in dokPersiapan %}
-                                {% if doc.ChkId == obj.ID %}
-                                    {% if doc.IsBelumAdaPersetujuan %}
-                                        {% set showInput = true %}
-                                    {% endif %}
+                                {% if doc.ChkId == obj.ID and not doc.IsBelumAdaPersetujuan %}
+                                    <div class="text-warning mt-1 xsmall">
+                                        <span style="width:12px;" data-feather="info"></span> 
+                                        Sudah ada persetujuan. Upload file baru akan meriset persetujuan untuk item ini.
+                                    </div>
                                 {% endif %}
                             {% endfor %}
-                            {# If no document found yet, show input #}
-                            {% if not dokPersiapan %} {% set showInput = true %} {% endif %}
                         {% endif %}
-
-                        {% if showInput %}
-                        <input type="file" name="checklist_{{ obj.ID }}" class="form-control mt-3">
-                        {% else %}
-                        <div class="text-muted mt-3 small"><span style="width:14px;" data-feather="lock"></span> Terkunci (Sudah ada persetujuan)</div>
-                        {% endif %}
+                    {% else %}
+                        <div class="text-muted mt-3 small"><span style="width:14px;" data-feather="lock"></span> Terkunci (Review sudah final)</div>
                     {% endif %}
 
-                    <table class="table mt-2" style="width: 70%;">
+                    <table class="table mt-2" style="width: 100%;">
                     <thead>
                     <tr>
-                        <th>Filename</th>
-                        <th width="10%">&nbsp;</th>
+                        <th width="70%">Filename</th>
+                        <th width="30%">&nbsp;</th>
                     </tr>
                     </thead>
                     <tbody>
+                    {% set latestDocId = 0 %}
                     {% for doc in dokPersiapan %}
-                        {%if doc.ChkId == obj.ID %}
-                        <tr>
-                            <td><a href="/download/{{ doc.DokId }}"><span style="width: 16px;" data-feather="download"></span> {{ doc.Dokumen.Filename }}</a></td>
-                            <td width="5%">{% if allowUpload and doc.IsBelumAdaPersetujuan %}
-                                <a href="/dok-final/{{ paket.ID }}/{{obj.ID}}/hapus" title="Hapus file" onclick="return confirm('apakah anda ingin menghapus file?')">
-                                <span style="width: 16px;" data-feather="trash-2"></span>
-                            </a>{% endif %}
-                            </td>
-                        </tr>
+                        {% if doc.ChkId == obj.ID %}
+                            {% if latestDocId == 0 %}
+                                {% set latestDocId = doc.ID %}
+                                <tr>
+                                    <td>
+                                        <a href="/download/{{ doc.DokId }}" class="font-weight-bold"><span style="width: 16px;" data-feather="download"></span> {{ doc.Dokumen.Filename }}</a>
+                                        <div class="xsmall text-muted mt-1">{{ doc.CreatedAt.Format("02-01-2006 15:04") }}</div>
+                                    </td>
+                                    <td class="text-end">{% if allowUpload %}
+                                        <a href="/dok-final/hapus/{{ doc.ID }}" class="btn btn-sm btn-ghost-danger px-1" title="Hapus file" onclick="confirmDelete(event, this.href, 'Apakah Anda yakin ingin menghapus file dokumen ini?')">
+                                        <span style="width: 16px;" data-feather="trash-2"></span>
+                                    </a>{% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
                         {% endif %}
                     {% endfor %}
                     </tbody>
                     </table>
+
+                    {# HISTORY (OLD VERSIONS) #}
+                    {% set hasHistory = false %}
+                    {% for snap in historySnapshots %}
+                        {% if snap.ChkId == obj.ID %}
+                            {% set hasHistory = true %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if hasHistory %}
+                    <div class="mt-2">
+                        <a class="small text-azure text-decoration-none" data-bs-toggle="collapse" href="#riwayat-{{ obj.ID }}" role="button">
+                            <span style="width:12px;" data-feather="clock"></span> Riwayat Versi (Klik)
+                        </a>
+                        <div class="collapse mt-2" id="riwayat-{{ obj.ID }}">
+                            <div class="card card-body p-2 bg-light border-0 shadow-none">
+                                <table class="table table-sm mb-0 bg-transparent">
+                                    {% for snap in historySnapshots %}
+                                        {% if snap.ChkId == obj.ID %}
+                                        <tr>
+                                            <td class="small py-1">
+                                                <a href="/download/{{ snap.DokId }}" class="text-muted"><span style="width:12px;" data-feather="file"></span> {{ snap.Dokumen.Filename }}</a>
+                                                <div class="xsmall opacity-50">{{ snap.CreatedAt.Format("02-01-2006 15:04") }}</div>
+                                                <div class="mt-1 text-muted xsmall" style="font-size: 0.7rem;">
+                                                    <span style="width:10px;" data-feather="check-square"></span> 
+                                                    {{ parseApprovals(snap.Approvals) }}
+                                                </div>
+                                            </td>
+                                            <td class="text-end py-1">
+                                                {% if allowUpload %}
+                                                <a href="/dok-final/hapus-snapshot/{{ snap.ID }}" class="text-danger" onclick="confirmDelete(event, this.href, 'Hapus riwayat versi ini?')">
+                                                    <span style="width:14px;" data-feather="x-circle"></span>
+                                                </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </td>
-                <td><ol>
+                <td>
+                    <ol>
                     {% for doc in dokPersiapan %}
-                        {%if doc.ChkId == obj.ID %}
+                        {% if doc.ID == latestDocId %}
                             {% for p in doc.Persetujuan %}
-                            <li>
-                                {{ p.Pegawai.PegNama }}
-                                {%if p.Status %}
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="green" class="icon icon-tabler icons-tabler-filled icon-tabler-square-rounded-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 2c-.218 0 -.432 .002 -.642 .005l-.616 .017l-.299 .013l-.579 .034l-.553 .046c-4.785 .464 -6.732 2.411 -7.196 7.196l-.046 .553l-.034 .579c-.005 .098 -.01 .198 -.013 .299l-.017 .616l-.004 .318l-.001 .324c0 .218 .002 .432 .005 .642l.017 .616l.013 .299l.034 .579l.046 .553c.464 4.785 2.411 6.732 7.196 7.196l.553 .046l.579 .034c.098 .005 .198 .01 .299 .013l.616 .017l.642 .005l.642 -.005l.616 -.017l.299 -.013l.579 -.034l.553 -.046c4.785 -.464 6.732 -2.411 7.196 -7.196l.046 -.553l.034 -.579c.005 -.098 .01 -.198 .013 -.299l.017 -.616l.005 -.642l-.005 -.642l-.017 -.616l-.013 -.299l-.034 -.579l-.046 -.553c-.464 -4.785 -2.411 -6.732 -7.196 -7.196l-.553 -.046l-.579 -.034a28.058 28.058 0 0 0 -.299 -.013l-.616 -.017l-.318 -.004l-.324 -.001zm2.293 7.293a1 1 0 0 1 1.497 1.32l-.083 .094l-4 4a1 1 0 0 1 -1.32 .083l-.094 -.083l-2 -2a1 1 0 0 1 1.32 -1.497l.094 .083l1.293 1.292l3.293 -3.292z" fill="currentColor" stroke-width="0" /><title>Sudah Setuju</title></svg>
+                            <li class="mb-1">
+                                <span class="small">{{ p.Pegawai.PegNama }}</span>
+                                {% if p.Status %}
+                                <span class="text-success"><span style="width:16px;" data-feather="check-circle"></span></span>
                                 {% else %}
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ccc" class="icon icon-tabler icons-tabler-filled icon-tabler-square-rounded-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 2l.324 .001l.318 .004l.616 .017l.299 .013l.579 .034l.553 .046c4.785 .464 6.732 2.411 7.196 7.196l.046 .553l.034 .579c.005 .098 .01 .198 .013 .299l.017 .616l.005 .642l-.005 .642l-.017 .616l-.013 .299l-.034 .579l-.046 .553c-.464 4.785 -2.411 6.732 -7.196 7.196l-.553 .046l-.579 .034c-.098 .005 -.198 .01 -.299 .013l-.616 .017l-.642 .005l-.642 -.005l-.616 -.017l-.299 -.013l-.579 -.034l-.553 -.046c-4.785 -.464 -6.732 -2.411 -7.196 -7.196l-.046 -.553l-.034 -.579a28.058 28.058 0 0 1 -.013 -.299l-.017 -.616c-.003 -.21 -.005 -.424 -.005 -.642l.001 -.324l.004 -.318l.017 -.616l.013 -.299l.034 -.579l.046 -.553c.464 -4.785 2.411 -6.732 7.196 -7.196l.553 -.046l.579 -.034c.098 -.005 .198 -.01 .299 -.013l.616 -.017c.21 -.003 .424 -.005 .642 -.005zm-1.489 7.14a1 1 0 0 0 -1.218 1.567l1.292 1.293l-1.292 1.293l-.083 .094a1 1 0 0 0 1.497 1.32l1.293 -1.292l1.293 1.292l.094 .083a1 1 0 0 0 1.32 -1.497l-1.292 -1.293l1.292 -1.293l.083 -.094a1 1 0 0 0 -1.497 -1.32l-1.293 1.292l-1.293 -1.292l-.094 -.083z" fill="currentColor" stroke-width="0" /><title>Tidak Setuju</title></svg>
+                                <span class="text-muted"><span style="width:16px;" data-feather="circle"></span></span>
                                 {% if (p.PegId == id or isAdmin) and not isLocked %}
-                                <a href="javascript:void(0)" onclick="handleSetuju('{{ doc.ID }}')" class="badge bg-blue text-blue-fg ms-1">Klik Setujui</a>
+                                <a href="javascript:void(0)" onclick="handleSetuju('{{ doc.ID }}')" class="badge bg-blue-lt ms-1">Setujui</a>
                                 {% endif %}
                                 {% endif %}
                             </li>
                             {% endfor %}
                         {% endif %}
                     {% endfor %}
-                </ol></td>
+                    </ol>
+                </td>
             </tr>
             {% endfor %}
         </table>
@@ -129,19 +182,37 @@ Dokument Persiapan Pengadaan
                 <button type="submit" class="btn btn-success"><span style="width: 16px;" data-feather="save"></span> Simpan Perubahan</button>
                 {% endif %}
 
-                {# Print only if fully approved and NOT in active addendum #}
+                {# Always show Preview button #}
+                <a class="btn btn-primary" href="/preview/ba-kajiulang/{{ paket.ID }}" target="_blank">
+                    <span style="width: 16px;" data-feather="eye"></span> Berita Acara Reviu
+                </a>
+
+                {# Print Logic #}
                 {% if allowCetak and not isAddendum %}
-                <a class="btn btn-primary" href="/preview/ba-kajiulang/{{ paket.ID }}" target="_blank"><span style="width: 16px;" data-feather="eye"></span> Berita Acara Reviu</a>
-                <a class="btn btn-primary" href="#" onclick="triggerCetakModal('/preview/ba-kajiulang/{{ paket.ID }}/print'); return false;"><span style="width: 16px;" data-feather="printer"></span> Cetak BA (Final)</a>
-                {% elif not isAddendum %}
-                <button class="btn btn-secondary" disabled title="Tunggu persetujuan semua pihak"><span style="width: 16px;" data-feather="printer"></span> Cetak BA (Belum Lengkap)</button>
+                    <a class="btn btn-primary" href="#" onclick="triggerCetakModal('/preview/ba-kajiulang/{{ paket.ID }}/print'); return false;">
+                        <span style="width: 16px;" data-feather="printer"></span> Cetak BA (Final)
+                    </a>
+                {% elif isAddendum %}
+                    <button class="btn btn-secondary" disabled title="Selesaikan upload & persetujuan addendum untuk mencetak">
+                        <span style="width: 16px;" data-feather="printer"></span> Cetak BA (Sedang Addendum)
+                    </button>
+                {% else %}
+                    <button class="btn btn-secondary" disabled title="Tunggu persetujuan semua pihak">
+                        <span style="width: 16px;" data-feather="printer"></span> Cetak BA (Belum Lengkap)
+                    </button>
                 {% endif %}
             </div>
 
             {% if (isPPK or isAdmin) %}
-            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalAddendum">
-                <span style="width:16px;" data-feather="refresh-cw"></span> Aktifkan Addendum
-            </button>
+                {% if isAddendum %}
+                    <a href="/dok-final/{{ paket.ID }}/selesai-addendum" class="btn btn-danger" onclick="confirmSelesaiAddendum(event, this.href)">
+                        <span style="width:16px;" data-feather="check-circle"></span> Selesaikan Addendum
+                    </a>
+                {% else %}
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalAddendum">
+                        <span style="width:16px;" data-feather="refresh-cw"></span> Aktifkan Addendum
+                    </button>
+                {% endif %}
             {% endif %}
         </div>
         </form>
@@ -161,7 +232,7 @@ Dokument Persiapan Pengadaan
                                 <span style="width: 14px;" data-feather="external-link"></span> Lihat Full Size
                             </a>
                             {% if allowUpload %}
-                            <a href="/paket/dok-paket/{{ fotoRapat.ID }}/hapus" class="btn btn-sm btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus foto ini?')">
+                            <a href="/paket/dok-paket/{{ fotoRapat.ID }}/hapus" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(event, this.href, 'Apakah Anda yakin ingin menghapus foto rapat ini?')">
                                 <span style="width: 14px;" data-feather="trash-2"></span> Hapus Foto
                             </a>
                             {% endif %}
@@ -192,32 +263,46 @@ Dokument Persiapan Pengadaan
 
         {# ADDENDUM HISTORY SECTION #}
         {% if addendums %}
-        <div class="mt-5">
-            <h5 class="mb-3 text-primary"><span style="width: 20px;" data-feather="clock"></span> Riwayat Addendum & Perubahan Dokumen</h5>
+        <div class="mt-5" id="riwayatSection">
+            <div class="d-flex align-items-center mb-3">
+                <h5 class="mb-0 text-primary"><span style="width: 20px;" data-feather="clock"></span> Riwayat Perubahan & Versi Dokumen Sebelumnya</h5>
+                <span class="ms-2 badge bg-azure-lt">{{ addendums|length }} Versi</span>
+            </div>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover bg-white">
-                    <thead class="table-light text-center">
+                <table class="table table-bordered table-hover bg-white shadow-sm">
+                    <thead class="table-light text-center small">
                         <tr>
                             <th width="5%">Versi</th>
-                            <th width="15%">Tanggal</th>
-                            <th width="40%">Alasan Perubahan</th>
-                            <th>Snapshot Dokumen & Persetujuan Saat Itu</th>
+                            <th width="15%">Waktu Perubahan</th>
+                            <th width="30%">Alasan Perubahan</th>
+                            <th>Snapshot Dokumen & Status Persetujuan Terakhir</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for add in addendums %}
                         <tr>
-                            <td class="text-center font-weight-bold">#{{ add.Version }}</td>
-                            <td class="text-center small">{{ add.CreatedAt.Format("02-01-2006 15:04") }}<br><span class="text-muted">oleh {{ add.Pegawai().PegNama }}</span></td>
-                            <td class="small">{{ add.Reason }}</td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary-lt text-secondary">v{{ add.Version }}</span>
+                            </td>
+                            <td class="small">
+                                <b>{{ add.CreatedAt.Format("02-01-2006") }}</b><br>
+                                <span class="text-muted">{{ add.CreatedAt.Format("15:04") }} WIB</span><br>
+                                <span class="badge bg-blue-lt mt-1">{{ add.Pegawai().PegNama }}</span>
+                            </td>
+                            <td class="small italic text-muted">"{{ add.Reason }}"</td>
                             <td class="p-0">
-                                <table class="table table-sm mb-0 border-0" style="font-size: 0.85rem;">
+                                <table class="table table-sm mb-0 border-0" style="font-size: 0.8rem;">
                                     {% for snap in add.Snapshot() %}
-                                    <tr>
-                                        <td width="30%" class="border-0">{{ snap.Checklist().Jenis }}</td>
-                                        <td class="border-0">
-                                            <a href="/download/{{ snap.DokId }}" class="text-blue"><span style="width:12px;" data-feather="download"></span> {{ snap.Dokumen().Filename }}</a>
-                                            <div class="mt-1 xsmall text-muted" style="font-size: 0.75rem;">Persetujuan: {{ snap.Approvals }}</div>
+                                    <tr class="border-bottom-0">
+                                        <td width="35%" class="border-0 py-1 ps-2"><b>{{ snap.Checklist().Jenis }}:</b></td>
+                                        <td class="border-0 py-1">
+                                            <a href="/download/{{ snap.DokId }}" class="text-primary text-decoration-none">
+                                                <span style="width:12px;" data-feather="file-text"></span> {{ snap.Dokumen().Filename }}
+                                            </a>
+                                            <div class="mt-1 text-muted xsmall" style="font-size: 0.7rem;">
+                                                <span style="width:10px;" data-feather="check-square"></span> 
+                                                {{ parseApprovals(snap.Approvals) }}
+                                            </div>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -275,32 +360,86 @@ Dokument Persiapan Pengadaan
 {% endblock %}
 
 {% block script %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
+function confirmDelete(event, url, message) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Konfirmasi Hapus',
+        text: message || 'Apakah Anda yakin ingin menghapus file ini?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = url;
+        }
+    });
+}
+
 function handleSetuju(id) {
-  let userConfirmed = confirm("Konfirmasi: Apakah Anda yakin ingin MENYETUJUI dokumen ini? Setelah disetujui, file tidak dapat diubah lagi kecuali melalui proses Addendum.");
-  let apiUrl = '/dok-final/{{ paket.ID }}/persetujuan';
-  const formData = new FormData();
-  formData.append("id", id); 
-  if (userConfirmed) {
-    formData.append('status', true);
-  } else {
-    return; // Cancel action
-  }
-  fetch(apiUrl, {
-     method : 'POST',
-     body : formData
-  })
-  .then(response => {
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      return response.json();
-  })
-  .then(data => {
-      location.reload(true);
-  })
-  .catch(error => {
-      console.error('Error:', error);
-      alert("Terjadi kesalahan saat menyimpan persetujuan.");
-  });
+    Swal.fire({
+        title: 'Konfirmasi Persetujuan',
+        text: 'Apakah Anda yakin ingin MENYETUJUI dokumen ini? Setelah disetujui, file tidak dapat diubah lagi kecuali melalui proses Addendum.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#206bc4',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Setujui!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let apiUrl = '/dok-final/{{ paket.ID }}/persetujuan';
+            const formData = new FormData();
+            formData.append("id", id); 
+            formData.append('status', true);
+            
+            fetch(apiUrl, {
+                method : 'POST',
+                body : formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire('Berhasil!', 'Persetujuan berhasil disimpan.', 'success')
+                    .then(() => location.reload(true));
+                } else {
+                    Swal.fire('Gagal!', data.message || 'Terjadi kesalahan.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error!', 'Terjadi kesalahan pada sistem saat menyimpan.', 'error');
+            });
+        }
+    });
+}
+
+function confirmSelesaiAddendum(event, url) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Selesaikan Addendum?',
+        text: 'Apakah Anda yakin semua penyesuaian dokumen sudah selesai? Status akan dikunci kembali dan notifikasi akan dikirim ke semua pihak.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, Selesaikan!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = url;
+        }
+    });
 }
 </script>
 {% endblock %}

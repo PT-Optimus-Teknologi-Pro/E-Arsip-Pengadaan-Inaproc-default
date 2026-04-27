@@ -303,8 +303,11 @@ func SetupRoutes(app *fiber.App) {
 	dokfinal.Post("/:id", handlers.SimpanDokumenPersiapanPaket)
 	dokfinal.Post("/:id/persetujuan", handlers.SimpanDokumenPersiapanPaketPersetujuan)
 	dokfinal.Get("/:id/addendum", handlers.UnlockAddendumReview)
+	dokfinal.Get("/:id/selesai-addendum", handlers.FinishAddendumReview)
 	dokfinal.Get("/:id/persetujuan", handlers.DokPersiapanPaketPersetujuan)
 	dokfinal.Get("/:id", handlers.DokPersiapanPaket)
+	dokfinal.Get("/hapus/:id", handlers.HapusDokPersiapan)
+	dokfinal.Get("/hapus-snapshot/:id", handlers.HapusDokPersiapanSnapshot)
 
 	pengadaan := app.Group("/pengadaan", handlers.LoggedMiddleware)
 	pengadaan.Post("/simpan-kode/:id", handlers.SimpanKodeTender)

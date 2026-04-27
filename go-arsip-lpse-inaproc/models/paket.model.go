@@ -170,7 +170,7 @@ func (obj Paket) Pp() Pegawai {
 
 func (obj Paket) DokPersiapan() []DokPersiapan {
 	var res []DokPersiapan
-	db.Find(&res, "pkt_id=?", obj.ID)
+	db.Where("pkt_id=?", obj.ID).Order("id DESC").Find(&res)
 	return res
 }
 
@@ -288,12 +288,13 @@ func (obj Paket) IsOnlyPpk() bool {
 	if obj.Metode == 7 || obj.Metode == 8 || obj.Metode == 9 {
 		// Rule for Construction (Pekerjaan Konstruksi - 2)
 		if obj.KgrId == 2 {
-			// > 400jt stays in PPK
-			return obj.Hps > HPS_BATAS_KONSTRUKSI
+			// <= 400jt stays in PPK
+			return obj.Hps <= HPS_BATAS_KONSTRUKSI
 		}
-		// For other types (Barang, Jasa, etc.), > 200jt stays in PPK (e-procurement / internal)
-		return obj.Hps > HPS_BATAS
+		// For other types (Barang, Jasa, etc.), <= 200jt stays in PPK
+		return obj.Hps <= HPS_BATAS
 	}
+	// Other methods (like Lelang, etc.) are NOT Only PPK
 	return false
 }
 
@@ -305,7 +306,12 @@ func (obj Paket) IsAssigned() bool {
 }
 
 func (obj Paket) IsPaketPokja() bool {
-	return obj.Metode == 12 || obj.Metode == 13 || obj.Metode == 14 || obj.Metode == 15
+	// If it's a PP method, it's not Pokja
+	if obj.IsPaketPp() {
+		return false
+	}
+	// If it's not PP and not Only PPK, then it must be handled by Pokja
+	return !obj.IsOnlyPpk() && obj.Metode != 0
 }
 
 func (obj Paket) IsPaketPp() bool {

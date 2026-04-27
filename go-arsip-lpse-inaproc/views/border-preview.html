@@ -31,7 +31,7 @@
       <div class="page-wrapper">
         <div class="page-body">
           <div class="container-xl">
-              <table class="table-borderless">
+              <table class="table-borderless w-100">
                   <tr>
                       <td width="15%" class="text-center">
                            {% if appSettings.DocLogoPath %}
@@ -41,14 +41,22 @@
                            {% endif %}
                       </td>
                       <td class="text-center">
-                          <h1 style="text-transform: uppercase; margin-bottom: 0;">{{ appSettings.DocInstansi|default:'PEMERINTAH KABUPATEN SERANG' }}</h1>
-                          <h2 style="text-transform: uppercase; margin-top: 0;">{{ appSettings.DocSubInstansi|default:'SEKRETARIAT DAERAH' }}</h2>
-                          <p style="font-size: 10pt; margin-bottom: 0;">{{ appSettings.DocAddress|default:'Jl. Veteran No. 1 Serang' }}</p>
-                          <p style="font-size: 10pt; margin-top: 0;">
+                          <h1 style="text-transform: uppercase; margin-bottom: 0; font-size: 1.4rem;">{{ appSettings.DocInstansi|default:'PEMERINTAH KABUPATEN SERANG' }}</h1>
+                          <h2 style="text-transform: uppercase; margin-top: 0; font-size: 1.2rem;">{{ appSettings.DocSubInstansi|default:'SEKRETARIAT DAERAH' }}</h2>
+                          <p style="font-size: 9pt; margin-bottom: 0;">{{ appSettings.DocAddress|default:'Jl. Veteran No. 1 Serang' }}</p>
+                          <p style="font-size: 9pt; margin-top: 0;">
                             {% if appSettings.DocPhone %} Telp: {{ appSettings.DocPhone }} {% endif %}
                             {% if appSettings.DocFax %} Fax: {{ appSettings.DocFax }} {% endif %}
                             {% if appSettings.DocWebsite %} Website: {{ appSettings.DocWebsite }} {% endif %}
                           </p>
+                      </td>
+                      <td width="15%" class="text-end">
+                        {% if qrValidasi or qr_validasi %}
+                        <div style="border: 1px solid #ccc; padding: 2px; display: inline-block; background: #fff;">
+                            <img src="data:image/png;base64,{{ qrValidasi|default:qr_validasi }}" width="70" />
+                            <div style="font-size: 5pt; text-align: center; font-weight: bold;">Verifikasi</div>
+                        </div>
+                        {% endif %}
                       </td>
                   </tr>
               </table>

@@ -416,6 +416,24 @@ func HapusDokPaket(id uint) (uint, error) {
 	return paket.PktId, err
 }
 
+func HapusDokPersiapan(id uint) (uint, error) {
+	dok := models.GetDokPersiapan(id)
+	if dok.ID == 0 {
+		return 0, errors.New("Dokumen tidak ditemukan")
+	}
+
+	// 1. Delete associated approvals
+	models.DeleteAllPersetujuanDokPersiapan(dok.ID)
+
+	// 2. Delete actual document and record
+	DeleteDocument(dok.Dokumen())
+
+	// 3. Delete DokPersiapan record
+	err := models.GetDB().Unscoped().Delete(&dok).Error
+
+	return dok.PktId, err
+}
+
 func GetBeritaAcara(id uint) models.BeritaAcara {
 	return models.GetBeritaAcara(id)
 }
