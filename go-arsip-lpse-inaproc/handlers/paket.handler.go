@@ -656,12 +656,17 @@ func DokPersiapanPaket(c *fiber.Ctx) error {
 	}
 	dokPersiapans := paket.DokPersiapan()
 	allowCetak := true
-	for _,v := range dokPersiapans {
-		v.CheckPersetujuanPegawai()
-		if !v.IsSudahPersetujuanSemua() {
+	approvedCategoryMap := make(map[uint]bool)
+	for i := range dokPersiapans {
+		dokPersiapans[i].CheckPersetujuanPegawai()
+		if !dokPersiapans[i].IsSudahPersetujuanSemua() {
 			allowCetak = false
+		} else {
+			// Jika dokumen ini sudah final, maka kategorinya (ChkId) dianggap sudah disetujui
+			approvedCategoryMap[dokPersiapans[i].ChkId] = true
 		}
 	}
+	mp["approvedCategoryMap"] = approvedCategoryMap
 	isLocked := paket.IsLockedReview && !paket.IsAddendum
 	// Fetch foto rapat dari dok_paket
 	fotoRapat := models.GetDokPaketJenis(id, models.FOTO_RAPAT)
@@ -674,6 +679,8 @@ func DokPersiapanPaket(c *fiber.Ctx) error {
 	mp["allowUpload"] = (mp["isPPK"].(bool) || mp["isPokja"].(bool) || mp["isPP"].(bool)) && !isLocked
 	mp["fotoRapat"] = fotoRapat
 	mp["addendums"] = models.GetReviewAddendumList(id)
+	mp["addendumCount"] = paket.AddendumCount
+	mp["addendumMaxReached"] = paket.AddendumCount >= 3
 	
 	// Fetch all snapshots for history
 	var historySnapshots []models.ReviewAddendumSnapshot
@@ -716,7 +723,10 @@ func UnlockAddendumReview(c *fiber.Ctx) error {
 	id := utils.StringToUint(c.Params("id"))
 	mp := currentMap(c)
 	userid := utils.InterfaceToUint(mp["id"])
-	reason := c.FormValue("reason")
+	reason := c.Query("reason")
+	if reason == "" {
+		reason = c.FormValue("reason")
+	}
 
 	if !mp["isPPK"].(bool) && !mp["isAdmin"].(bool) {
 		return Forbiden(c)
@@ -725,6 +735,12 @@ func UnlockAddendumReview(c *fiber.Ctx) error {
 	paket := services.GetPaket(id)
 	if paket.ID == 0 {
 		return c.SendStatus(404)
+	}
+
+	// Cek batas maksimum addendum (3x)
+	const maxAddendum = 3
+	if paket.AddendumCount >= maxAddendum {
+		return flashError(c, fmt.Sprintf("Addendum telah mencapai batas maksimum (%d kali). Hubungi Pokja untuk mereset kuota addendum.", maxAddendum), "/dok-final/"+utils.UintToString(id))
 	}
 
 	// 1. Create Addendum Record
@@ -770,14 +786,18 @@ func UnlockAddendumReview(c *fiber.Ctx) error {
 		models.DeleteAllPersetujuanDokPersiapan(dp.ID)
 	}
 
-	// 4. Update Paket status
+	// 4. Update Paket status - increment addendum counter
 	paket.IsLockedReview = false
 	paket.IsAddendum = true
+	paket.AddendumCount = paket.AddendumCount + 1
 	models.SavePaket(&paket)
 
 	// 5. Send Inbox Notifications to relevant parties
 	subject := "Pemberitahuan Addendum Reviu Dokumen: " + paket.Nama
-	content := fmt.Sprintf("Addendum telah diaktifkan untuk paket %s. Alasan: %s. Silakan lakukan peninjauan dan persetujuan ulang pada dokumen persiapan.", paket.Nama, c.FormValue("reason"))
+	content := fmt.Sprintf(
+		"Addendum ke-%d telah diaktifkan untuk paket %s.\n\nAlasan Perubahan:\n%s\n\nSilakan buka tab Dokumen Final untuk melakukan peninjauan dan persetujuan ulang.",
+		paket.AddendumCount+1, paket.Nama, reason,
+	)
 	
 	services.SendNotification(paket.PpkId, subject, content)
 	services.SendNotification(paket.PpId, subject, content)
@@ -785,7 +805,7 @@ func UnlockAddendumReview(c *fiber.Ctx) error {
 		services.SendNotification(a.ID, subject, content)
 	}
 
-	return flashSuccess(c, "Addendum Berhasil Diaktifkan. Silakan upload revisi dokumen.", "/dok-final/"+utils.UintToString(id))
+	return flashSuccess(c, fmt.Sprintf("Addendum ke-%d Berhasil Diaktifkan. Silakan upload revisi dokumen.", paket.AddendumCount), "/dok-final/"+utils.UintToString(id))
 }
 
 func FinishAddendumReview(c *fiber.Ctx) error {
@@ -797,14 +817,15 @@ func FinishAddendumReview(c *fiber.Ctx) error {
 		return Forbiden(c)
 	}
 
-	// Set Status back to Locked
+	// Kembalikan status Addendum ke false, tapi JANGAN lock dulu
+	// Lock akan otomatis terjadi setelah semua pihak menyetujui dokumen
 	paket.IsAddendum = false
-	paket.IsLockedReview = true
+	paket.IsLockedReview = false
 	models.SavePaket(&paket)
 
 	// Send Notifications
 	subject := "Penyelesaian Addendum Reviu Dokumen: " + paket.Nama
-	content := "Proses penyesuaian/addendum reviu dokumen telah selesai dan dokumen telah difinalisasi kembali."
+	content := "Proses addendum selesai. Silakan lakukan persetujuan ulang pada halaman Dokumen Final."
 	
 	services.SendNotification(paket.PpkId, subject, content)
 	services.SendNotification(paket.PpId, subject, content)
@@ -812,7 +833,36 @@ func FinishAddendumReview(c *fiber.Ctx) error {
 		services.SendNotification(a.ID, subject, content)
 	}
 
-	return flashSuccess(c, "Addendum Berhasil Diselesaikan. Dokumen telah difinalisasi.", "/dok-final/"+utils.UintToString(id))
+	return flashSuccess(c, "Addendum Berhasil Diselesaikan. Silakan lakukan persetujuan ulang.", "/dok-final/"+utils.UintToString(id))
+}
+
+// ResetAddendumCount - hanya bisa dilakukan oleh Pokja atau Admin
+func ResetAddendumCount(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.StringToUint(c.Params("id"))
+
+	// Hanya Pokja atau Admin yang bisa reset kuota addendum
+	if !mp["isPokja"].(bool) && !mp["isAdmin"].(bool) {
+		return Forbiden(c)
+	}
+
+	paket := services.GetPaket(id)
+	if paket.ID == 0 {
+		return c.SendStatus(404)
+	}
+
+	paket.AddendumCount = 0
+	models.SavePaket(&paket)
+
+	// Notifikasi ke PPK bahwa kuota addendum sudah direset
+	subject := "Kuota Addendum Direset: " + paket.Nama
+	content := fmt.Sprintf(
+		"Kuota addendum untuk paket \"%s\" telah direset oleh Pokja. Anda kini dapat mengaktifkan addendum kembali (sisa: 3 kali).",
+		paket.Nama,
+	)
+	services.SendNotification(paket.PpkId, subject, content)
+
+	return flashSuccess(c, "Kuota addendum berhasil direset. PPK dapat mengaktifkan addendum kembali.", "/dok-final/"+utils.UintToString(id))
 }
 
 func DokPersiapanPaketPersetujuan(c *fiber.Ctx) error {
@@ -849,6 +899,28 @@ func SimpanDokumenPersiapanPaketPersetujuan(c *fiber.Ctx) error {
 		}
 		return flashError(c, "Simpan Dokumen Persiapan gagal", "/dok-final/" + c.Params("id"))
 	}
+
+	// Auto-lock: cek apakah semua dokumen sudah disetujui semua pihak
+	paket := services.GetPaket(dokPersiapan.PktId)
+	if !paket.IsLockedReview {
+		allApproved := true
+		dokPersiapans := paket.DokPersiapan()
+		if len(dokPersiapans) == 0 {
+			allApproved = false
+		}
+		for _, dp := range dokPersiapans {
+			if !dp.IsSudahPersetujuanSemua() {
+				allApproved = false
+				break
+			}
+		}
+		if allApproved {
+			paket.IsLockedReview = true
+			models.SavePaket(&paket)
+			log.Info("Paket ", paket.ID, " otomatis dikunci karena semua persetujuan selesai")
+		}
+	}
+
 	if c.XHR() {
 		return c.JSON(fiber.Map{"status": "success", "message": "Persetujuan berhasil disimpan"})
 	}
@@ -888,14 +960,17 @@ func HasilPengadanPaket(c *fiber.Ctx) error {
 	mp["paket"] = paket
 
 	// Try to get from Tender Selesai
-	realisasiTender := paket.GetTender().GetRealisasi()
+	tender := paket.GetTender()
+	mp["tender"] = tender
+	realisasiTender := tender.GetRealisasi()
 	if len(realisasiTender) > 0 {
 		mp["realisasi"] = realisasiTender[0]
 	} else {
 		// Try to get from Non-Tender Selesai
-		realisasiNontender := paket.GetNontender().GetRealisasi()
+		nontender := paket.GetNontender()
+		mp["nontender"] = nontender
+		realisasiNontender := nontender.GetRealisasi()
 		if len(realisasiNontender) > 0 {
-			// Map NontenderSelesai to a generic interface or use it directly
 			mp["realisasi"] = realisasiNontender[0]
 		}
 	}

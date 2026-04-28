@@ -161,7 +161,7 @@
                             {% endif %}
                             </p>
                              {% if paket.Pp.PegNamauser %}
-                            <p><a href="#" onclick="triggerCetakModal('/preview/sk-pp/{{ paket.ID }}/print'); return false;" class="badge bg-green text-green-fg">cetak Surat Penunjukan</a></p>
+                            <p><a href="/preview/sk-pp/{{ paket.ID }}/print" target="_blank" class="badge bg-green text-green-fg">cetak Surat Penunjukan</a></p>
                             {% endif %}
                         </div>
                     </div>
@@ -177,7 +177,7 @@
                                 {% endif %}
                             </p>
                             {% if paket.Pokja.Nama %}
-                            <p><a href="#" onclick="triggerCetakModal('/preview/sk-pokja/{{ paket.ID }}/print'); return false;" class="badge bg-green text-green-fg">cetak Surat Penunjukan</a></p>
+                            <p><a href="/preview/sk-pokja/{{ paket.ID }}/print" target="_blank" class="badge bg-green text-green-fg">cetak Surat Penunjukan</a></p>
                             {% endif %}
                         </div>
                     </div>

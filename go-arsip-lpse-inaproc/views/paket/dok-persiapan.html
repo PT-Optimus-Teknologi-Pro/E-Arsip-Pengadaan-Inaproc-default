@@ -49,59 +49,98 @@ Dokument Persiapan Pengadaan
             {% endif %}
 
         <form method="post" action="/dok-final/{{ paket.ID }}" enctype="multipart/form-data">
-        <table class="table">
-            <tr>
-                <th>Jenis</th>
-                <th>File</th>
-                <th>Persetujuan</th>
+        <table class="table table-vcenter" style="table-layout: fixed; width: 100%;">
+            <tr style="background-color: #f6f8fb; border-bottom: 2px solid #ebedef;">
+                <th style="width: 15%; padding: 12px 16px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #626976;">Jenis Dokumen</th>
+                <th style="width: 85%; padding: 12px 16px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #626976;">Daftar File &amp; Status Persetujuan</th>
             </tr>
             {% for obj in paket.Checklist %}
             <tr>
                 <td class="align-top">{{ obj.Jenis }}</td>
                 <td> 
-                    {# Show Upload if not fully locked #}
-                    {% if allowUpload %}
-                        <input type="file" name="checklist_{{ obj.ID }}" class="form-control mt-3">
-                        {% if not isAddendum %}
-                            {# Show warning if there are already approvals #}
-                            {% for doc in dokPersiapan %}
-                                {% if doc.ChkId == obj.ID and not doc.IsBelumAdaPersetujuan %}
-                                    <div class="text-warning mt-1 xsmall">
-                                        <span style="width:12px;" data-feather="info"></span> 
-                                        Sudah ada persetujuan. Upload file baru akan meriset persetujuan untuk item ini.
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
+                    {# Check if any document for this category is fully approved (Final) - From Backend Map #}
+                    {% set thisItemApproved = approvedCategoryMap[obj.ID] %}
+                    {% set hasAnyApprovals = false %}
+                    {% for d in dokPersiapan %}
+                        {% if d.ChkId == obj.ID and not d.IsBelumAdaPersetujuan %}
+                            {% set hasAnyApprovals = true %}
                         {% endif %}
+                    {% endfor %}
+
+                    {# Show Upload if not fully locked #}
+                    {% if allowUpload and not thisItemApproved %}
+                        <input type="file" name="checklist_{{ obj.ID }}" class="form-control mt-3">
+                        {% if hasAnyApprovals and not isAddendum %}
+                            <div class="text-warning mt-1 xsmall">
+                                <span style="width:12px;" data-feather="info"></span> 
+                                Sudah ada persetujuan pada beberapa file. Menambahkan file baru akan memerlukan persetujuan ulang untuk file baru tersebut.
+                            </div>
+                        {% endif %}
+                    {% elif thisItemApproved %}
+                        <div class="alert alert-important alert-success py-2 px-3 mt-2 mb-0 d-inline-flex align-items-center gap-2" style="font-size: 0.8rem; border-radius: 20px;">
+                            <span style="width:16px; height:16px;" data-feather="check-circle"></span>
+                            <div><strong>Sudah Final</strong> &mdash; Dokumen telah disetujui oleh semua pihak.</div>
+                        </div>
                     {% else %}
                         <div class="text-muted mt-3 small"><span style="width:14px;" data-feather="lock"></span> Terkunci (Review sudah final)</div>
                     {% endif %}
 
-                    <table class="table mt-2" style="width: 100%;">
+                    <table class="table table-vcenter card-table mt-3" style="width: 100%; border: 1px solid #ebedef;">
                     <thead>
-                    <tr>
-                        <th width="70%">Filename</th>
-                        <th width="30%">&nbsp;</th>
+                    <tr style="background-color: #f8f9fa;">
+                        <th width="35%" style="padding: 10px;">Informasi File</th>
+                        <th width="55%" style="padding: 10px;">Persetujuan Pihak Terkait</th>
+                        <th width="10%" class="text-end" style="padding: 10px;">Aksi</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% set latestDocId = 0 %}
                     {% for doc in dokPersiapan %}
                         {% if doc.ChkId == obj.ID %}
-                            {% if latestDocId == 0 %}
-                                {% set latestDocId = doc.ID %}
-                                <tr>
-                                    <td>
-                                        <a href="/download/{{ doc.DokId }}" class="font-weight-bold"><span style="width: 16px;" data-feather="download"></span> {{ doc.Dokumen.Filename }}</a>
-                                        <div class="xsmall text-muted mt-1">{{ doc.CreatedAt.Format("02-01-2006 15:04") }}</div>
-                                    </td>
-                                    <td class="text-end">{% if allowUpload %}
+                            <tr>
+                                <td class="align-top">
+                                    <div class="d-flex flex-column">
+                                        <a href="/download/{{ doc.DokId }}" class="font-weight-bold">
+                                            <span style="width: 16px;" data-feather="download"></span> {{ doc.Dokumen.Filename }}
+                                        </a>
+                                        <div class="xsmall text-muted mt-1">
+                                            <span style="width: 12px;" data-feather="calendar"></span> {{ doc.CreatedAt.Format("02-01-2006 15:04") }}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="align-top">
+                                    <div class="d-flex flex-column gap-1">
+                                    {% for p in doc.Persetujuan() %}
+                                        <div class="d-flex align-items-center gap-2 border-bottom pb-1 mb-1" style="font-size: 0.75rem;">
+                                            <div style="flex: 1; min-width: 0;">
+                                                <span class="fw-semibold text-truncate d-block" title="{{ p.Pegawai().PegNama }}">{{ p.Pegawai().PegNama }}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-1">
+                                                {% if p.Status %}
+                                                    <span class="badge bg-success-lt d-flex align-items-center gap-1" style="font-size: 0.65rem; padding: 2px 6px;"><span style="width:12px; height:12px;" data-feather="check"></span> SETUJU</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger-lt d-flex align-items-center gap-1" style="font-size: 0.65rem; padding: 2px 6px;"><span style="width:12px; height:12px;" data-feather="x"></span> BELUM</span>
+                                                    {% if (p.PegId == id or isAdmin) and not isLocked %}
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button type="button" onclick="handleSetuju('{{ doc.ID }}', true)" class="btn btn-success py-0 px-1" style="font-size: 0.65rem;">Setuju</button>
+                                                            <button type="button" onclick="handleSetuju('{{ doc.ID }}', false)" class="btn btn-danger py-0 px-1" style="font-size: 0.65rem;">Tolak</button>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                                </td>
+                                <td class="text-end align-top">
+                                    {% if allowUpload and not doc.IsSudahPersetujuanSemua %}
                                         <a href="/dok-final/hapus/{{ doc.ID }}" class="btn btn-sm btn-ghost-danger px-1" title="Hapus file" onclick="confirmDelete(event, this.href, 'Apakah Anda yakin ingin menghapus file dokumen ini?')">
-                                        <span style="width: 16px;" data-feather="trash-2"></span>
-                                    </a>{% endif %}
-                                    </td>
-                                </tr>
-                            {% endif %}
+                                            <span style="width: 16px;" data-feather="trash-2"></span>
+                                        </a>
+                                    {% elif doc.IsSudahPersetujuanSemua %}
+                                        <span class="text-success" title="Dokumen Terkunci"><span style="width: 16px;" data-feather="lock"></span></span>
+                                    {% endif %}
+                                </td>
+                            </tr>
                         {% endif %}
                     {% endfor %}
                     </tbody>
@@ -150,27 +189,6 @@ Dokument Persiapan Pengadaan
                     </div>
                     {% endif %}
                 </td>
-                <td>
-                    <ol>
-                    {% for doc in dokPersiapan %}
-                        {% if doc.ID == latestDocId %}
-                            {% for p in doc.Persetujuan %}
-                            <li class="mb-1">
-                                <span class="small">{{ p.Pegawai.PegNama }}</span>
-                                {% if p.Status %}
-                                <span class="text-success"><span style="width:16px;" data-feather="check-circle"></span></span>
-                                {% else %}
-                                <span class="text-muted"><span style="width:16px;" data-feather="circle"></span></span>
-                                {% if (p.PegId == id or isAdmin) and not isLocked %}
-                                <a href="javascript:void(0)" onclick="handleSetuju('{{ doc.ID }}')" class="badge bg-blue-lt ms-1">Setujui</a>
-                                {% endif %}
-                                {% endif %}
-                            </li>
-                            {% endfor %}
-                        {% endif %}
-                    {% endfor %}
-                    </ol>
-                </td>
             </tr>
             {% endfor %}
         </table>
@@ -179,41 +197,66 @@ Dokument Persiapan Pengadaan
         <div class="d-flex justify-content-between align-items-center mt-3">
             <div>
                 {% if not isLocked %}
-                <button type="submit" class="btn btn-success"><span style="width: 16px;" data-feather="save"></span> Simpan Perubahan</button>
+                <button type="submit" class="btn btn-success"><span style="width: 16px;" data-feather="save"></span> Simpan</button>
                 {% endif %}
 
                 {# Always show Preview button #}
                 <a class="btn btn-primary" href="/preview/ba-kajiulang/{{ paket.ID }}" target="_blank">
-                    <span style="width: 16px;" data-feather="eye"></span> Berita Acara Reviu
+                    <span style="width: 16px;" data-feather="eye"></span> Berita Acara Reviu Dokumen
                 </a>
 
                 {# Print Logic #}
                 {% if allowCetak and not isAddendum %}
-                    <a class="btn btn-primary" href="#" onclick="triggerCetakModal('/preview/ba-kajiulang/{{ paket.ID }}/print'); return false;">
-                        <span style="width: 16px;" data-feather="printer"></span> Cetak BA (Final)
+                    <a class="btn btn-primary" href="/preview/ba-kajiulang/{{ paket.ID }}/print" target="_blank">
+                        <span style="width: 16px;" data-feather="printer"></span> Cetak Berita Acara Reviu Dokumen
                     </a>
                 {% elif isAddendum %}
                     <button class="btn btn-secondary" disabled title="Selesaikan upload & persetujuan addendum untuk mencetak">
-                        <span style="width: 16px;" data-feather="printer"></span> Cetak BA (Sedang Addendum)
+                        <span style="width: 16px;" data-feather="printer"></span> Cetak Berita Acara Reviu Dokumen (Sedang Addendum)
                     </button>
                 {% else %}
                     <button class="btn btn-secondary" disabled title="Tunggu persetujuan semua pihak">
-                        <span style="width: 16px;" data-feather="printer"></span> Cetak BA (Belum Lengkap)
+                        <span style="width: 16px;" data-feather="printer"></span> Cetak Berita Acara Reviu Dokumen (Belum Lengkap)
                     </button>
                 {% endif %}
             </div>
 
-            {% if (isPPK or isAdmin) %}
-                {% if isAddendum %}
-                    <a href="/dok-final/{{ paket.ID }}/selesai-addendum" class="btn btn-danger" onclick="confirmSelesaiAddendum(event, this.href)">
-                        <span style="width:16px;" data-feather="check-circle"></span> Selesaikan Addendum
-                    </a>
-                {% else %}
-                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalAddendum">
-                        <span style="width:16px;" data-feather="refresh-cw"></span> Aktifkan Addendum
-                    </button>
+            {# Addendum Action Buttons #}
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+
+                {% if (isPPK or isAdmin) %}
+                    {% if isAddendum %}
+                        <a href="/dok-final/{{ paket.ID }}/selesai-addendum" class="btn btn-danger" onclick="confirmSelesaiAddendum(event, this.href)">
+                            <span style="width:16px;" data-feather="check-circle"></span> Selesaikan Addendum
+                        </a>
+                    {% elif addendumMaxReached %}
+                        <button type="button" class="btn btn-outline-danger" disabled title="Batas maksimum addendum (3x) telah tercapai. Hubungi Pokja untuk mereset.">
+                            <span style="width:16px;" data-feather="slash"></span> Addendum Tidak Tersedia
+                        </button>
+                        <span class="badge bg-danger-lt text-danger px-2 py-1">
+                            <span style="width:12px;" data-feather="alert-circle"></span>
+                            Batas 3x tercapai &mdash; Hubungi Pokja
+                        </span>
+                    {% else %}
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalAddendum">
+                            <span style="width:16px;" data-feather="refresh-cw"></span> Aktifkan Addendum
+                        </button>
+                        <span class="badge bg-secondary-lt text-secondary px-2 py-1" title="Sisa kuota addendum">
+                            Addendum: {{ addendumCount }}/3
+                        </span>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
+
+                {# Tombol Reset Addendum - hanya untuk Pokja/Admin #}
+                {% if (isPokja or isAdmin) and addendumMaxReached and not isAddendum %}
+                    <a href="/dok-final/{{ paket.ID }}/reset-addendum"
+                       class="btn btn-sm btn-outline-warning"
+                       onclick="return confirm('Reset kuota addendum untuk paket ini? PPK akan dapat mengaktifkan addendum kembali.')">
+                        <span style="width:14px;" data-feather="rotate-ccw"></span> Reset Kuota Addendum
+                    </a>
+                {% endif %}
+
+            </div>
         </div>
         </form>
 
@@ -380,37 +423,40 @@ function confirmDelete(event, url, message) {
     });
 }
 
-function handleSetuju(id) {
+function handleSetuju(id, status) {
+    const isSetuju = (status === true || status === 'true');
     Swal.fire({
-        title: 'Konfirmasi Persetujuan',
-        text: 'Apakah Anda yakin ingin MENYETUJUI dokumen ini? Setelah disetujui, file tidak dapat diubah lagi kecuali melalui proses Addendum.',
-        icon: 'warning',
+        title: isSetuju ? 'Konfirmasi Persetujuan' : 'Konfirmasi Penolakan',
+        text: isSetuju 
+            ? 'Apakah Anda yakin ingin MENYETUJUI dokumen ini?'
+            : 'Apakah Anda yakin ingin MENOLAK persetujuan dokumen ini?',
+        icon: isSetuju ? 'question' : 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#206bc4',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Ya, Setujui!',
+        confirmButtonColor: isSetuju ? '#28a745' : '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: isSetuju ? '✓ Ya, Setujui!' : '✗ Ya, Tolak!',
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
             let apiUrl = '/dok-final/{{ paket.ID }}/persetujuan';
             const formData = new FormData();
-            formData.append("id", id); 
-            formData.append('status', true);
+            formData.append('id', id);
+            formData.append('status', isSetuju ? 'true' : 'false');
             
             fetch(apiUrl, {
-                method : 'POST',
-                body : formData,
+                method: 'POST',
+                body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
             .then(response => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) throw new Error('HTTP error! status: ' + response.status);
                 return response.json();
             })
             .then(data => {
                 if (data.status === 'success') {
-                    Swal.fire('Berhasil!', 'Persetujuan berhasil disimpan.', 'success')
+                    Swal.fire('Berhasil!', isSetuju ? 'Persetujuan berhasil disimpan.' : 'Penolakan berhasil disimpan.', 'success')
                     .then(() => location.reload(true));
                 } else {
                     Swal.fire('Gagal!', data.message || 'Terjadi kesalahan.', 'error');
@@ -418,7 +464,7 @@ function handleSetuju(id) {
             })
             .catch(error => {
                 console.error('Error:', error);
-                Swal.fire('Error!', 'Terjadi kesalahan pada sistem saat menyimpan.', 'error');
+                Swal.fire('Error!', 'Terjadi kesalahan pada sistem: ' + error.message, 'error');
             });
         }
     });

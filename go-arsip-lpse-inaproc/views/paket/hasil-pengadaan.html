@@ -74,11 +74,21 @@ Hasil Pengadaan
                 <div class="col-sm-4">
                     <p class="form-control-plaintext">
                         {% if realisasi.NamaPenyedia != "" %}
-                            {{ realisasi.NamaPenyedia }}
+                            <span class="fw-semibold">{{ realisasi.NamaPenyedia }}</span>
                         {% elif purchase.OrderId != "" %}
-                            {{ purchase.Penyedia().NamaPenyedia }}
+                            <span class="fw-semibold">{{ purchase.Penyedia().NamaPenyedia }}</span>
+                        {% elif tender.KdTender > 0 and tender.StatusTender != "" %}
+                            <span class="badge bg-warning-lt text-warning border border-warning">
+                                <span style="width:12px;" data-feather="clock"></span>
+                                Tender {{ tender.StatusTender }}
+                            </span>
+                        {% elif nontender.KdNontender > 0 and nontender.StatusNontender != "" %}
+                            <span class="badge bg-warning-lt text-warning border border-warning">
+                                <span style="width:12px;" data-feather="clock"></span>
+                                Nontender {{ nontender.StatusNontender }}
+                            </span>
                         {% else %}
-                            <span class="text-muted">Data tidak ditemukan</span>
+                            <span class="text-muted fst-italic">Belum ada data pemenang</span>
                         {% endif %}
                     </p>
                 </div>
@@ -86,11 +96,13 @@ Hasil Pengadaan
                 <div class="col-sm-4">
                     <p class="form-control-plaintext">
                         {% if realisasi.NilaiKontrak > 0 %}
-                            {{ rupiah(realisasi.NilaiKontrak) }}
+                            <span class="fw-semibold text-success">{{ rupiah(realisasi.NilaiKontrak) }}</span>
                         {% elif purchase.Total > 0 %}
-                            {{ rupiah(purchase.Total) }}
+                            <span class="fw-semibold text-success">{{ rupiah(purchase.Total) }}</span>
+                        {% elif tender.KdTender > 0 %}
+                            <span class="text-muted fst-italic">Menunggu penetapan</span>
                         {% else %}
-                            -
+                            <span class="text-muted">-</span>
                         {% endif %}
                     </p>
                 </div>

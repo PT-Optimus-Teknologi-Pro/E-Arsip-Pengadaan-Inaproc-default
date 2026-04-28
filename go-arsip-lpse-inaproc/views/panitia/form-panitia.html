@@ -170,7 +170,7 @@ Form Pokja
             <div class="reg-card-body">
                 {% include "alert.html" %}
                 
-                <div class="row mb-4">
+                <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label class="form-label-custom">Nama Pokja</label>
@@ -184,6 +184,27 @@ Form Pokja
                             <div class="form-control-custom" style="background: #f8fafc; color: var(--text-muted); border-style: dashed;">
                                 {{ panitia.Tahun }}
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label class="form-label-custom">Nomor SK Resmi</label>
+                            <input type="text" name="no_sk" class="form-control form-control-custom" value="{{ panitia.NoSk }}" placeholder="Masukkan nomor SK..."/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label class="form-label-custom">Tanggal SK</label>
+                            <input type="text" name="tgl_sk" class="form-control form-control-custom datepicker" value="{% if !panitia.TglSk.IsZero %}{{ panitia.TglSk.Format("2006-01-02") }}{% endif %}" placeholder="Pilih tanggal..."/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label class="form-label-custom">Tempat Penetapan</label>
+                            <input type="text" name="tempat_sk" class="form-control form-control-custom" value="{{ panitia.TempatSk }}" placeholder="Contoh: Banjarmasin"/>
                         </div>
                     </div>
                 </div>

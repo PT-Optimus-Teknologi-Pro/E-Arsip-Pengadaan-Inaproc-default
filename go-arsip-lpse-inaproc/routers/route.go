@@ -304,6 +304,7 @@ func SetupRoutes(app *fiber.App) {
 	dokfinal.Post("/:id/persetujuan", handlers.SimpanDokumenPersiapanPaketPersetujuan)
 	dokfinal.Get("/:id/addendum", handlers.UnlockAddendumReview)
 	dokfinal.Get("/:id/selesai-addendum", handlers.FinishAddendumReview)
+	dokfinal.Get("/:id/reset-addendum", handlers.ResetAddendumCount)
 	dokfinal.Get("/:id/persetujuan", handlers.DokPersiapanPaketPersetujuan)
 	dokfinal.Get("/:id", handlers.DokPersiapanPaket)
 	dokfinal.Get("/hapus/:id", handlers.HapusDokPersiapan)

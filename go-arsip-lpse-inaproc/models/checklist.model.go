@@ -3,7 +3,7 @@ package models
 import (
 	"arsip/utils"
 	"database/sql"
-	"encoding/json"
+
 	"fmt"
 	"time"
 
@@ -170,22 +170,60 @@ func (c DokPersiapan) SavePersetujuanPegawai(pegId uint, status bool) error {
 	return db.Save(&persetujuan).Error
 }
 
-func (c DokPersiapan) CheckPersetujuanPegawai() {
+func (c *DokPersiapan) CheckPersetujuanPegawai() {
+	if c.ID == 0 {
+		return
+	}
+	
 	persetujuanList := c.Persetujuan()
-	paket := GetPaket(c.PktId);
+	paket := GetPaket(c.PktId)
 	panitia := paket.Pokja()
 	ppk := paket.Ppk()
 	pp := paket.Pp()
+	
+	// 1. Bersihkan yang sudah tidak relevan
 	for _, v := range persetujuanList {
-		if v.Pegawai().IsPokja() && !panitia.IsAnggota(v.PegId) {
-			db.Delete(&v, v,v.DkpId)
+		peg := v.Pegawai()
+		isInvalid := false
+		if peg.IsPokja() && !panitia.IsAnggota(v.PegId) {
+			isInvalid = true
+		} else if peg.IsPPK() && v.PegId != ppk.ID {
+			isInvalid = true
+		} else if peg.IsPP() && v.PegId != pp.ID {
+			isInvalid = true
 		}
-		if v.Pegawai().IsPPK() && v.Pegawai().ID != ppk.ID {
-			db.Delete(&v, v,v.DkpId)
+		
+		if isInvalid {
+			db.Unscoped().Delete(&v)
 		}
-		if v.Pegawai().IsPP() && v.Pegawai().ID != pp.ID {
-			db.Delete(&v, v,v.DkpId)
+	}
+
+	// 2. Tambahkan yang belum ada
+	if ppk.ID > 0 {
+		c.EnsurePersetujuanExist(ppk.ID)
+	}
+	if pp.ID > 0 {
+		c.EnsurePersetujuanExist(pp.ID)
+	}
+	anggota := panitia.AnggotaList()
+	for _, a := range anggota {
+		c.EnsurePersetujuanExist(a.ID)
+	}
+}
+
+func (c *DokPersiapan) EnsurePersetujuanExist(pegId uint) {
+	if c.ID == 0 || pegId == 0 {
+		return
+	}
+	var count int64
+	db.Model(&PersetujuanDokPersiapan{}).Where("dkp_id = ? AND peg_id = ?", c.ID, pegId).Count(&count)
+	if count == 0 {
+		persetujuan := PersetujuanDokPersiapan{
+			DkpId:  c.ID,
+			PegId:  pegId,
+			Status: false,
 		}
+		db.Create(&persetujuan)
 	}
 }
 
@@ -202,15 +240,17 @@ func (c DokPersiapan) IsBelumAdaPersetujuan() bool {
 }
 
 func (c DokPersiapan) IsSudahPersetujuanSemua() bool {
-	sudahSetuju := true
 	persetujuanList := c.Persetujuan()
+	// Jika belum ada persetujuan sama sekali, anggap belum selesai
+	if len(persetujuanList) == 0 {
+		return false
+	}
 	for _, v := range persetujuanList {
 		if !v.Status {
-			sudahSetuju = false
-			break
+			return false
 		}
 	}
-	return sudahSetuju
+	return true
 }
 
 func GetDokPersiapan(id uint) DokPersiapan {
@@ -229,66 +269,19 @@ func SaveAllDokPersiapan(c *fiber.Ctx, id uint, userid uint) error {
 			continue
 		}
 		
-		var dp DokPersiapan
-		db.Where("pkt_id = ? AND chk_id = ?", paket.ID, obj.ID).Order("id DESC").First(&dp)
-		
-		if dp.ID > 0 {
-			// Save current state to history before updating
-			approvals := dp.Persetujuan()
-			type ApprovalState struct {
-				Name   string `json:"name"`
-				Status bool   `json:"status"`
-			}
-			var state []ApprovalState
-			for _, a := range approvals {
-				state = append(state, ApprovalState{
-					Name:   a.Pegawai().PegNama,
-					Status: a.Status,
-				})
-			}
-			stateJson, _ := json.Marshal(state)
-			
-			snapshot := ReviewAddendumSnapshot{
-				AddendumId: 0, // 0 means manual update history (not formal addendum)
-				ChkId:      dp.ChkId,
-				DokId:      dp.DokId,
-				PktId:      dp.PktId,
-				Approvals:  string(stateJson),
-			}
-			db.Save(&snapshot)
-
-			// Update existing record to keep one record per checklist item
-			dp.DokId = dokId
-			db.Save(&dp)
-			checks = append(checks, dp)
-		} else {
-			checklistpaket := DokPersiapan {
-				DokId: dokId,
-				PktId: paket.ID,
-				ChkId: obj.ID,
-			}
-			db.Save(&checklistpaket)
-			checks = append(checks, checklistpaket)
+		// Selalu buat record baru (Multi-file support)
+		checklistpaket := DokPersiapan {
+			DokId: dokId,
+			PktId: paket.ID,
+			ChkId: obj.ID,
 		}
+		db.Save(&checklistpaket)
+		checks = append(checks, checklistpaket)
 	}
 	
-	ppk := paket.Ppk()
-	pp := paket.Pp()
-	pokja := paket.Pokja()
-	anggota := pokja.AnggotaList()
-	for _, obj := range checks {
+	for i := range checks {
 		// Reset/Ensure approvals exist for the (updated) record
-		if ppk.ID > 0 {
-			obj.SavePersetujuanPegawai(ppk.ID, false)
-		}
-		if pp.ID > 0 {
-			obj.SavePersetujuanPegawai(pp.ID, false)
-		}
-		if len(anggota) > 0 {
-			for _,a := range anggota {
-				obj.SavePersetujuanPegawai(a.ID, false)
-			}
-		}
+		checks[i].CheckPersetujuanPegawai()
 	}
 	return nil
 }

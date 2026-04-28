@@ -66,7 +66,16 @@ func GetAnggotaPokja(id uint) []models.AnggotaPanitia {
 }
 
 func CreatePanitia(panitia models.PanitiaDTO) error {
-	objPanitia := models.Panitia{Nama: panitia.Nama, Tahun: panitia.Tahun}
+	objPanitia := models.Panitia{
+		Nama: panitia.Nama, 
+		Tahun: panitia.Tahun,
+		NoSk: panitia.NoSk,
+		TempatSk: panitia.TempatSk,
+	}
+	if panitia.TglSk != "" {
+		objPanitia.TglSk, _ = time.Parse("2006-01-02", panitia.TglSk)
+	}
+
 	err := models.SavePanitia(&objPanitia)
 	if err != nil {
 		log.Error("error saving panitia ", err)
@@ -87,6 +96,12 @@ func UpdatePanitia(id uint, panitia models.PanitiaDTO) error {
 	}
 	objPanitia.Nama = panitia.Nama
 	objPanitia.Tahun = panitia.Tahun
+	objPanitia.NoSk = panitia.NoSk
+	objPanitia.TempatSk = panitia.TempatSk
+	if panitia.TglSk != "" {
+		objPanitia.TglSk, _ = time.Parse("2006-01-02", panitia.TglSk)
+	}
+
 	err := models.SavePanitia(&objPanitia)
 	if err != nil {
 		return errors.New("Gagal Simpan panitia")

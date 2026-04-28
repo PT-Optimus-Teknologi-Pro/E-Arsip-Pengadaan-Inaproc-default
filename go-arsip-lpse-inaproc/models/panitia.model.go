@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"time"
 
 	"github.com/gofiber/fiber/v2/log"
 	"gorm.io/gorm"
@@ -11,6 +12,9 @@ type Panitia struct {
 	gorm.Model
 	Nama  string `gorm:"not null" json:"nama"`
 	Tahun int    `gorm:"not null" json:"tahun"`
+	NoSk  string `json:"no_sk"`
+	TglSk time.Time `json:"tgl_sk"`
+	TempatSk string `json:"tempat_sk"`
 }
 
 func (obj Panitia) AnggotaList() []Pegawai {
@@ -124,4 +128,7 @@ type PanitiaDTO struct {
 	Nama    string `form:"nama" json:"nama"`
 	Tahun   int    `form:"tahun" json:"tahun"`
 	Anggota []uint `form:"anggota" json:"anggota"`
+	NoSk    string `form:"no_sk" json:"no_sk"`
+	TglSk   string `form:"tgl_sk" json:"tgl_sk"`
+	TempatSk string `form:"tempat_sk" json:"tempat_sk"`
 }

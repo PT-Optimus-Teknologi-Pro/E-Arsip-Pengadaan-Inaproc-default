@@ -367,9 +367,9 @@ func GetDataTablePp(c *fiber.Ctx, usrsession UserSession) error {
 }
 
 func GetDataTableInbox(c *fiber.Ctx, id uint) error {
-	orm := db.Model(&Inbox{}).Where("peg_id=?", id)
+	orm := db.Model(&Inbox{}).Where("peg_id=?", id).Order("enqueue_date DESC")
 	var datas []Inbox
-	return populate(orm, c, &datas,  "id", "subject", "enqueue_date", "status")
+	return populate(orm, c, &datas, "id", "subject", "enqueue_date", "status")
 }
 
 func GetDataTableDocTemplate(c *fiber.Ctx) error {
@@ -447,15 +447,15 @@ func populate(db *gorm.DB, c *fiber.Ctx, result interface{}, columns ...string) 
 	var requestColumn string
 	columnIdx := 0
 	orderable := false
-	for i, column := range columns {
-		requestColumn = c.Query("order["+strconv.Itoa(i)+"][column]")
+	for i := range columns {
+		requestColumn = c.Query("order[" + strconv.Itoa(i) + "][column]")
 		if len(requestColumn) == 0 {
 			continue
 		}
 		columnIdx, _ = strconv.Atoi(requestColumn)
-		orderable  = c.QueryBool("columns["+requestColumn+"][orderable]")
-		if orderable && (columnIdx >= 0 && columnIdx < len(column)) {
-			order_status := c.Query("order["+strconv.Itoa(i)+"][dir]")
+		orderable = c.QueryBool("columns[" + requestColumn + "][orderable]")
+		if orderable && (columnIdx >= 0 && columnIdx < len(columns)) {
+			order_status := c.Query("order[" + strconv.Itoa(i) + "][dir]")
 			db = db.Order(columns[columnIdx] + " " + order_status)
 		}
 	}

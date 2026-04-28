@@ -47,6 +47,7 @@ type Paket struct {
 	BuktiDokId     uint          `json:"bukti_dok_id" gorm:"->;-:migration"` // virtual: from LEFT JOIN dok_paket
 	IsLockedReview bool          `json:"is_locked_review" gorm:"default:false"`
 	IsAddendum     bool          `json:"is_addendum" gorm:"default:false"`
+	AddendumCount  int           `json:"addendum_count" gorm:"default:0"`
 }
 
 func (Paket) TableName() string {
