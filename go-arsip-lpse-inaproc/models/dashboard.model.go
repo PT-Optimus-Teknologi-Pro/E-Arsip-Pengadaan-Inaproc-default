@@ -21,6 +21,7 @@ type RupProgress struct {
 	KdSatker		uint
 	Nama			string
 	Pagu			float64
+	PaguPds			float64
 	PaguSwakelola	float64
 	Belanja 		float64
 	TotalBelanja	float64
@@ -31,10 +32,11 @@ func (c RupProgress) MarshalJSON() ([]byte, error) {
 		"kd_satker" : c.KdSatker,
 		"nama_satker" : c.Nama,
 		"pagu" : utils.FormatRupiah(c.Pagu),
+		"pagu_pds" : utils.FormatRupiah(c.PaguPds),
 		"pagu_swakelola" : utils.FormatRupiah(c.PaguSwakelola),
 		"belanja" : utils.FormatRupiah(c.Belanja),
 		"total_belanja" : utils.FormatRupiah(c.TotalBelanja),
-		"prosentase" : utils.Prosentase(c.Pagu+c.PaguSwakelola, c.TotalBelanja),
+		"prosentase" : utils.Prosentase(c.Pagu+c.PaguPds+c.PaguSwakelola, c.TotalBelanja),
 	})
 }
 
@@ -211,10 +213,12 @@ type DetailPaketBulanan struct {
 
 func GetRupProgress(tahun int) []RupProgress {
 	var result []RupProgress
-	db.Raw(`SELECT a.id_satker, s.nama, belanja_pengadaan as belanja, total_belanja, p.pagu, w.pagu pagu_swakelola FROM struktur_anggaran a
-			LEFT JOIN (SELECT id_satker, sum(pagu) as pagu FROM paket_sirup WHERE tahun = ? and paket_aktif='TRUE' GROUP BY id_satker) p On a.id_satker = p.id_satker
-			LEFT JOIN (SELECT id_satker, sum(jumlah_pagu) as pagu FROM swakelola_sirup WHERE tahun = ? and aktif='TRUE' GROUP BY id_satker) w On a.id_satker = w.id_satker
-			LEFT JOIN satker s ON a.id_satker = s.id WHERE a.tahun_anggaran = ?`, tahun, tahun, tahun).Scan(&result)
+	db.Raw(`SELECT a.id_satker, s.nama, belanja_pengadaan as belanja, total_belanja, 
+			p.pagu, pds.pagu as pagu_pds, w.pagu as pagu_swakelola FROM struktur_anggaran a
+			LEFT JOIN (SELECT id_satker, sum(pagu) as pagu FROM paket_sirup WHERE tahun = ? and paket_aktif='TRUE' and paket_terumumkan='TRUE' and (id_swakelola = 0 OR id_swakelola IS NULL) GROUP BY id_satker) p On a.id_satker = p.id_satker
+			LEFT JOIN (SELECT id_satker, sum(pagu) as pagu FROM paket_sirup WHERE tahun = ? and paket_aktif='TRUE' and paket_terumumkan='TRUE' and id_swakelola > 0 GROUP BY id_satker) pds On a.id_satker = pds.id_satker
+			LEFT JOIN (SELECT id_satker, sum(jumlah_pagu) as pagu FROM swakelola_sirup WHERE tahun = ? and aktif='TRUE' and umumkan='TRUE' GROUP BY id_satker) w On a.id_satker = w.id_satker
+			LEFT JOIN satker s ON a.id_satker = s.id WHERE a.tahun_anggaran = ?`, tahun, tahun, tahun, tahun).Scan(&result)
 	return result
 }
 

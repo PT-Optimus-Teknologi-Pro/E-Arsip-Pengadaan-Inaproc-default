@@ -24,9 +24,9 @@ func GetDashboardHeroStats(tahun int) DashboardHeroStats {
 	var totalPagu, totalBelanja float64
 	var skpdAktif int
 	for _, p := range progress {
-		totalPagu += p.Pagu
+		totalPagu += p.Pagu + p.PaguPds + p.PaguSwakelola
 		totalBelanja += p.Belanja
-		if p.Pagu > 0 {
+		if (p.Pagu + p.PaguPds + p.PaguSwakelola) > 0 {
 			skpdAktif++
 		}
 	}
