@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"arsip/models"
 	"arsip/services"
 	"arsip/utils"
 	"github.com/gofiber/fiber/v2"

@@ -174,7 +174,10 @@ Login
 
       
       <div class="mb-3">
-        <label class="form-label">Password</label>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+          <label class="form-label" style="margin-bottom: 0;">Password</label>
+          <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPwModal" style="font-size: 0.82rem; color: #0026B4; text-decoration: none; font-weight: 500;">Lupa Password?</a>
+        </div>
         <div class="password-wrapper">
           <input type="password" class="form-control" placeholder="Masukan Password..." name="password" required id="passwordField" autocomplete="current-password">
           <button type="button" class="password-toggle" id="togglePassword" title="Tampilkan/Sembunyikan Password">
@@ -220,6 +223,34 @@ Login
       <button type="submit" class="btn-signin">Sign In</button>
     </form>
 
+  </div>
+</div>
+
+<!-- Modal Lupa Password -->
+<div class="modal fade" id="forgotPwModal" tabindex="-1" aria-labelledby="forgotPwModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+      <div class="modal-header text-white" style="background: #0026B4; border-bottom: none;">
+        <h5 class="modal-title d-flex align-items-center" id="forgotPwModalLabel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Informasi Reset Password
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <div class="mb-3 text-warning">
+          <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <h4 class="mb-3" style="color: #11215D; font-weight: 700;">Lupa Password Anda?</h4>
+        <p class="text-muted mb-0" style="font-size: 0.95rem; line-height: 1.6;">
+          Untuk alasan keamanan, proses reset password hanya dapat dilakukan oleh Administrator. 
+          Silakan hubungi <strong>Administrator instansi Anda</strong> untuk bantuan pemulihan akses akun.
+        </p>
+      </div>
+      <div class="modal-footer border-0 d-flex justify-content-center pb-4 pt-0">
+        <button type="button" class="btn btn-secondary px-4 py-2 rounded-pill" data-bs-dismiss="modal" style="font-weight: 500;">Mengerti & Tutup</button>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
