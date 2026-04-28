@@ -56,9 +56,14 @@ func GetVerifikasi(c *fiber.Ctx) error {
 		return c.SendStatus(404)
 	}
 	documents := services.GetDocumentPegawai(uint(id))
+	docMap := make(map[string]models.Document)
+	for _, d := range documents {
+		docMap[d.Jenis] = d
+	}
 	mp := currentMap(c)
 	mp["pegawai"] = user
 	mp["documents"] = documents
+	mp["docMap"] = docMap
 	return c.Render("verifikasi/verifikasi-detil", mp)
 }
 

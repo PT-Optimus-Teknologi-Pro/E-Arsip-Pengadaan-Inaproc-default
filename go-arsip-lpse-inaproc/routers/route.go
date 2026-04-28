@@ -81,6 +81,8 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/logout", handlers.LoggedMiddleware, handlers.Logout)
 	app.Get("/home", handlers.LoggedMiddleware, handlers.Home)
 	app.Get("/profile", handlers.LoggedMiddleware, handlers.Profile)
+	app.Get("/profile/password", handlers.LoggedMiddleware, handlers.ChangePassword)
+	app.Post("/profile/password", handlers.LoggedMiddleware, handlers.SubmitChangePassword)
 	app.Get("/template-sk", handlers.GetTemplateSK)
 	app.Get("/template-sk-pokja", handlers.GetTemplateSKPokja)
 	templates := app.Group("/templates", handlers.LoggedMiddleware)

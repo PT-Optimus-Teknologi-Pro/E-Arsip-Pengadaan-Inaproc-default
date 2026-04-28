@@ -53,7 +53,18 @@ func DeleteDocTemplate(template models.DokTemplate) error {
 }
 
 func SaveTTD(c *fiber.Ctx, id uint) error {
+	// Cek apakah ada file upload tanda tangan (sederhana)
+	file, err := c.FormFile("ttd_file")
+	if err == nil {
+		_, err = models.SaveDocumentHeader(c, id, models.TTD, file)
+		return err
+	}
+
+	// Jika tidak ada file upload, gunakan data base64 dari canvas
 	data := c.FormValue("ttd")
+	if data == "" {
+		return nil // Abaikan jika kosong
+	}
 	filename := config.UploadPath() + "/" + strconv.Itoa(int(id)) + "/signed.png"
 	return saveBase64Image(data, filename, id, models.TTD)
 }

@@ -327,10 +327,14 @@ Detil Verifikasi
                                     <div class="info-value">{{ pegawai.PegJabatan }}</div>
                                 </div>
                                 <div class="info-group">
+                                    <div class="info-label">No. Sertifikat PBJ</div>
+                                    <div class="info-value">{{ pegawai.PegNoPbj|default:"—" }}</div>
+                                </div>
+                                <div class="info-group">
                                     <div class="info-label">Status Verifikasi</div>
                                     <div class="info-value">
                                         {% if pegawai.PegStatus == 0 %}
-                                            <span class="reg-badge badge-warning">● Menunggu</span>
+                                            <span class="reg-badge badge-warning">● Menunggu Verifikasi</span>
                                         {% elif pegawai.PegStatus == 1 or pegawai.PegStatus == 2 %}
                                             <span class="reg-badge badge-success">● Disetujui</span>
                                         {% else %}

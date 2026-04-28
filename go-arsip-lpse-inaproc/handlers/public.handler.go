@@ -188,7 +188,17 @@ func Home(c *fiber.Ctx) error {
 		mp["countAgency"] = services.GetCountAgency()
 		mp["countUkpbj"] = services.GetCountUkpbj()
 		mp["countPegawai"] = services.GetCountPegawai()
-		mp["user"] = services.GetPegawai(id)
+		peg := services.GetPegawai(id)
+		mp["user"] = peg
+		
+		// Ambil dokumen pendaftaran (KTP, SK, dsb)
+		docs := models.GetDocumentPegawai(id)
+		docMap := make(map[string]models.Document)
+		for _, d := range docs {
+			docMap[d.Jenis] = d
+		}
+		mp["docMap"] = docMap
+
 		if mp["isPokja"].(bool) || mp["isPegawai"].(bool) || mp["isPPK"].(bool) || mp["isPP"].(bool) || mp["isArsiparis"].(bool) {
 			var countPaket, countPermohonan, countInbox int64
 			db := models.GetDB()
@@ -262,7 +272,53 @@ func Profile(c *fiber.Ctx) error {
 	id := utils.InterfaceToUint(mp["id"])
 	user := services.GetPegawai(id)
 	mp["user"] = user
+
+	// Ambil dokumen pendaftaran (KTP, SK, dsb)
+	docs := models.GetDocumentPegawai(id)
+	docMap := make(map[string]models.Document)
+	for _, d := range docs {
+		docMap[d.Jenis] = d
+	}
+	mp["docMap"] = docMap
+
 	return c.Render("profile", mp)
+}
+
+func ChangePassword(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	return c.Render("profile-password", mp)
+}
+
+func SubmitChangePassword(c *fiber.Ctx) error {
+	mp := currentMap(c)
+	id := utils.InterfaceToUint(mp["id"])
+
+	oldPass := c.FormValue("old_password")
+	newPass := c.FormValue("new_password")
+	confirmPass := c.FormValue("confirm_password")
+
+	if newPass != confirmPass {
+		return flashError(c, "Konfirmasi password baru tidak cocok!", "/profile/password")
+	}
+
+	user := services.GetPegawai(id)
+	if utils.HashPassword(oldPass) != user.Passw {
+		return flashError(c, "Password lama salah!", "/profile/password")
+	}
+
+	// Validate password strength
+	strength := passwordvalidator.GetEntropy(newPass)
+	if strength < 60 {
+		return flashError(c, "Password baru terlalu lemah! Gunakan kombinasi huruf besar, kecil, angka, dan simbol.", "/profile/password")
+	}
+
+	user.Passw = utils.HashPassword(newPass)
+	err := models.SavePegawai(&user)
+	if err != nil {
+		return flashError(c, "Gagal memperbarui password!", "/profile/password")
+	}
+
+	return flashSuccess(c, "Password berhasil diperbarui!", "/profile")
 }
 
 

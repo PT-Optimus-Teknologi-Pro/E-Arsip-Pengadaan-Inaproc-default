@@ -236,8 +236,12 @@ Dashboard
                     </thead>
                     <tbody>
                     <tr>
-                        <td class="fw-medium">{{ user.PegNama}}</td>
-                        <td class="text-muted">{{ user.PegNip}}</td>
+                        <td class="fw-medium">
+                            <a href="javascript:void(0)" class="text-decoration-none fw-bold text-primary hover-underline" data-bs-toggle="modal" data-bs-target="#modalDetailRegistrasi">
+                                {{ user.PegNama }}
+                            </a>
+                        </td>
+                        <td class="text-muted">{{ user.PegNip }}</td>
                         <td class="text-muted">{{ user.PegEmail}}</td>
                         <td class="text-muted">{{ user.PegNamauser}}</td>
                         <td class="text-center">
@@ -263,6 +267,92 @@ Dashboard
     </div>
 </div>
 {% endif %}
+
+<!-- Modal Detail Registrasi -->
+<div class="modal fade" id="modalDetailRegistrasi" tabindex="-1" aria-labelledby="modalDetailRegistrasiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white py-3">
+                <h5 class="modal-title fw-bold" id="modalDetailRegistrasiLabel">
+                    <i data-feather="user" class="me-2"></i>Detail Data Registrasi
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="background-color: #f8fafc;">
+                <div class="row g-4">
+                    <!-- Kolom Kiri: Biodata -->
+                    <div class="col-md-7">
+                        <div class="card border-0 shadow-sm rounded-3">
+                            <div class="card-body p-0">
+                                <table class="table table-sm table-borderless mb-0">
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted" width="40%">Role Pengangkatan</td><td class="p-3 fw-bold text-primary">{{ user.RoleLabel }}</td></tr>
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted">Nama Lengkap</td><td class="p-3">{{ user.PegNama }}</td></tr>
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted">NIK</td><td class="p-3">{{ user.PegNik }}</td></tr>
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted">NIP/NRP</td><td class="p-3">{{ user.PegNip }}</td></tr>
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted">User ID (Username)</td><td class="p-3">{{ user.PegNamauser }}</td></tr>
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted">Alamat</td><td class="p-3">{{ user.PegAlamat }}</td></tr>
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted">Telepon</td><td class="p-3">{{ user.PegTelepon }}</td></tr>
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted">Email</td><td class="p-3">{{ user.PegEmail }}</td></tr>
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted">Pangkat / Golongan</td><td class="p-3">{{ user.PegPangkat }} / {{ user.PegGolongan }}</td></tr>
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted">Jabatan</td><td class="p-3">{{ user.PegJabatan }}</td></tr>
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted">No. Sertifikat PBJ</td><td class="p-3">{{ user.PegNoPbj }}</td></tr>
+                                    <tr class="border-bottom"><td class="p-3 fw-bold text-muted">Nomor SK</td><td class="p-3">{{ user.PegNoSk }}</td></tr>
+                                    <tr><td class="p-3 fw-bold text-muted">Masa Berlaku SK</td><td class="p-3">{{ user.GetMasaBerlaku }}</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Kolom Kanan: Dokumen & TTD -->
+                    <div class="col-md-5">
+                        <h6 class="fw-bold mb-3"><i data-feather="file-text" class="me-2 text-primary"></i>Lampiran Dokumen</h6>
+                        <div class="list-group shadow-sm rounded-3 mb-4">
+                            {% if docMap.KTP %}
+                            <a href="/download/{{ docMap.KTP.ID }}" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3">
+                                <span><i data-feather="credit-card" class="me-2 text-info"></i>Scan KTP</span>
+                                <span class="badge bg-primary rounded-pill"><i data-feather="download" style="width: 12px; height: 12px;"></i></span>
+                            </a>
+                            {% else %}
+                            <div class="list-group-item text-muted p-3">KTP tidak tersedia</div>
+                            {% endif %}
+
+                            {% if docMap.SK %}
+                            <a href="/download/{{ docMap.SK.ID }}" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3">
+                                <span><i data-feather="file" class="me-2 text-success"></i>Scan SK</span>
+                                <span class="badge bg-primary rounded-pill"><i data-feather="download" style="width: 12px; height: 12px;"></i></span>
+                            </a>
+                            {% else %}
+                            <div class="list-group-item text-muted p-3">SK tidak tersedia</div>
+                            {% endif %}
+
+                            {% if docMap.SERTIFIKAT %}
+                            <a href="/download/{{ docMap.SERTIFIKAT.ID }}" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3">
+                                <span><i data-feather="award" class="me-2 text-warning"></i>Scan Sertifikat</span>
+                                <span class="badge bg-primary rounded-pill"><i data-feather="download" style="width: 12px; height: 12px;"></i></span>
+                            </a>
+                            {% else %}
+                            <div class="list-group-item text-muted p-3">Sertifikat tidak tersedia</div>
+                            {% endif %}
+                        </div>
+
+                        <h6 class="fw-bold mb-3"><i data-feather="edit-3" class="me-2 text-primary"></i>Tanda Tangan Digital</h6>
+                        <div class="card border-0 shadow-sm rounded-3">
+                            <div class="card-body p-2 text-center bg-white">
+                                {% if docMap.TTD %}
+                                <img src="/preview/image/{{ docMap.TTD.ID }}" class="img-fluid rounded" style="max-height: 150px; background: #fafafa; border: 1px dashed #ddd;" alt="Tanda Tangan">
+                                {% else %}
+                                <p class="text-muted small my-4">Tanda tangan belum tersedia</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
     <div class="modal fade" id="theModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
@@ -277,6 +367,18 @@ Dashboard
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var myModalDetail = document.getElementById('modalDetailRegistrasi');
+            if(myModalDetail) {
+                myModalDetail.addEventListener('shown.bs.modal', function () {
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                });
+            }
+        });
+    </script>
 {% endblock %}
 
 {% block css%}
@@ -299,6 +401,12 @@ Dashboard
   --shadow-card: 0 4px 20px rgba(0,0,0,0.06);
   --glass-bg:    rgba(255, 255, 255, 0.15);
   --glass-border: rgba(255, 255, 255, 0.25);
+}
+
+.hover-underline:hover {
+    text-decoration: underline !important;
+    color: #0026B4 !important;
+    transition: all 0.2s ease;
 }
 
 /* ══════════════════════════════════════════════
