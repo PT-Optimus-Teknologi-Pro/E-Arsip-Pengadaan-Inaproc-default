@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func main() {
+func ResetApp() {
 	db, err := gorm.Open(postgres.Open(config.GetDbUrl()), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)

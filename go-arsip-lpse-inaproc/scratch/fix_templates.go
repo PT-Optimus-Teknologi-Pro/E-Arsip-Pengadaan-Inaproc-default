@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func main() {
+func mainFixTemplates() {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")

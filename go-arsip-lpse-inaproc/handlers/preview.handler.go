@@ -1033,7 +1033,7 @@ func CetakBAKajiUlang(c *fiber.Ctx) error {
 	}
 	previewUrl := fmt.Sprintf("http://127.0.0.1:%s/preview/ba-kajiulang/%s", port, c.Params("id"))
 	result := utils.ExportToPdf(previewUrl)
-	if result == nil || len(result) == 0 {
+	if len(result) == 0 {
 		// Fallback ke renderToString jika ExportToPdf gagal
 		mp := prepareBAKajiUlangData(c)
 		valUrl := fmt.Sprintf("%s://%s/preview/ba-kajiulang/%s", c.Protocol(), c.Hostname(), c.Params("id"))

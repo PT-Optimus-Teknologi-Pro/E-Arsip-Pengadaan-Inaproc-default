@@ -18,7 +18,7 @@ func (Checklist) TableName() string {
     return "checklist"
 }
 
-func main() {
+func mainCheckChecklist() {
     db, err := gorm.Open(sqlite.Open("arsip.db"), &gorm.Config{})
     if err != nil {
         log.Fatal("failed to connect database")

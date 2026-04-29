@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func main() {
+func mainGenHash() {
 	password := "19&2H1)a"
 	var sha512Hasher = sha512.New()
 	sha512Hasher.Write([]byte(password))
