@@ -285,17 +285,25 @@ func (obj Paket) IsOnlyPpk() bool {
 		return false
 	}
 
-	// For Direct Procurement (Pengadaan Langsung - 8), Penunjukan Langsung (7), and e-Purchasing (9)
-	if obj.Metode == 7 || obj.Metode == 8 || obj.Metode == 9 {
-		// Rule for Construction (Pekerjaan Konstruksi - 2)
-		if obj.KgrId == 2 {
-			// <= 400jt stays in PPK
-			return obj.Hps <= HPS_BATAS_KONSTRUKSI
-		}
-		// For other types (Barang, Jasa, etc.), <= 200jt stays in PPK
-		return obj.Hps <= HPS_BATAS
+	// Pengadaan Langsung (8): SELALU melibatkan PP dan wajib Kaji Ulang
+	// Tidak ada skenario PPK-only untuk Pengadaan Langsung
+	if obj.Metode == 8 {
+		return false
 	}
-	// Other methods (like Lelang, etc.) are NOT Only PPK
+
+	// E-Purchasing (9): PPK-only HANYA jika HPS MELEBIHI batas (tidak ada Kaji Ulang)
+	// Jika HPS di bawah batas, wajib melibatkan PP dan Kaji Ulang
+	if obj.Metode == 9 {
+		if obj.KgrId == 2 { // Pekerjaan Konstruksi
+			// > 400jt: PPK saja, tidak ada Kaji Ulang
+			return obj.Hps > HPS_BATAS_KONSTRUKSI
+		}
+		// Barang, Jasa Konsultasi, Jasa Lainnya
+		// > 200jt: PPK saja, tidak ada Kaji Ulang
+		return obj.Hps > HPS_BATAS
+	}
+
+	// Other methods (like Tender, etc.) are NOT Only PPK
 	return false
 }
 

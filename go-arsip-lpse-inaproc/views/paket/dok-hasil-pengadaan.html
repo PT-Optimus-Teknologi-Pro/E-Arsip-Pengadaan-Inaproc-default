@@ -1,4 +1,4 @@
-﻿{% if isPokja or isPP or (paket.IsOnlyPpk and isPPK) %}
+{% if isPokja or isPP or (paket.IsOnlyPpk and isPPK) %}
  <form method="post" action="/hasil/{{ paket.ID }}/upload" enctype="multipart/form-data">
      <div class="input-group mt-2">
          <input type="file" name="file" class="form-control">
